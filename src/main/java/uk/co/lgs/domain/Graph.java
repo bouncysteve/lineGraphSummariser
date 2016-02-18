@@ -6,8 +6,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import uk.co.lgs.domain.exception.DomainException;
 
-import static org.apache.commons.lang3.StringUtils.isEmpty;
-
 /**
  * Domain class representing a multi-series line graph. A graph consists of a
  * title, two or more series, and a time aspect.

@@ -7,8 +7,9 @@ repositories {
 
 dependencies {
     compile (
-        'org.slf4j:slf4j-api:1.+',
-        'org.apache.commons:commons-lang3:3.4'
+    	'org.slf4j:slf4j-log4j12:1.+',
+        'org.apache.commons:commons-lang3:3.+',
+        'org.apache.commons:commons-csv:1.+'
     )
 
     testCompile (

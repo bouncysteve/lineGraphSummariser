@@ -1,11 +1,23 @@
 package uk.co.lgs.domain.loader;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
+
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 import uk.co.lgs.domain.loader.exception.LoaderException;
 
 public class IscatterLoader {
 
+	private final Logger logger = LoggerFactory.getLogger(IscatterLoader.class);
+	
 	private static final String MISSING_FOLDER_MESSAGE_PREFIX = "Can't find a folder with the name ";
 	
 	private static final String MISSING_SCHEMA_MESSAGE = "Can't find a file called schema.csv at this location";
@@ -35,10 +47,29 @@ public class IscatterLoader {
 		if (!schemaFile.isFile()){
 			throw new LoaderException(MISSING_SCHEMA_MESSAGE);
 		}
-		
+				
 		dataFile = new File (parentFolder.getAbsolutePath() + "/" + DATA_FILENAME);
 		if (!dataFile.isFile()){
 			throw new LoaderException(MISSING_DATA_MESSAGE);
 		}
+		
+		try {
+			CSVParser parser = CSVParser.parse(schemaFile, Charset.defaultCharset(), CSVFormat.DEFAULT);
+			boolean foundRecords = false;
+			for (CSVRecord csvRecord: parser){
+				foundRecords = true;
+				if (logger.isDebugEnabled()){
+					logger.debug(csvRecord.toString());
+				}
+			}
+			if (!foundRecords){
+				throw new LoaderException(BAD_OR_EMPTY_SCHEMA_MESSAGE);
+			}
+		} catch (IOException ioe){
+			throw new LoaderException(BAD_OR_EMPTY_SCHEMA_MESSAGE);
+		}
+
 	}
+	
+	
 }
