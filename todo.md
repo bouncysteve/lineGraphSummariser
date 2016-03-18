@@ -1,4 +1,3 @@
-* Add coverage tool in eclipse and add any missing tests
 * Get loader working
 * Write a main class which loads a graph, and returns a list of graphSegments
 * Work out whether the iScatter format is helpful or not

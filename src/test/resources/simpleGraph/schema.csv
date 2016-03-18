@@ -1,4 +1,4 @@
 id,name,description,unit,type,level
-quarter,time,time in quarters,time (quarter),string,interval
+quarter,time,time in quarters,quarter,string,interval
 cash_saving_ratio_net,Cash saving ratio on a net interest basis,Cash saving ratio on a net interest basis,%,number,ratio
 cash_saving_ratio_gross,Cash saving ratio on a gross interest basis,Cash saving ratio on a gross interest basis,%,number,ratio

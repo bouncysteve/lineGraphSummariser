@@ -3,6 +3,8 @@ package uk.co.lgs.domain.loader;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.csv.CSVFormat;
@@ -40,6 +42,10 @@ public class IscatterLoader {
 	Object schema;
 	
 	Object data;
+	
+	List<CSVRecord> records;
+
+	private Map<String, Integer> header;
 
 	public IscatterLoader(File parentFolder) throws LoaderException {
 		super();
@@ -58,6 +64,7 @@ public class IscatterLoader {
 			throw new LoaderException(MISSING_DATA_MESSAGE);
 		}
 		
+		this.records = new ArrayList<CSVRecord>();
 		
 		
 		schema = parseSchemaFile(schemaFile);
@@ -92,25 +99,14 @@ public class IscatterLoader {
 	private Object parseDataFile(File dataFile) throws LoaderException {
 		try {
 			CSVParser parser = CSVParser.parse(dataFile, Charset.defaultCharset(), CSVFormat.DEFAULT);
-			boolean foundRecords = false;
-			Map<String, Integer> headerMap = parser.getHeaderMap();
+			this.header = parser.getHeaderMap();
 			for (CSVRecord csvRecord: parser){
-				if (!foundRecords){
-					//These are the labels
-					String yLabel = csvRecord.get(0);
-					for (int i=1; i<csvRecord.size(); i++){
-						//TODO: store the labels somehow
-					}
-					//TODO: parse the rest of the records
-				} else {
-					
-				}
 				if (logger.isDebugEnabled()){
 					logger.debug(csvRecord.toString());
 				}
-				foundRecords = true;
+				this.records.add(csvRecord);
 			}
-			if (!foundRecords){
+			if (this.records.isEmpty()){
 				throw new LoaderException(BAD_OR_EMPTY_DATA_MESSAGE);
 			}
 		} catch (IOException ioe){
@@ -118,6 +114,10 @@ public class IscatterLoader {
 		}
 		//TODO: return the data object
 		return true;
+	}
+
+	public int getRecordCount() {
+		return records.size();
 	}
 	
 	
