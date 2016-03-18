@@ -2,7 +2,7 @@ package uk.co.lgs.model.segment;
 
 import java.util.Map;
 
-import uk.co.lgs.model.Gradient;
+import uk.co.lgs.model.GradientType;
 
 public class SeriesSegmentImpl implements SeriesSegment {
 
@@ -10,7 +10,7 @@ public class SeriesSegmentImpl implements SeriesSegment {
 	
 	private Map<String, Double> endTimeAndValue;
 	
-	Gradient gradientType;
+	GradientType gradientType;
 	
 	/** We never need to know the exact gradient, so we assume that the interval between records is
 	 * 1. If we have combined records (and we are taking an average gradient), then the segment length
@@ -65,7 +65,7 @@ public class SeriesSegmentImpl implements SeriesSegment {
 	 * @see uk.co.lgs.model.segment.SeriesSegment#getGradientType()
 	 */
 	@Override
-	public Gradient getGradientType(){
+	public GradientType getGradientType(){
 		return this.gradientType;
 	}
 	
@@ -77,17 +77,17 @@ public class SeriesSegmentImpl implements SeriesSegment {
 		return this.segmentLength;
 	}
 	
-	private Gradient calculateGradient() {
+	private GradientType calculateGradient() {
 		double valueAtStart = startTimeAndValue.values().iterator().next();
 		double valueAtEnd = endTimeAndValue.values().iterator().next();
 		double numericGradient = (valueAtEnd - valueAtStart)/ segmentLength;
-		Gradient gradientType;
+		GradientType gradientType;
 		if (0 == numericGradient){
-			gradientType = Gradient.ZERO;
+			gradientType = GradientType.ZERO;
 		} else if (0 < numericGradient){
-			gradientType = Gradient.POSITIVE;
+			gradientType = GradientType.POSITIVE;
 		} else {
-			gradientType = Gradient.NEGATIVE;
+			gradientType = GradientType.NEGATIVE;
 		}
 		return gradientType;
 	}

@@ -9,7 +9,7 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 
-import uk.co.lgs.model.Gradient;
+import uk.co.lgs.model.GradientType;
 
 public class SeriesSegmentTest {
 
@@ -17,7 +17,7 @@ public class SeriesSegmentTest {
 	
 	private static final Double HIGH_VALUE= 23.45d;
 	private static final Double LOW_VALUE= 12.34d;
-
+	
 	private static final String START_TIME = "2014";
 
 	private static final String END_TIME = "2015";
@@ -35,18 +35,21 @@ public class SeriesSegmentTest {
 	public void testZeroGradient(){
 		givenASegmentWithStartAndEndValues(LOW_VALUE, LOW_VALUE);
 		thenTheGradientShouldEqualZero();
+		thenTheSegmentLengthShouldBe(1);
 	}
 	
 	@Test
 	public void testPositiveGradient(){
 		givenASegmentWithStartAndEndValues(LOW_VALUE, HIGH_VALUE);
 		thenTheGradientShouldBePositive();
+		thenTheSegmentLengthShouldBe(1);
 	}
 	
 	@Test
 	public void testNegativeGradient(){
 		givenASegmentWithStartAndEndValues(HIGH_VALUE, LOW_VALUE);
 		thenTheGradientShouldBeNegative();
+		thenTheSegmentLengthShouldBe(1);
 	}
 	
 	@Test
@@ -67,7 +70,7 @@ public class SeriesSegmentTest {
 		thenTheStartTimeShouldBe(START_TIME);
 		thenTheEndTimeShouldBe(END_TIME);
 	}
-	
+
 	private void thenTheEndTimeShouldBe(String endTime) {
 		assertEquals(endTime, underTest.getEndTime());
 	}
@@ -82,15 +85,15 @@ public class SeriesSegmentTest {
 	}
 
 	private void thenTheGradientShouldBePositive() {
-		assertEquals(Gradient.POSITIVE, underTest.getGradientType());
+		assertEquals(GradientType.POSITIVE, underTest.getGradientType());
 	}
 	
 	private void thenTheGradientShouldBeNegative() {
-		assertEquals(Gradient.NEGATIVE, underTest.getGradientType());
+		assertEquals(GradientType.NEGATIVE, underTest.getGradientType());
 	}
 
 	private void thenTheGradientShouldEqualZero() {
-		assertEquals(Gradient.ZERO, underTest.getGradientType());
+		assertEquals(GradientType.ZERO, underTest.getGradientType());
 	}
 
 	private void givenASegmentWithStartAndEndValues(double startValue, double endValue) {

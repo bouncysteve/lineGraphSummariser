@@ -11,7 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.co.lgs.domain.loader.IscatterLoader;
-import uk.co.lgs.model.Gradient;
+import uk.co.lgs.model.GradientType;
 import uk.co.lgs.model.segment.exception.SegmentCategoryNotFoundException;
 
 public class GraphSegmentImpl implements GraphSegment {
@@ -111,8 +111,8 @@ public class GraphSegmentImpl implements GraphSegment {
 	}
 
 	private void determineSegmentCategory() throws SegmentCategoryNotFoundException {
-		Gradient firstSeriesGradient = firstSeriesSegment.getGradientType();
-		Gradient secondSeriesGradient = secondSeriesSegment.getGradientType();
+		GradientType firstSeriesGradient = firstSeriesSegment.getGradientType();
+		GradientType secondSeriesGradient = secondSeriesSegment.getGradientType();
 		for (GraphSegmentCategory category : GraphSegmentCategory.values()) {
 			if (category.getFirstSeriesGradient().equals(firstSeriesGradient)
 					&& category.getSecondSeriesGradient().equals(secondSeriesGradient)

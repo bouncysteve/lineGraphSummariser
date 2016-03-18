@@ -1,6 +1,6 @@
 package uk.co.lgs.model.segment;
 
-import uk.co.lgs.model.Gradient;
+import uk.co.lgs.model.GradientType;
 
 public interface SeriesSegment {
 
@@ -12,7 +12,7 @@ public interface SeriesSegment {
 
 	String getEndTime();
 
-	Gradient getGradientType();
+	GradientType getGradientType();
 
 	int getSegmentLength();
 

@@ -1,32 +1,32 @@
 package uk.co.lgs.model.segment;
 
-import uk.co.lgs.model.Gradient;
+import uk.co.lgs.model.GradientType;
 
 public enum GraphSegmentCategory {
-	ZERO_ZERO (Gradient.ZERO, Gradient.ZERO, false),
-	NEGATIVE_ZERO(Gradient.NEGATIVE, Gradient.ZERO, false),
-	POSITIVE_ZERO(Gradient.POSITIVE, Gradient.ZERO, false),
-	ZERO_POSITIVE(Gradient.ZERO, Gradient.POSITIVE, false),
-	NEGATIVE_POSITIVE(Gradient.NEGATIVE, Gradient.POSITIVE, false),
-	POSITIVE_POSITIVE(Gradient.POSITIVE, Gradient.POSITIVE, false),
-	ZERO_NEGATIVE(Gradient.ZERO, Gradient.NEGATIVE, false),
-	NEGATIVE_NEGATIVE(Gradient.NEGATIVE, Gradient.NEGATIVE, false),
-	POSITIVE_NEGATIVE(Gradient.POSITIVE, Gradient.NEGATIVE, false),
-	ZERO_ZERO_INTERSECTING (Gradient.ZERO, Gradient.ZERO, true),
-	NEGATIVE_ZERO_INTERSECTING(Gradient.NEGATIVE, Gradient.ZERO, true),
-	POSITIVE_ZERO_INTERSECTING(Gradient.POSITIVE, Gradient.ZERO, true),
-	ZERO_POSITIVE_INTERSECTING(Gradient.ZERO, Gradient.POSITIVE, true),
-	NEGATIVE_POSITIVE_INTERSECTING(Gradient.NEGATIVE, Gradient.POSITIVE, true),
-	POSITIVE_POSITIVE_INTERSECTING(Gradient.POSITIVE, Gradient.POSITIVE, true),
-	ZERO_NEGATIVE_INTERSECTING(Gradient.ZERO, Gradient.NEGATIVE, true),
-	NEGATIVE_NEGATIVE_INTERSECTING(Gradient.NEGATIVE, Gradient.NEGATIVE, true),
-	POSITIVE_NEGATIVE_INTERSECTING(Gradient.POSITIVE, Gradient.NEGATIVE, true);
+	ZERO_ZERO (GradientType.ZERO, GradientType.ZERO, false),
+	NEGATIVE_ZERO(GradientType.NEGATIVE, GradientType.ZERO, false),
+	POSITIVE_ZERO(GradientType.POSITIVE, GradientType.ZERO, false),
+	ZERO_POSITIVE(GradientType.ZERO, GradientType.POSITIVE, false),
+	NEGATIVE_POSITIVE(GradientType.NEGATIVE, GradientType.POSITIVE, false),
+	POSITIVE_POSITIVE(GradientType.POSITIVE, GradientType.POSITIVE, false),
+	ZERO_NEGATIVE(GradientType.ZERO, GradientType.NEGATIVE, false),
+	NEGATIVE_NEGATIVE(GradientType.NEGATIVE, GradientType.NEGATIVE, false),
+	POSITIVE_NEGATIVE(GradientType.POSITIVE, GradientType.NEGATIVE, false),
+	ZERO_ZERO_INTERSECTING (GradientType.ZERO, GradientType.ZERO, true),
+	NEGATIVE_ZERO_INTERSECTING(GradientType.NEGATIVE, GradientType.ZERO, true),
+	POSITIVE_ZERO_INTERSECTING(GradientType.POSITIVE, GradientType.ZERO, true),
+	ZERO_POSITIVE_INTERSECTING(GradientType.ZERO, GradientType.POSITIVE, true),
+	NEGATIVE_POSITIVE_INTERSECTING(GradientType.NEGATIVE, GradientType.POSITIVE, true),
+	POSITIVE_POSITIVE_INTERSECTING(GradientType.POSITIVE, GradientType.POSITIVE, true),
+	ZERO_NEGATIVE_INTERSECTING(GradientType.ZERO, GradientType.NEGATIVE, true),
+	NEGATIVE_NEGATIVE_INTERSECTING(GradientType.NEGATIVE, GradientType.NEGATIVE, true),
+	POSITIVE_NEGATIVE_INTERSECTING(GradientType.POSITIVE, GradientType.NEGATIVE, true);
 	
 	private boolean intersecting;
-	Gradient  firstSeriesGradient;
-	Gradient secondSeriesGradient;
+	GradientType  firstSeriesGradient;
+	GradientType secondSeriesGradient;
 	
-	private GraphSegmentCategory (Gradient firstSeriesGradient, Gradient secondSeriesGradient, boolean intersecting){
+	private GraphSegmentCategory (GradientType firstSeriesGradient, GradientType secondSeriesGradient, boolean intersecting){
 		this.intersecting = intersecting;
 		this.firstSeriesGradient = firstSeriesGradient;
 		this.secondSeriesGradient = secondSeriesGradient;
@@ -36,11 +36,11 @@ public enum GraphSegmentCategory {
 		return this.intersecting;
 	}
 	
-	public Gradient getFirstSeriesGradient(){
+	public GradientType getFirstSeriesGradient(){
 		return this.firstSeriesGradient;
 	}
 	
-	public Gradient getSecondSeriesGradient(){
+	public GradientType getSecondSeriesGradient(){
 		return this.secondSeriesGradient;
 	}
 	

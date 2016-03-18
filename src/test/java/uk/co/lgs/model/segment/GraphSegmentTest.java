@@ -8,7 +8,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import uk.co.lgs.model.Gradient;
+import uk.co.lgs.model.GradientType;
 import uk.co.lgs.model.segment.exception.SegmentCategoryNotFoundException;
 
 import static org.mockito.Mockito.when;
@@ -37,8 +37,8 @@ public class GraphSegmentTest {
 
 	@Test
 	public void testZERO_ZERO() throws SegmentCategoryNotFoundException {
-		givenFirstSeriesWithGradient(Gradient.ZERO);
-		givenSecondSeriesWithGradientThatIntersectsAt(Gradient.ZERO, Intersection.NEVER);
+		givenFirstSeriesWithGradient(GradientType.ZERO);
+		givenSecondSeriesWithGradientThatIntersectsAt(GradientType.ZERO, Intersection.NEVER);
 		whenTheGraphSegmentIsConstructed();
 		thenTheSegmentDoesNotContainIntersection();
 		andTheSeriesAreParallel();
@@ -47,8 +47,8 @@ public class GraphSegmentTest {
 
 	@Test
 	public void testNEGATIVE_ZERO() throws SegmentCategoryNotFoundException {
-		givenFirstSeriesWithGradient(Gradient.NEGATIVE);
-		givenSecondSeriesWithGradientThatIntersectsAt(Gradient.ZERO, Intersection.NEVER);
+		givenFirstSeriesWithGradient(GradientType.NEGATIVE);
+		givenSecondSeriesWithGradientThatIntersectsAt(GradientType.ZERO, Intersection.NEVER);
 		whenTheGraphSegmentIsConstructed();
 		thenTheSegmentDoesNotContainIntersection();
 		andTheSeriesAreNotParallel();
@@ -57,8 +57,8 @@ public class GraphSegmentTest {
 
 	@Test
 	public void testPOSITIVE_ZERO() throws SegmentCategoryNotFoundException {
-		givenFirstSeriesWithGradient(Gradient.POSITIVE);
-		givenSecondSeriesWithGradientThatIntersectsAt(Gradient.ZERO, Intersection.NEVER);
+		givenFirstSeriesWithGradient(GradientType.POSITIVE);
+		givenSecondSeriesWithGradientThatIntersectsAt(GradientType.ZERO, Intersection.NEVER);
 		whenTheGraphSegmentIsConstructed();
 		thenTheSegmentDoesNotContainIntersection();
 		andTheSeriesAreNotParallel();
@@ -67,8 +67,8 @@ public class GraphSegmentTest {
 
 	@Test
 	public void testZERO_POSITIVE() throws SegmentCategoryNotFoundException {
-		givenFirstSeriesWithGradient(Gradient.ZERO);
-		givenSecondSeriesWithGradientThatIntersectsAt(Gradient.POSITIVE, Intersection.NEVER);
+		givenFirstSeriesWithGradient(GradientType.ZERO);
+		givenSecondSeriesWithGradientThatIntersectsAt(GradientType.POSITIVE, Intersection.NEVER);
 		whenTheGraphSegmentIsConstructed();
 		thenTheSegmentDoesNotContainIntersection();
 		andTheSeriesAreNotParallel();
@@ -77,8 +77,8 @@ public class GraphSegmentTest {
 
 	@Test
 	public void testNEGATIVE_POSITIVE() throws SegmentCategoryNotFoundException {
-		givenFirstSeriesWithGradient(Gradient.NEGATIVE);
-		givenSecondSeriesWithGradientThatIntersectsAt(Gradient.POSITIVE, Intersection.NEVER);
+		givenFirstSeriesWithGradient(GradientType.NEGATIVE);
+		givenSecondSeriesWithGradientThatIntersectsAt(GradientType.POSITIVE, Intersection.NEVER);
 		whenTheGraphSegmentIsConstructed();
 		thenTheSegmentDoesNotContainIntersection();
 		andTheSeriesAreNotParallel();
@@ -87,8 +87,8 @@ public class GraphSegmentTest {
 
 	@Test
 	public void testPOSITIVE_POSITIVE() throws SegmentCategoryNotFoundException {
-		givenFirstSeriesWithGradient(Gradient.POSITIVE);
-		givenSecondSeriesWithGradientThatIntersectsAt(Gradient.POSITIVE, Intersection.NEVER);
+		givenFirstSeriesWithGradient(GradientType.POSITIVE);
+		givenSecondSeriesWithGradientThatIntersectsAt(GradientType.POSITIVE, Intersection.NEVER);
 		whenTheGraphSegmentIsConstructed();
 		thenTheSegmentDoesNotContainIntersection();
 		andTheSeriesAreNotParallel();
@@ -97,8 +97,8 @@ public class GraphSegmentTest {
 
 	@Test
 	public void testZERO_NEGATIVE() throws SegmentCategoryNotFoundException {
-		givenFirstSeriesWithGradient(Gradient.ZERO);
-		givenSecondSeriesWithGradientThatIntersectsAt(Gradient.NEGATIVE, Intersection.NEVER);
+		givenFirstSeriesWithGradient(GradientType.ZERO);
+		givenSecondSeriesWithGradientThatIntersectsAt(GradientType.NEGATIVE, Intersection.NEVER);
 		whenTheGraphSegmentIsConstructed();
 		thenTheSegmentDoesNotContainIntersection();
 		andTheSeriesAreNotParallel();
@@ -107,8 +107,8 @@ public class GraphSegmentTest {
 
 	@Test
 	public void testNEGATIVE_NEGATIVE() throws SegmentCategoryNotFoundException {
-		givenFirstSeriesWithGradient(Gradient.NEGATIVE);
-		givenSecondSeriesWithGradientThatIntersectsAt(Gradient.NEGATIVE, Intersection.NEVER);
+		givenFirstSeriesWithGradient(GradientType.NEGATIVE);
+		givenSecondSeriesWithGradientThatIntersectsAt(GradientType.NEGATIVE, Intersection.NEVER);
 		whenTheGraphSegmentIsConstructed();
 		thenTheSegmentDoesNotContainIntersection();
 		andTheSeriesAreNotParallel();
@@ -117,8 +117,8 @@ public class GraphSegmentTest {
 
 	@Test
 	public void testPOSITIVE_NEGATIVE() throws SegmentCategoryNotFoundException {
-		givenFirstSeriesWithGradient(Gradient.POSITIVE);
-		givenSecondSeriesWithGradientThatIntersectsAt(Gradient.NEGATIVE, Intersection.NEVER);
+		givenFirstSeriesWithGradient(GradientType.POSITIVE);
+		givenSecondSeriesWithGradientThatIntersectsAt(GradientType.NEGATIVE, Intersection.NEVER);
 		whenTheGraphSegmentIsConstructed();
 		thenTheSegmentDoesNotContainIntersection();
 		andTheSeriesAreNotParallel();
@@ -127,8 +127,8 @@ public class GraphSegmentTest {
 	
 	@Test
 	public void testZERO_ZERO_INTERSECTING() throws SegmentCategoryNotFoundException {
-		givenFirstSeriesWithGradient(Gradient.ZERO);
-		givenSecondSeriesWithGradientThatIntersectsAt(Gradient.ZERO, Intersection.START);
+		givenFirstSeriesWithGradient(GradientType.ZERO);
+		givenSecondSeriesWithGradientThatIntersectsAt(GradientType.ZERO, Intersection.START);
 		whenTheGraphSegmentIsConstructed();
 		thenTheSegmentDoesContainIntersection();
 		andTheValueAtTheIntersectionIs(FIRST_SERIES_START);
@@ -138,8 +138,8 @@ public class GraphSegmentTest {
 
 	@Test
 	public void testNEGATIVE_ZERO_INTERSECTING_START() throws SegmentCategoryNotFoundException {
-		givenFirstSeriesWithGradient(Gradient.NEGATIVE);
-		givenSecondSeriesWithGradientThatIntersectsAt(Gradient.ZERO, Intersection.START);
+		givenFirstSeriesWithGradient(GradientType.NEGATIVE);
+		givenSecondSeriesWithGradientThatIntersectsAt(GradientType.ZERO, Intersection.START);
 		whenTheGraphSegmentIsConstructed();
 		thenTheSegmentDoesContainIntersection();
 		andTheValueAtTheIntersectionIs(FIRST_SERIES_START);
@@ -149,8 +149,8 @@ public class GraphSegmentTest {
 
 	@Test
 	public void testPOSITIVE_ZERO_INTERSECTING_START() throws SegmentCategoryNotFoundException {
-		givenFirstSeriesWithGradient(Gradient.POSITIVE);
-		givenSecondSeriesWithGradientThatIntersectsAt(Gradient.ZERO, Intersection.START);
+		givenFirstSeriesWithGradient(GradientType.POSITIVE);
+		givenSecondSeriesWithGradientThatIntersectsAt(GradientType.ZERO, Intersection.START);
 		whenTheGraphSegmentIsConstructed();
 		thenTheSegmentDoesContainIntersection();
 		andTheValueAtTheIntersectionIs(FIRST_SERIES_START);
@@ -160,8 +160,8 @@ public class GraphSegmentTest {
 
 	@Test
 	public void testZERO_POSITIVE_INTERSECTING_START() throws SegmentCategoryNotFoundException {
-		givenFirstSeriesWithGradient(Gradient.ZERO);
-		givenSecondSeriesWithGradientThatIntersectsAt(Gradient.POSITIVE, Intersection.START);
+		givenFirstSeriesWithGradient(GradientType.ZERO);
+		givenSecondSeriesWithGradientThatIntersectsAt(GradientType.POSITIVE, Intersection.START);
 		whenTheGraphSegmentIsConstructed();
 		thenTheSegmentDoesContainIntersection();
 		andTheValueAtTheIntersectionIs(FIRST_SERIES_START);
@@ -171,8 +171,8 @@ public class GraphSegmentTest {
 
 	@Test
 	public void testNEGATIVE_POSITIVE_INTERSECTING_START() throws SegmentCategoryNotFoundException {
-		givenFirstSeriesWithGradient(Gradient.NEGATIVE);
-		givenSecondSeriesWithGradientThatIntersectsAt(Gradient.POSITIVE, Intersection.START);
+		givenFirstSeriesWithGradient(GradientType.NEGATIVE);
+		givenSecondSeriesWithGradientThatIntersectsAt(GradientType.POSITIVE, Intersection.START);
 		whenTheGraphSegmentIsConstructed();
 		thenTheSegmentDoesContainIntersection();
 		andTheValueAtTheIntersectionIs(FIRST_SERIES_START);
@@ -182,8 +182,8 @@ public class GraphSegmentTest {
 
 	@Test
 	public void testPOSITIVE_POSITIVE_INTERSECTING_START() throws SegmentCategoryNotFoundException {
-		givenFirstSeriesWithGradient(Gradient.POSITIVE);
-		givenSecondSeriesWithGradientThatIntersectsAt(Gradient.POSITIVE, Intersection.START);
+		givenFirstSeriesWithGradient(GradientType.POSITIVE);
+		givenSecondSeriesWithGradientThatIntersectsAt(GradientType.POSITIVE, Intersection.START);
 		whenTheGraphSegmentIsConstructed();
 		thenTheSegmentDoesContainIntersection();
 		andTheValueAtTheIntersectionIs(FIRST_SERIES_START);
@@ -193,8 +193,8 @@ public class GraphSegmentTest {
 
 	@Test
 	public void testZERO_NEGATIVE_INTERSECTING_START() throws SegmentCategoryNotFoundException {
-		givenFirstSeriesWithGradient(Gradient.ZERO);
-		givenSecondSeriesWithGradientThatIntersectsAt(Gradient.NEGATIVE, Intersection.START);
+		givenFirstSeriesWithGradient(GradientType.ZERO);
+		givenSecondSeriesWithGradientThatIntersectsAt(GradientType.NEGATIVE, Intersection.START);
 		whenTheGraphSegmentIsConstructed();
 		thenTheSegmentDoesContainIntersection();
 		andTheValueAtTheIntersectionIs(FIRST_SERIES_START);
@@ -204,8 +204,8 @@ public class GraphSegmentTest {
 
 	@Test
 	public void testNEGATIVE_NEGATIVE_INTERSECTING_START() throws SegmentCategoryNotFoundException {
-		givenFirstSeriesWithGradient(Gradient.NEGATIVE);
-		givenSecondSeriesWithGradientThatIntersectsAt(Gradient.NEGATIVE, Intersection.START);
+		givenFirstSeriesWithGradient(GradientType.NEGATIVE);
+		givenSecondSeriesWithGradientThatIntersectsAt(GradientType.NEGATIVE, Intersection.START);
 		whenTheGraphSegmentIsConstructed();
 		thenTheSegmentDoesContainIntersection();
 		andTheValueAtTheIntersectionIs(FIRST_SERIES_START);
@@ -215,8 +215,8 @@ public class GraphSegmentTest {
 
 	@Test
 	public void testPOSITIVE_NEGATIVE_INTERSECTING_START() throws SegmentCategoryNotFoundException {
-		givenFirstSeriesWithGradient(Gradient.POSITIVE);
-		givenSecondSeriesWithGradientThatIntersectsAt(Gradient.NEGATIVE, Intersection.START);
+		givenFirstSeriesWithGradient(GradientType.POSITIVE);
+		givenSecondSeriesWithGradientThatIntersectsAt(GradientType.NEGATIVE, Intersection.START);
 		whenTheGraphSegmentIsConstructed();
 		thenTheSegmentDoesContainIntersection();
 		andTheValueAtTheIntersectionIs(FIRST_SERIES_START);
@@ -227,8 +227,8 @@ public class GraphSegmentTest {
 	
 	@Test
 	public void testNEGATIVE_ZERO_INTERSECTING_END() throws SegmentCategoryNotFoundException {
-		givenFirstSeriesWithGradient(Gradient.NEGATIVE);
-		givenSecondSeriesWithGradientThatIntersectsAt(Gradient.ZERO, Intersection.END);
+		givenFirstSeriesWithGradient(GradientType.NEGATIVE);
+		givenSecondSeriesWithGradientThatIntersectsAt(GradientType.ZERO, Intersection.END);
 		whenTheGraphSegmentIsConstructed();
 		thenTheSegmentDoesContainIntersection();
 		andTheValueAtTheIntersectionIs(FIRST_SERIES_START-1);
@@ -238,8 +238,8 @@ public class GraphSegmentTest {
 
 	@Test
 	public void testPOSITIVE_ZERO_INTERSECTING_END() throws SegmentCategoryNotFoundException {
-		givenFirstSeriesWithGradient(Gradient.POSITIVE);
-		givenSecondSeriesWithGradientThatIntersectsAt(Gradient.ZERO, Intersection.END);
+		givenFirstSeriesWithGradient(GradientType.POSITIVE);
+		givenSecondSeriesWithGradientThatIntersectsAt(GradientType.ZERO, Intersection.END);
 		whenTheGraphSegmentIsConstructed();
 		thenTheSegmentDoesContainIntersection();
 		andTheValueAtTheIntersectionIs(FIRST_SERIES_START+1);
@@ -249,8 +249,8 @@ public class GraphSegmentTest {
 
 	@Test
 	public void testZERO_POSITIVE_INTERSECTING_END() throws SegmentCategoryNotFoundException {
-		givenFirstSeriesWithGradient(Gradient.ZERO);
-		givenSecondSeriesWithGradientThatIntersectsAt(Gradient.POSITIVE, Intersection.END);
+		givenFirstSeriesWithGradient(GradientType.ZERO);
+		givenSecondSeriesWithGradientThatIntersectsAt(GradientType.POSITIVE, Intersection.END);
 		whenTheGraphSegmentIsConstructed();
 		thenTheSegmentDoesContainIntersection();
 		andTheValueAtTheIntersectionIs(FIRST_SERIES_START);
@@ -260,8 +260,8 @@ public class GraphSegmentTest {
 
 	@Test
 	public void testNEGATIVE_POSITIVE_INTERSECTING_END() throws SegmentCategoryNotFoundException {
-		givenFirstSeriesWithGradient(Gradient.NEGATIVE);
-		givenSecondSeriesWithGradientThatIntersectsAt(Gradient.POSITIVE, Intersection.END);
+		givenFirstSeriesWithGradient(GradientType.NEGATIVE);
+		givenSecondSeriesWithGradientThatIntersectsAt(GradientType.POSITIVE, Intersection.END);
 		whenTheGraphSegmentIsConstructed();
 		thenTheSegmentDoesContainIntersection();
 		andTheValueAtTheIntersectionIs(FIRST_SERIES_START-1);
@@ -271,8 +271,8 @@ public class GraphSegmentTest {
 
 	@Test
 	public void testPOSITIVE_POSITIVE_INTERSECTING_END() throws SegmentCategoryNotFoundException {
-		givenFirstSeriesWithGradient(Gradient.POSITIVE);
-		givenSecondSeriesWithGradientThatIntersectsAt(Gradient.POSITIVE, Intersection.END);
+		givenFirstSeriesWithGradient(GradientType.POSITIVE);
+		givenSecondSeriesWithGradientThatIntersectsAt(GradientType.POSITIVE, Intersection.END);
 		whenTheGraphSegmentIsConstructed();
 		thenTheSegmentDoesContainIntersection();
 		andTheValueAtTheIntersectionIs(FIRST_SERIES_START+1);
@@ -282,8 +282,8 @@ public class GraphSegmentTest {
 
 	@Test
 	public void testZERO_NEGATIVE_INTERSECTING_END() throws SegmentCategoryNotFoundException {
-		givenFirstSeriesWithGradient(Gradient.ZERO);
-		givenSecondSeriesWithGradientThatIntersectsAt(Gradient.NEGATIVE, Intersection.END);
+		givenFirstSeriesWithGradient(GradientType.ZERO);
+		givenSecondSeriesWithGradientThatIntersectsAt(GradientType.NEGATIVE, Intersection.END);
 		whenTheGraphSegmentIsConstructed();
 		thenTheSegmentDoesContainIntersection();
 		andTheValueAtTheIntersectionIs(FIRST_SERIES_START);
@@ -293,8 +293,8 @@ public class GraphSegmentTest {
 
 	@Test
 	public void testNEGATIVE_NEGATIVE_INTERSECTING_END() throws SegmentCategoryNotFoundException {
-		givenFirstSeriesWithGradient(Gradient.NEGATIVE);
-		givenSecondSeriesWithGradientThatIntersectsAt(Gradient.NEGATIVE, Intersection.END);
+		givenFirstSeriesWithGradient(GradientType.NEGATIVE);
+		givenSecondSeriesWithGradientThatIntersectsAt(GradientType.NEGATIVE, Intersection.END);
 		whenTheGraphSegmentIsConstructed();
 		thenTheSegmentDoesContainIntersection();
 		andTheValueAtTheIntersectionIs(FIRST_SERIES_START-1);
@@ -304,8 +304,8 @@ public class GraphSegmentTest {
 
 	@Test
 	public void testPOSITIVE_NEGATIVE_INTERSECTING_END() throws SegmentCategoryNotFoundException {
-		givenFirstSeriesWithGradient(Gradient.POSITIVE);
-		givenSecondSeriesWithGradientThatIntersectsAt(Gradient.NEGATIVE, Intersection.END);
+		givenFirstSeriesWithGradient(GradientType.POSITIVE);
+		givenSecondSeriesWithGradientThatIntersectsAt(GradientType.NEGATIVE, Intersection.END);
 		whenTheGraphSegmentIsConstructed();
 		thenTheSegmentDoesContainIntersection();
 		andTheValueAtTheIntersectionIs(FIRST_SERIES_START+1);
@@ -315,8 +315,8 @@ public class GraphSegmentTest {
 	
 	@Test
 	public void testNEGATIVE_ZERO_INTERSECTING_WITHIN() throws SegmentCategoryNotFoundException {
-		givenFirstSeriesWithGradient(Gradient.NEGATIVE);
-		givenSecondSeriesWithGradientThatIntersectsAt(Gradient.ZERO, Intersection.WITHIN);
+		givenFirstSeriesWithGradient(GradientType.NEGATIVE);
+		givenSecondSeriesWithGradientThatIntersectsAt(GradientType.ZERO, Intersection.WITHIN);
 		whenTheGraphSegmentIsConstructed();
 		thenTheSegmentDoesContainIntersection();
 		andTheValueAtTheIntersectionIs(firstSeriesSegment.getStartValue()+ (firstSeriesSegment.getEndValue()-firstSeriesSegment.getStartValue())/2);
@@ -326,8 +326,8 @@ public class GraphSegmentTest {
 
 	@Test
 	public void testPOSITIVE_ZERO_INTERSECTING_WITHIN() throws SegmentCategoryNotFoundException {
-		givenFirstSeriesWithGradient(Gradient.POSITIVE);
-		givenSecondSeriesWithGradientThatIntersectsAt(Gradient.ZERO, Intersection.WITHIN);
+		givenFirstSeriesWithGradient(GradientType.POSITIVE);
+		givenSecondSeriesWithGradientThatIntersectsAt(GradientType.ZERO, Intersection.WITHIN);
 		whenTheGraphSegmentIsConstructed();
 		thenTheSegmentDoesContainIntersection();
 		andTheValueAtTheIntersectionIs(firstSeriesSegment.getStartValue()+ (firstSeriesSegment.getEndValue()-firstSeriesSegment.getStartValue())/2);
@@ -337,8 +337,8 @@ public class GraphSegmentTest {
 
 	@Test
 	public void testZERO_POSITIVE_INTERSECTING_WITHIN() throws SegmentCategoryNotFoundException {
-		givenFirstSeriesWithGradient(Gradient.ZERO);
-		givenSecondSeriesWithGradientThatIntersectsAt(Gradient.POSITIVE, Intersection.WITHIN);
+		givenFirstSeriesWithGradient(GradientType.ZERO);
+		givenSecondSeriesWithGradientThatIntersectsAt(GradientType.POSITIVE, Intersection.WITHIN);
 		whenTheGraphSegmentIsConstructed();
 		thenTheSegmentDoesContainIntersection();
 		andTheValueAtTheIntersectionIs(FIRST_SERIES_START);
@@ -348,8 +348,8 @@ public class GraphSegmentTest {
 
 	@Test
 	public void testNEGATIVE_POSITIVE_INTERSECTING_WITHIN() throws SegmentCategoryNotFoundException {
-		givenFirstSeriesWithGradient(Gradient.NEGATIVE);
-		givenSecondSeriesWithGradientThatIntersectsAt(Gradient.POSITIVE, Intersection.WITHIN);
+		givenFirstSeriesWithGradient(GradientType.NEGATIVE);
+		givenSecondSeriesWithGradientThatIntersectsAt(GradientType.POSITIVE, Intersection.WITHIN);
 		whenTheGraphSegmentIsConstructed();
 		thenTheSegmentDoesContainIntersection();
 		andTheValueAtTheIntersectionIs(firstSeriesSegment.getStartValue()+ (firstSeriesSegment.getEndValue()-firstSeriesSegment.getStartValue())/2);
@@ -359,8 +359,8 @@ public class GraphSegmentTest {
 
 	@Test
 	public void testPOSITIVE_POSITIVE_INTERSECTING_WITHIN() throws SegmentCategoryNotFoundException {
-		givenFirstSeriesWithGradient(Gradient.POSITIVE);
-		givenSecondSeriesWithGradientThatIntersectsAt(Gradient.POSITIVE, Intersection.WITHIN);
+		givenFirstSeriesWithGradient(GradientType.POSITIVE);
+		givenSecondSeriesWithGradientThatIntersectsAt(GradientType.POSITIVE, Intersection.WITHIN);
 		whenTheGraphSegmentIsConstructed();
 		thenTheSegmentDoesContainIntersection();
 		andTheValueAtTheIntersectionIs(firstSeriesSegment.getStartValue()+ (firstSeriesSegment.getEndValue()-firstSeriesSegment.getStartValue())/2);
@@ -370,8 +370,8 @@ public class GraphSegmentTest {
 
 	@Test
 	public void testZERO_NEGATIVE_INTERSECTING_WITHIN() throws SegmentCategoryNotFoundException {
-		givenFirstSeriesWithGradient(Gradient.ZERO);
-		givenSecondSeriesWithGradientThatIntersectsAt(Gradient.NEGATIVE, Intersection.WITHIN);
+		givenFirstSeriesWithGradient(GradientType.ZERO);
+		givenSecondSeriesWithGradientThatIntersectsAt(GradientType.NEGATIVE, Intersection.WITHIN);
 		whenTheGraphSegmentIsConstructed();
 		thenTheSegmentDoesContainIntersection();
 		andTheValueAtTheIntersectionIs(FIRST_SERIES_START);
@@ -381,8 +381,8 @@ public class GraphSegmentTest {
 
 	@Test
 	public void testNEGATIVE_NEGATIVE_INTERSECTING_WITHIN() throws SegmentCategoryNotFoundException {
-		givenFirstSeriesWithGradient(Gradient.NEGATIVE);
-		givenSecondSeriesWithGradientThatIntersectsAt(Gradient.NEGATIVE, Intersection.WITHIN);
+		givenFirstSeriesWithGradient(GradientType.NEGATIVE);
+		givenSecondSeriesWithGradientThatIntersectsAt(GradientType.NEGATIVE, Intersection.WITHIN);
 		whenTheGraphSegmentIsConstructed();
 		thenTheSegmentDoesContainIntersection();
 		andTheValueAtTheIntersectionIs(firstSeriesSegment.getStartValue()+ (firstSeriesSegment.getEndValue()-firstSeriesSegment.getStartValue())/2);
@@ -392,8 +392,8 @@ public class GraphSegmentTest {
 
 	@Test
 	public void testPOSITIVE_NEGATIVE_INTERSECTING_WITHIN() throws SegmentCategoryNotFoundException {
-		givenFirstSeriesWithGradient(Gradient.POSITIVE);
-		givenSecondSeriesWithGradientThatIntersectsAt(Gradient.NEGATIVE, Intersection.WITHIN);
+		givenFirstSeriesWithGradient(GradientType.POSITIVE);
+		givenSecondSeriesWithGradientThatIntersectsAt(GradientType.NEGATIVE, Intersection.WITHIN);
 		whenTheGraphSegmentIsConstructed();
 		thenTheSegmentDoesContainIntersection();
 		andTheValueAtTheIntersectionIs(firstSeriesSegment.getStartValue()+ (firstSeriesSegment.getEndValue()-firstSeriesSegment.getStartValue())/2);
@@ -405,12 +405,12 @@ public class GraphSegmentTest {
 		underTest = new GraphSegmentImpl(firstSeriesSegment, secondSeriesSegment);
 	}
 
-	private void givenSecondSeriesWithGradientThatIntersectsAt(Gradient gradient, Intersection intersection) {
-		when(secondSeriesSegment.getGradientType()).thenReturn(gradient);
+	private void givenSecondSeriesWithGradientThatIntersectsAt(GradientType gradientType, Intersection intersection) {
+		when(secondSeriesSegment.getGradientType()).thenReturn(gradientType);
 
-		double startValue = calculateStartOfSecondSeriesGivenIntersect(gradient, intersection);
+		double startValue = calculateStartOfSecondSeriesGivenIntersect(gradientType, intersection);
 		when(secondSeriesSegment.getStartValue()).thenReturn(startValue);
-		switch (gradient) {
+		switch (gradientType) {
 		case NEGATIVE:
 			when(secondSeriesSegment.getEndValue()).thenReturn(startValue - SECOND_SERIES_GRADIENT_FACTOR);
 			break;
@@ -425,7 +425,7 @@ public class GraphSegmentTest {
 		}
 	}
 
-	private double calculateStartOfSecondSeriesGivenIntersect(Gradient gradient, Intersection intersection) {
+	private double calculateStartOfSecondSeriesGivenIntersect(GradientType gradientType, Intersection intersection) {
 		double secondSeriesStartValue = 0;
 		switch (intersection) {
 		case NEVER:
@@ -439,18 +439,18 @@ public class GraphSegmentTest {
 			break;
 		case END:
 			// Set the start value so that the end values will be the same
-			secondSeriesStartValue = firstSeriesSegment.getEndValue() - 2 * gradient.getMultiplier();
+			secondSeriesStartValue = firstSeriesSegment.getEndValue() - 2 * gradientType.getMultiplier();
 			break;
 		case WITHIN:
 			switch (firstSeriesSegment.getGradientType()) {
 			case ZERO:
-				secondSeriesStartValue = firstSeriesSegment.getStartValue() - gradient.getMultiplier();
+				secondSeriesStartValue = firstSeriesSegment.getStartValue() - gradientType.getMultiplier();
 				break;
 			case POSITIVE:
-				secondSeriesStartValue = firstSeriesSegment.getStartValue() + .5 - gradient.getMultiplier();
+				secondSeriesStartValue = firstSeriesSegment.getStartValue() + .5 - gradientType.getMultiplier();
 				break;
 			case NEGATIVE:
-				secondSeriesStartValue = firstSeriesSegment.getStartValue() - .5 - gradient.getMultiplier();
+				secondSeriesStartValue = firstSeriesSegment.getStartValue() - .5 - gradientType.getMultiplier();
 				break;
 			default:
 				break;
@@ -464,11 +464,11 @@ public class GraphSegmentTest {
 		return secondSeriesStartValue;
 	}
 
-	private void givenFirstSeriesWithGradient(Gradient gradient) {
+	private void givenFirstSeriesWithGradient(GradientType gradientType) {
 		double startValue = firstSeriesSegment.getStartValue();
 
-		when(firstSeriesSegment.getGradientType()).thenReturn(gradient);
-		switch (gradient) {
+		when(firstSeriesSegment.getGradientType()).thenReturn(gradientType);
+		switch (gradientType) {
 		case NEGATIVE:
 			when(firstSeriesSegment.getEndValue()).thenReturn(startValue - FIRST_SERIES_GRADIENT_FACTOR);
 			break;
