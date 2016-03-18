@@ -1,7 +1,6 @@
 package uk.co.lgs.model.segment;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -36,6 +35,8 @@ public class SeriesSegmentTest {
 		givenASegmentWithStartAndEndValues(LOW_VALUE, LOW_VALUE);
 		thenTheGradientShouldEqualZero();
 		thenTheSegmentLengthShouldBe(1);
+		thenTheStartValueShouldEqual(LOW_VALUE);
+		thenTheEndValueShouldEqual(LOW_VALUE);
 	}
 	
 	@Test
@@ -43,6 +44,8 @@ public class SeriesSegmentTest {
 		givenASegmentWithStartAndEndValues(LOW_VALUE, HIGH_VALUE);
 		thenTheGradientShouldBePositive();
 		thenTheSegmentLengthShouldBe(1);
+		thenTheStartValueShouldEqual(LOW_VALUE);
+		thenTheEndValueShouldEqual(HIGH_VALUE);
 	}
 	
 	@Test
@@ -50,18 +53,16 @@ public class SeriesSegmentTest {
 		givenASegmentWithStartAndEndValues(HIGH_VALUE, LOW_VALUE);
 		thenTheGradientShouldBeNegative();
 		thenTheSegmentLengthShouldBe(1);
-	}
-	
-	@Test
-	public void testGetSegmentLength(){
-		givenASegmentWithStartAndEndValues(HIGH_VALUE, LOW_VALUE);
-		thenTheSegmentLengthShouldBe(1);
+		thenTheStartValueShouldEqual(HIGH_VALUE);
+		thenTheEndValueShouldEqual(LOW_VALUE);
 	}
 	
 	@Test
 	public void testGetSegmentLengthForCombinedSegments(){
 		givenASegmentWithStartAndEndValuesAndLength(HIGH_VALUE, LOW_VALUE, 2);
 		thenTheSegmentLengthShouldBe(2);
+		thenTheStartValueShouldEqual(HIGH_VALUE);
+		thenTheEndValueShouldEqual(LOW_VALUE);
 	}
 
 	@Test
@@ -69,6 +70,8 @@ public class SeriesSegmentTest {
 		givenASegmentWithStartAndEndValues(HIGH_VALUE, LOW_VALUE);
 		thenTheStartTimeShouldBe(START_TIME);
 		thenTheEndTimeShouldBe(END_TIME);
+		thenTheStartValueShouldEqual(HIGH_VALUE);
+		thenTheEndValueShouldEqual(LOW_VALUE);
 	}
 
 	private void thenTheEndTimeShouldBe(String endTime) {
@@ -106,5 +109,13 @@ public class SeriesSegmentTest {
 		firstValue.put(START_TIME, startValue);
 		secondValue.put(END_TIME, endValue);
 		underTest = new SeriesSegmentImpl(firstValue, secondValue, i);
+	}
+	
+	private void thenTheStartValueShouldEqual(double expectedValue) {
+		assertEquals(expectedValue, underTest.getStartValue(), 0);
+	}
+	
+	private void thenTheEndValueShouldEqual(double expectedValue) {
+		assertEquals(expectedValue, underTest.getEndValue(), 0);
 	}
 }
