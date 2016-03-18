@@ -22,6 +22,8 @@ public class IscatterLoaderTest {
 
 	private static final String BAD_OR_EMPTY_SCHEMA_MESSAGE = "File schema.csv exists but is empty or malformed";
 
+	private static final String BAD_OR_EMPTY_DATA_MESSAGE = "File data.csv exists but is empty or malformed";
+
 	IscatterLoader underTest;
 	
 	ClassLoader classLoader;
@@ -93,6 +95,22 @@ public class IscatterLoaderTest {
 		expectedEx.expect(LoaderException.class);
 	    expectedEx.expectMessage(BAD_OR_EMPTY_SCHEMA_MESSAGE);
 	    File file = new File(classLoader.getResource(fileName).getFile());
+		underTest = new IscatterLoader(file);
+	}
+	
+	@Test
+	public void dataFileIsEmpty() throws LoaderException {
+		String fileName = "folderWithEmptyData";
+		expectedEx.expect(LoaderException.class);
+	    expectedEx.expectMessage(BAD_OR_EMPTY_DATA_MESSAGE);
+	    File file = new File(classLoader.getResource(fileName).getFile());
+		underTest = new IscatterLoader(file);
+	}
+	
+	@Test
+	public void sunnyDayScenario() throws LoaderException{
+		String fileName = "simpleGraph";
+		File file = new File(classLoader.getResource(fileName).getFile());
 		underTest = new IscatterLoader(file);
 	}
 }

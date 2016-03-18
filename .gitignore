@@ -13,3 +13,11 @@ hs_err_pid*
 
 #gradle dist
 gradle/
+bin/
+.settings/
+build/
+.gradle
+
+#eclipse
+.project
+.classpath
