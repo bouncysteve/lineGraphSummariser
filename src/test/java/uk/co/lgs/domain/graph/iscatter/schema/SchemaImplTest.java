@@ -53,9 +53,56 @@ public class SchemaImplTest {
 		expectAComplaintThatTheHeaderIsInvalid();
 		whenICreateASchema();
 	}
+	
+	@Test
+	public void testAttributeWithOptionalColumnsMissing() throws SchemaException {
+		givenAStandardSchemaHeader();
+		givenARecordWithValues(Arrays.asList("myId", "myName", "", "", "string", "interval"));
+		whenICreateASchema();
+		thenTheSchemaContainsThisManyAttributes(1);
+		thenARecordIsCreatedAtPositionWithValues(0, "myId", "myName", "", "", IScatterType.STRING, IScatterLevel.INTERVAL );
+	}
+	
+	@Test
+	public void testAttributeWithMissingId() throws SchemaException {
+		givenAStandardSchemaHeader();
+		givenARecordWithValues(Arrays.asList("", "myName", "", "", "string", "interval"));
+		expectAComplaintThatTheAttributeIsInvalid();
+		whenICreateASchema();
+	}
+	
+	@Test
+	public void testAttributeWithMissingName() throws SchemaException {
+		givenAStandardSchemaHeader();
+		givenARecordWithValues(Arrays.asList("myId", "", "", "", "string", "interval"));
+		expectAComplaintThatTheAttributeIsInvalid();
+		whenICreateASchema();
+	}
 
+	@Test
+	public void testAttributeWithMissingType() throws SchemaException {
+		givenAStandardSchemaHeader();
+		givenARecordWithValues(Arrays.asList("myId", "myName", "", "", "", "interval"));
+		expectAComplaintThatTheAttributeIsInvalid();
+		whenICreateASchema();
+	}
+	
+	@Test
+	public void testAttributeWithMissingLevel() throws SchemaException {
+		givenAStandardSchemaHeader();
+		givenARecordWithValues(Arrays.asList("myId", "myName", "", "", "string", ""));
+		expectAComplaintThatTheAttributeIsInvalid();
+		whenICreateASchema();
+	}
+	
+	private void expectAComplaintThatTheAttributeIsInvalid() {
+		expectedEx.expect(SchemaException.class);
+		expectedEx.expectMessage("Invalid attribute");
+	}
+	
 	private void expectAComplaintThatTheHeaderIsInvalid() {
 		expectedEx.expect(SchemaException.class);
+		expectedEx.expectMessage("Invalid header");
 	}
 
 	private void thenTheSchemaContainsThisManyAttributes(int i) {
