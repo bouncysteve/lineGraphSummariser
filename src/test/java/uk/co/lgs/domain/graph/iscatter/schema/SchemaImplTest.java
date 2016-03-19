@@ -7,15 +7,23 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import uk.co.lgs.domain.graph.iscatter.schema.exception.SchemaException;
+import uk.co.lgs.domain.loader.exception.LoaderException;
 
 public class SchemaImplTest {
 
+	private static final String INVALID_HEADER_MESSAGE = "Invalid header at position ";
+	
 	private List <List<String>> inputRecords;
 	
 	private Schema underTest;
+	
+	@Rule
+	public ExpectedException expectedEx = ExpectedException.none();
 	
 	@Before
 	public void setup(){
@@ -30,12 +38,24 @@ public class SchemaImplTest {
 		givenARecordWithValues(Arrays.asList("myId3", "myName3", "myDescription3", "myUnit3", "string", "ordinal"));
 		givenARecordWithValues(Arrays.asList("myId4", "myName4", "myDescription4", "myUnit4", "number", "nominal"));
 		whenICreateASchema();
-		thenTheHeaderIsValid();
 		thenTheSchemaContainsThisManyAttributes(4);
 		thenARecordIsCreatedAtPositionWithValues(0, "myId", "myName", "myDescription", "myUnit", IScatterType.STRING, IScatterLevel.INTERVAL );
 		thenARecordIsCreatedAtPositionWithValues(1, "myId2", "myName2", "myDescription2", "myUnit2", IScatterType.NUMBER, IScatterLevel.RATIO );
 		thenARecordIsCreatedAtPositionWithValues(2, "myId3", "myName3", "myDescription3", "myUnit3", IScatterType.STRING, IScatterLevel.ORDINAL );
 		thenARecordIsCreatedAtPositionWithValues(3, "myId4", "myName4", "myDescription4", "myUnit4", IScatterType.NUMBER, IScatterLevel.NOMINAL );
+	}
+	
+	@Test
+	public void testInvalidHeader() throws SchemaException{
+		givenAHeaderWithValues(Arrays.asList("id", "name", "randomHeaderName", "unit", "type", "level"));
+		givenARecordWithValues(Arrays.asList("myId", "myName", "myDescription", "myUnit", "string", "interval"));
+		givenARecordWithValues(Arrays.asList("myId2", "myName2", "myDescription2", "myUnit2", "number", "ratio"));
+		expectAComplaintThatTheHeaderIsInvalid();
+		whenICreateASchema();
+	}
+
+	private void expectAComplaintThatTheHeaderIsInvalid() {
+		expectedEx.expect(SchemaException.class);
 	}
 
 	private void thenTheSchemaContainsThisManyAttributes(int i) {
@@ -47,14 +67,14 @@ public class SchemaImplTest {
 		givenARecordWithValues(Arrays.asList("id", "name", "description", "unit", "type", "level"));
 	}
 
-	private void thenTheHeaderIsValid() {
-		// TODO Auto-generated method stub
-	}
-
 	private void whenICreateASchema() throws SchemaException {
 		underTest = new SchemaImpl(inputRecords);
 	}
 
+	private void givenAHeaderWithValues(List<String> values) {
+		givenARecordWithValues(values);
+	}
+	
 	private void givenARecordWithValues(List<String> values) {
 		inputRecords.add(values);
 	}
@@ -69,5 +89,5 @@ public class SchemaImplTest {
 		assertEquals(type, attribute.getType());
 		assertEquals(level, attribute.getLevel());
 	}
-	
+
 }

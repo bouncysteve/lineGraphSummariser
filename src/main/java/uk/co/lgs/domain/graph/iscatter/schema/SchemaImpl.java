@@ -1,6 +1,7 @@
 package uk.co.lgs.domain.graph.iscatter.schema;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import uk.co.lgs.domain.graph.iscatter.schema.exception.SchemaException;
@@ -29,14 +30,14 @@ public class SchemaImpl implements Schema{
 		}
 	}
 
-	private void validateHeader(List<String> inputRecord) {
-		int i=0;
-		assert(ID.equalsIgnoreCase(inputRecord.get(i++)));
-		assert(NAME.equalsIgnoreCase(inputRecord.get(i++)));
-		assert(DESCRIPTION.equalsIgnoreCase(inputRecord.get(i++)));
-		assert(UNIT.equalsIgnoreCase(inputRecord.get(i++)));
-		assert(TYPE.equalsIgnoreCase(inputRecord.get(i++)));
-		assert(LEVEL.equalsIgnoreCase(inputRecord.get(i++)));
+	private void validateHeader(List<String> inputRecord) throws SchemaException {
+		List<String> expectedHeaders = Arrays.asList(ID, NAME, DESCRIPTION, UNIT, TYPE, LEVEL);
+		for (int i = 0; i<expectedHeaders.size(); i++){
+			if (!expectedHeaders.get(i).equalsIgnoreCase(inputRecord.get(i))){
+				throw new SchemaException ("Invalid header, expected: " + expectedHeaders.get(i)
+				+ " but was : " + inputRecord.get(i));
+			}
+		}
 	}
 
 	@Override

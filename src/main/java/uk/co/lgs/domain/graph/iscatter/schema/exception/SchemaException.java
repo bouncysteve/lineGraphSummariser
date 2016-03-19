@@ -6,6 +6,10 @@ public class SchemaException extends Exception {
 		super(string);
 	}
 
+	public SchemaException(String string, AssertionError e) {
+		super(string, e);
+	}
+
 	/**
 	 * 
 	 */
