@@ -424,7 +424,7 @@ public class GraphSegmentTest {
 			when(secondSeriesSegment.getEndValue()).thenReturn(startValue + SECOND_SERIES_GRADIENT_FACTOR);
 			break;
 		default:
-			break;
+			fail ("gradient type not specified");
 		}
 	}
 
@@ -456,6 +456,7 @@ public class GraphSegmentTest {
 				secondSeriesStartValue = firstSeriesSegment.getStartValue() - .5 - gradientType.getMultiplier();
 				break;
 			default:
+				fail ("gradient type not specified");
 				break;
 			}
 			break;
@@ -482,6 +483,7 @@ public class GraphSegmentTest {
 			when(firstSeriesSegment.getEndValue()).thenReturn(startValue + FIRST_SERIES_GRADIENT_FACTOR);
 			break;
 		default:
+			fail ("gradient type not specified");
 			break;
 		}
 	}
