@@ -40,9 +40,21 @@ public class SchemaImpl implements Schema {
 
 	private void processAndValidate(List<List<String>> inputRecords) throws SchemaException{
 		for (List<String> inputRecord: inputRecords){
+			if (inputRecord.size()> expectedHeaders.size()){
+				throw new SchemaException("Attribute has too many columns");
+			}
 			for (String mandatoryAttributeValue: mandatoryAttributeValues){
-				if (StringUtils.isEmpty(inputRecord.get(expectedHeaders.indexOf(mandatoryAttributeValue)))){
+				String value = inputRecord.get(expectedHeaders.indexOf(mandatoryAttributeValue));
+				if (StringUtils.isEmpty(value)){
 					throw new SchemaException ("Invalid attribute, missing mandatory value: " + mandatoryAttributeValue);
+				}else {
+					if (TYPE.equals(mandatoryAttributeValue)){
+						IScatterType.get(value);
+					} else {
+						if (LEVEL.equals(mandatoryAttributeValue)) {
+							IScatterLevel.get(value);
+						}
+					}
 				}
 			}
 			attributes.add(new IScatterAttributeImpl(inputRecord));

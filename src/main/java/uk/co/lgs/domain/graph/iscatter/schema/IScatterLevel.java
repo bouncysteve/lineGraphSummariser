@@ -18,6 +18,6 @@ private String name;
 				return type;
 			}
 		}
-		throw new SchemaException ("Couldn't match type: " + name);
+		throw new SchemaException ("Couldn't match level: " + name);
 	}
 }
