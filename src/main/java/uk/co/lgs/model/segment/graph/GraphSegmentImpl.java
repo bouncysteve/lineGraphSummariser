@@ -1,4 +1,4 @@
-package uk.co.lgs.model.segment;
+package uk.co.lgs.model.segment.graph;
 
 import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import org.apache.commons.math3.linear.ArrayRealVector;
@@ -10,9 +10,11 @@ import org.apache.commons.math3.linear.SingularMatrixException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uk.co.lgs.domain.loader.IscatterLoader;
-import uk.co.lgs.model.GradientType;
+import uk.co.lgs.domain.loader.IscatterLoaderImpl;
+import uk.co.lgs.model.gradient.GradientType;
 import uk.co.lgs.model.segment.exception.SegmentCategoryNotFoundException;
+import uk.co.lgs.model.segment.graph.category.GraphSegmentCategory;
+import uk.co.lgs.model.segment.series.SeriesSegment;
 
 public class GraphSegmentImpl implements GraphSegment {
 

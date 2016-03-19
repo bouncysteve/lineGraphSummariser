@@ -1,4 +1,6 @@
-package uk.co.lgs.model.segment;
+package uk.co.lgs.model.segment.graph;
+
+import uk.co.lgs.model.segment.graph.category.GraphSegmentCategory;
 
 /**Models a segment of a graph, exposes the properties which are useful for summarising the segment.
  * @author bouncysteve

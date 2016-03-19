@@ -1,4 +1,4 @@
-package uk.co.lgs.domain;
+package uk.co.lgs.domain.graph;
 
 import static org.junit.Assert.assertEquals;
 
@@ -14,6 +14,9 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import uk.co.lgs.domain.exception.DomainException;
+import uk.co.lgs.domain.graph.Graph;
+import uk.co.lgs.domain.graph.GraphImpl;
+import uk.co.lgs.domain.record.RecordImpl;
 
 @RunWith(MockitoJUnitRunner.class)
 public class GraphTest {

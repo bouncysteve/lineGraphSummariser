@@ -1,4 +1,4 @@
-package uk.co.lgs.domain;
+package uk.co.lgs.domain.record;
 
 import java.util.List;
 

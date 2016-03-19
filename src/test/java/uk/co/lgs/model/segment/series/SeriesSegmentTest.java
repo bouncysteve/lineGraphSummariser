@@ -1,4 +1,4 @@
-package uk.co.lgs.model.segment;
+package uk.co.lgs.model.segment.series;
 
 import static org.junit.Assert.assertEquals;
 
@@ -8,7 +8,9 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 
-import uk.co.lgs.model.GradientType;
+import uk.co.lgs.model.gradient.GradientType;
+import uk.co.lgs.model.segment.series.SeriesSegment;
+import uk.co.lgs.model.segment.series.SeriesSegmentImpl;
 
 public class SeriesSegmentTest {
 

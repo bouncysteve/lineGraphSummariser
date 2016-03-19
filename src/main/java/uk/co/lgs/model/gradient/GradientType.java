@@ -1,4 +1,4 @@
-package uk.co.lgs.model;
+package uk.co.lgs.model.gradient;
 
 public enum GradientType {
 	POSITIVE(1),

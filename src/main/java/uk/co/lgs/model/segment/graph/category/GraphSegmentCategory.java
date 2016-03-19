@@ -1,6 +1,6 @@
-package uk.co.lgs.model.segment;
+package uk.co.lgs.model.segment.graph.category;
 
-import uk.co.lgs.model.GradientType;
+import uk.co.lgs.model.gradient.GradientType;
 
 public enum GraphSegmentCategory {
 	ZERO_ZERO (GradientType.ZERO, GradientType.ZERO, false),

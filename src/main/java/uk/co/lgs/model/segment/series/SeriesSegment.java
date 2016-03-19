@@ -1,6 +1,6 @@
-package uk.co.lgs.model.segment;
+package uk.co.lgs.model.segment.series;
 
-import uk.co.lgs.model.GradientType;
+import uk.co.lgs.model.gradient.GradientType;
 
 public interface SeriesSegment {
 

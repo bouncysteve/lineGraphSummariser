@@ -1,4 +1,4 @@
-package uk.co.lgs.domain;
+package uk.co.lgs.domain.graph;
 
 import java.util.Collection;
 import java.util.List;
@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
 import uk.co.lgs.domain.exception.DomainException;
+import uk.co.lgs.domain.record.RecordImpl;
 
 /**
  * Domain class representing a multi-series line graph. A graph consists of a

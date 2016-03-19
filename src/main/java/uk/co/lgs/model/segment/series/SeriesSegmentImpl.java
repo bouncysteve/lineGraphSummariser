@@ -1,8 +1,8 @@
-package uk.co.lgs.model.segment;
+package uk.co.lgs.model.segment.series;
 
 import java.util.Map;
 
-import uk.co.lgs.model.GradientType;
+import uk.co.lgs.model.gradient.GradientType;
 
 public class SeriesSegmentImpl implements SeriesSegment {
 

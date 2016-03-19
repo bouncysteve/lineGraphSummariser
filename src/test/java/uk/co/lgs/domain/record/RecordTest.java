@@ -1,4 +1,4 @@
-package uk.co.lgs.domain;
+package uk.co.lgs.domain.record;
 
 import static org.junit.Assert.*;
 
@@ -11,8 +11,9 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import uk.co.lgs.domain.RecordImpl;
 import uk.co.lgs.domain.exception.DomainException;
+import uk.co.lgs.domain.record.Record;
+import uk.co.lgs.domain.record.RecordImpl;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RecordTest {

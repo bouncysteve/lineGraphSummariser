@@ -1,4 +1,4 @@
-package uk.co.lgs.model.segment;
+package uk.co.lgs.model.segment.graph;
 
 import static org.junit.Assert.*;
 
@@ -8,8 +8,11 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import uk.co.lgs.model.GradientType;
+import uk.co.lgs.model.gradient.GradientType;
 import uk.co.lgs.model.segment.exception.SegmentCategoryNotFoundException;
+import uk.co.lgs.model.segment.graph.GraphSegmentImpl;
+import uk.co.lgs.model.segment.graph.category.GraphSegmentCategory;
+import uk.co.lgs.model.segment.series.SeriesSegment;
 
 import static org.mockito.Mockito.when;
 
