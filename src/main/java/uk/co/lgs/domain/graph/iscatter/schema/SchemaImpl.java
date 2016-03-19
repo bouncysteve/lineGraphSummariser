@@ -40,7 +40,7 @@ public class SchemaImpl implements Schema{
 	}
 
 	@Override
-	public int getSeriesCount() {
+	public int getAttributesCount() {
 		return attributes.size();
 	}
 

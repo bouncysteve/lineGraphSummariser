@@ -24,12 +24,27 @@ public class SchemaImplTest {
 	
 	@Test
 	public void testConstructor() throws SchemaException{
-		givenARecordWithValues(Arrays.asList("id", "name", "description", "unit", "type", "level"));
+		givenAStandardSchemaHeader();
 		givenARecordWithValues(Arrays.asList("myId", "myName", "myDescription", "myUnit", "string", "interval"));
+		givenARecordWithValues(Arrays.asList("myId2", "myName2", "myDescription2", "myUnit2", "number", "ratio"));
+		givenARecordWithValues(Arrays.asList("myId3", "myName3", "myDescription3", "myUnit3", "string", "ordinal"));
+		givenARecordWithValues(Arrays.asList("myId4", "myName4", "myDescription4", "myUnit4", "number", "nominal"));
 		whenICreateASchema();
 		thenTheHeaderIsValid();
+		thenTheSchemaContainsThisManyAttributes(4);
 		thenARecordIsCreatedAtPositionWithValues(0, "myId", "myName", "myDescription", "myUnit", IScatterType.STRING, IScatterLevel.INTERVAL );
+		thenARecordIsCreatedAtPositionWithValues(1, "myId2", "myName2", "myDescription2", "myUnit2", IScatterType.NUMBER, IScatterLevel.RATIO );
+		thenARecordIsCreatedAtPositionWithValues(2, "myId3", "myName3", "myDescription3", "myUnit3", IScatterType.STRING, IScatterLevel.ORDINAL );
+		thenARecordIsCreatedAtPositionWithValues(3, "myId4", "myName4", "myDescription4", "myUnit4", IScatterType.NUMBER, IScatterLevel.NOMINAL );
+	}
+
+	private void thenTheSchemaContainsThisManyAttributes(int i) {
+		assertEquals(i, underTest.getAttributesCount());
 		
+	}
+
+	private void givenAStandardSchemaHeader() {
+		givenARecordWithValues(Arrays.asList("id", "name", "description", "unit", "type", "level"));
 	}
 
 	private void thenTheHeaderIsValid() {

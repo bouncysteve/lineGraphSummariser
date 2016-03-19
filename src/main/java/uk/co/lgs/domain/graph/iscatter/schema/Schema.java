@@ -4,7 +4,7 @@ import java.util.List;
 
 public interface Schema {
 	
-	int getSeriesCount();
+	int getAttributesCount();
 
 	IScatterAttribute getAttribute(int position);
 
