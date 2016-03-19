@@ -10,7 +10,6 @@ import org.apache.commons.math3.linear.SingularMatrixException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uk.co.lgs.domain.loader.IscatterLoaderImpl;
 import uk.co.lgs.model.gradient.GradientType;
 import uk.co.lgs.model.segment.exception.SegmentCategoryNotFoundException;
 import uk.co.lgs.model.segment.graph.category.GraphSegmentCategory;

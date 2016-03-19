@@ -1,12 +1,11 @@
 package uk.co.lgs.domain.graph;
 
-import java.util.Collection;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.csv.CSVRecord;
 
 import uk.co.lgs.domain.exception.DomainException;
-import uk.co.lgs.domain.record.RecordImpl;
+import uk.co.lgs.domain.graph.iscatter.schema.Schema;
 
 /**
  * Domain class representing a multi-series line graph. A graph consists of a
@@ -17,14 +16,19 @@ import uk.co.lgs.domain.record.RecordImpl;
  */
 public class GraphImpl implements Graph {
 
-	private static String MISSING_TITLE_MESSAGE = "Graph without title";
-	private static String MISSING_SERIES_MESSAGE = "Graph must contain at least two data series";
+	private static String MISSING_RECORDS_MESSAGE = "Graph must contain at least two data records";
 
 	/**
 	 * The title of the graph, as present in any original publication.
 	 * 
 	 */
 	private String title;
+	
+	private Schema schema;
+
+	private CSVRecord header;
+
+	private List<CSVRecord> records;
 
 	/**
 	 * @param title
@@ -36,34 +40,49 @@ public class GraphImpl implements Graph {
 	 * @throws DomainException
 	 *             if the title is missing or empty, or if at least two data
 	 *             series are not present.
-	 */
-	public GraphImpl(String title, List<RecordImpl> records) throws DomainException {
-		super();
-		if (StringUtils.isEmpty(title)) {
-			throw new DomainException(MISSING_TITLE_MESSAGE);
-		}
+	*/
+	public GraphImpl(String title, Schema schema, CSVRecord header, List<CSVRecord> records) throws DomainException {
+		this(schema, header, records);
 		this.title = title;
-		if (null == records || records.size() < 2) {
-			throw new DomainException(MISSING_SERIES_MESSAGE);
-		}
-		this.records = records;
 	}
 
-	private List<RecordImpl> records;
+	public GraphImpl(Schema schema, CSVRecord header, List<CSVRecord> records) throws DomainException {
+		this.schema= schema;
+		this.header = header;
+		this.records = records;
+		
+		if (null == records || records.size() < 2) {
+			throw new DomainException(MISSING_RECORDS_MESSAGE);
+		}
+	}
 
-	/* (non-Javadoc)
-	 * @see uk.co.lgs.domain.GraphI#getTitle()
-	 */
 	@Override
+	public CSVRecord getHeader() {
+		return this.header;
+	}
+
+	@Override
+	public Schema getSchema() {
+		return this.schema;
+	}
+
+	@Override
+	public int getSeriesCount() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int getRecordCount() {
+		return this.records.size();
+	}
+
+	@Override
+	public List<CSVRecord> getRecords() {
+		return this.records;
+	}
+
 	public String getTitle() {
 		return title;
-	}
-
-	/* (non-Javadoc)
-	 * @see uk.co.lgs.domain.GraphI#getRecords()
-	 */
-	@Override
-	public Collection<RecordImpl> getRecords() {
-		return records;
 	}
 }

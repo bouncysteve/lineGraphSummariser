@@ -1,93 +1,84 @@
 package uk.co.lgs.domain.graph;
 
-import static org.junit.Assert.assertEquals;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.csv.CSVRecord;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
 
 import uk.co.lgs.domain.exception.DomainException;
-import uk.co.lgs.domain.graph.Graph;
-import uk.co.lgs.domain.graph.GraphImpl;
-import uk.co.lgs.domain.record.RecordImpl;
+import uk.co.lgs.domain.graph.iscatter.schema.Schema;
 
-@RunWith(MockitoJUnitRunner.class)
 public class GraphTest {
 
-	private static String MISSING_TITLE_MESSAGE = "Graph without title";
-	private static String MISSING_SERIES_MESSAGE = "Graph must contain at least two data series";
-	
+	private static String MISSING_RECORD_MESSAGE = "Graph must contain at least two data records";
+
 	private Graph underTest;
 
-	@Mock
-	private RecordImpl mockSeries;
+	private CSVRecord headerRecord;
+
+	private CSVRecord record1;
+
+	private CSVRecord record2;
+
+	private List<CSVRecord> records;
 
 	@Mock
-	private RecordImpl mockSeries2;
-	
-	private List<RecordImpl> records;
-
-	private String title;
+	private Schema schema;
 
 	@Before
 	public void setup() {
-		title = "This is a graph";
-		records = new ArrayList<RecordImpl>();
-		records.add(mockSeries);
-		records.add(mockSeries2);
-		System.out.println(records.size());
+		records = new ArrayList<CSVRecord>();
 	}
 
 	@Rule
 	public ExpectedException expectedEx = ExpectedException.none();
-	
+
 	@Test
 	public void testSunnyDay() throws DomainException {
-		underTest = new GraphImpl(title, records);
-		assertEquals(records, underTest.getRecords());
-		assertEquals(title, underTest.getTitle());
+		whenAGraphIsCreatedWithRecords(record1, record2);
 	}
 
-	@Test(expected = DomainException.class)
-	public void testNullTitleThrowsException() throws DomainException {
-		underTest = new GraphImpl(null, records);
-	}
-
-	@Test
-	public void testEmptyTitleThrowsException() throws DomainException {
-		expectedEx.expect(DomainException.class);
-	    expectedEx.expectMessage(MISSING_TITLE_MESSAGE);
-		underTest = new GraphImpl("", records);
-	}
-
-	
 	@Test
 	public void testNullSeriesThrowsException() throws DomainException {
-		expectedEx.expect(DomainException.class);
-	    expectedEx.expectMessage(MISSING_SERIES_MESSAGE);
-		underTest = new GraphImpl(title, null);
+		expectDomainExceptionWithMissingRecordMessage();
+		whenAGraphIsCreatedWithRecords(null);
 	}
-	
+
 	@Test
 	public void testEmptySeriesCollectionThrowsException() throws DomainException {
-		expectedEx.expect(DomainException.class);
-	    expectedEx.expectMessage(MISSING_SERIES_MESSAGE);
-	    records = new ArrayList<RecordImpl>();
-		underTest = new GraphImpl(title, records);
+		expectDomainExceptionWithMissingRecordMessage();
+		whenAGraphIsCreatedWithNoRecords();
 	}
-	
+
 	@Test
-	public void testSingleSeriesCollectionThrowsException() throws DomainException {
+	public void testSingleRecordCollectionThrowsException() throws DomainException {
+		expectDomainExceptionWithMissingRecordMessage();
+		whenAGraphIsCreatedWithRecords(record1);
+	}
+
+	private void expectDomainExceptionWithMissingRecordMessage() {
 		expectedEx.expect(DomainException.class);
-	    expectedEx.expectMessage(MISSING_SERIES_MESSAGE);
-	    records.remove(mockSeries);
-		underTest = new GraphImpl(title, records);
+		expectedEx.expectMessage(MISSING_RECORD_MESSAGE);
+	}
+
+	private void whenAGraphIsCreatedWithRecords(CSVRecord record) throws DomainException {
+		records.add(record);
+		underTest = new GraphImpl(schema, headerRecord, records);
+	}
+
+	private void whenAGraphIsCreatedWithRecords(CSVRecord record1, CSVRecord record2) throws DomainException {
+		records.add(record1);
+		records.add(record2);
+		underTest = new GraphImpl(schema, headerRecord, records);
+	}
+
+	
+	private void whenAGraphIsCreatedWithNoRecords() throws DomainException {
+		underTest = new GraphImpl(schema, headerRecord, records);
 	}
 }
