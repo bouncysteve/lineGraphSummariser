@@ -86,12 +86,25 @@ public class GraphImpl implements Graph {
 
     @Override
     public int getSeriesCount() {
-        // TODO Auto-generated method stub
-        return 0;
+        return this.header.size() - 1;
     }
 
     @Override
     public String getTitle() {
         return this.title;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("\n");
+        builder.append("***************GRAPH DOMAIN OBJECT (RAW DATA)***************").append("\n");
+        builder.append("Title: ").append(this.getTitle()).append("\n");
+        builder.append("Series: ").append(this.getSeriesCount()).append("\n");
+        builder.append("Header: ").append(this.getHeader()).append("\n");
+        builder.append("Records: ").append(this.getRecords().toString()).append("\n");
+        builder.append("RecordCount: ").append(this.getDataRecordCount()).append("\n");
+        builder.append("\n");
+        return builder.toString();
     }
 }
