@@ -2,21 +2,24 @@ package uk.co.lgs.model.segment.graph;
 
 import uk.co.lgs.model.segment.graph.category.GraphSegmentCategory;
 
-/**Models a segment of a graph, exposes the properties which are useful for summarising the segment.
+/**
+ * Models a segment of a graph, exposes the properties which are useful for
+ * summarising the segment.
+ * 
  * @author bouncysteve
  *
  */
 public interface GraphSegment {
 
-	boolean isIntersecting();
+    boolean isIntersecting();
 
-	//TODO: change type (String?)
-	Object getPointOfIntersection();
+    // TODO: change type (String?)
+    Object getPointOfIntersection();
 
-	GraphSegmentCategory getRecordCategory();
+    GraphSegmentCategory getRecordCategory();
 
-	boolean isParallel();
+    boolean isParallel();
 
-	GraphSegmentCategory getSegmentCategory();
+    GraphSegmentCategory getSegmentCategory();
 
 }

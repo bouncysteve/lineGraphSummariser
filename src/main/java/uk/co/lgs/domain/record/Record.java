@@ -4,10 +4,10 @@ import java.util.List;
 
 public interface Record {
 
-	List<Double> getValues();
+    List<Double> getValues();
 
-	int getCount();
+    int getCount();
 
-	String getLabel();
+    String getLabel();
 
 }

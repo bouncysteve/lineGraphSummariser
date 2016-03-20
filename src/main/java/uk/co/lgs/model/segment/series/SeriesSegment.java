@@ -4,16 +4,16 @@ import uk.co.lgs.model.gradient.GradientType;
 
 public interface SeriesSegment {
 
-	double getStartValue();
+    double getStartValue();
 
-	String getStartTime();
+    String getStartTime();
 
-	double getEndValue();
+    double getEndValue();
 
-	String getEndTime();
+    String getEndTime();
 
-	GradientType getGradientType();
+    GradientType getGradientType();
 
-	int getSegmentLength();
+    int getSegmentLength();
 
 }

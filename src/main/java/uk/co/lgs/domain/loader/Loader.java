@@ -4,6 +4,6 @@ import uk.co.lgs.domain.graph.Graph;
 
 public interface Loader {
 
-	Graph getGraph();
+    Graph getGraph();
 
 }

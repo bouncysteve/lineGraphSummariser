@@ -18,39 +18,39 @@ import uk.co.lgs.domain.record.RecordImpl;
 @RunWith(MockitoJUnitRunner.class)
 public class RecordTest {
 
-	Record underTest;
-	
-	private static String MISSING_VALUES_MESSAGE = "Record cannot be created without values";
-	
-	@Rule
-	public ExpectedException expectedEx = ExpectedException.none();
-	
-	@Test
-	public void testSunnyDay() throws DomainException {
-		List<Double> values = new ArrayList<Double>();
-		values.add(5.2);
-		values.add(4.5);
-		values.add(3.9);
-		underTest = new RecordImpl(values);
-		assertEquals(3, underTest.getCount());
-		List<Double> returnedValues = underTest.getValues();
-		assertEquals(values, returnedValues);
-		assertNull(underTest.getLabel());
-	}
-	
-	@Test
-	public void testFailIfNullValueList() throws DomainException{
-		expectedEx.expect(DomainException.class);
-	    expectedEx.expectMessage(MISSING_VALUES_MESSAGE);
-	    underTest = new RecordImpl(null);
-	}
-	
-	@Test
-	public void testFailIfNoValues() throws DomainException{
-		expectedEx.expect(DomainException.class);
-	    expectedEx.expectMessage(MISSING_VALUES_MESSAGE);
-	    List<Double> values = new ArrayList<Double>();
-		underTest = new RecordImpl(values);
-	}
+    Record underTest;
+
+    private static String MISSING_VALUES_MESSAGE = "Record cannot be created without values";
+
+    @Rule
+    public ExpectedException expectedEx = ExpectedException.none();
+
+    @Test
+    public void testSunnyDay() throws DomainException {
+        List<Double> values = new ArrayList<Double>();
+        values.add(5.2);
+        values.add(4.5);
+        values.add(3.9);
+        underTest = new RecordImpl(values);
+        assertEquals(3, underTest.getCount());
+        List<Double> returnedValues = underTest.getValues();
+        assertEquals(values, returnedValues);
+        assertNull(underTest.getLabel());
+    }
+
+    @Test
+    public void testFailIfNullValueList() throws DomainException {
+        expectedEx.expect(DomainException.class);
+        expectedEx.expectMessage(MISSING_VALUES_MESSAGE);
+        underTest = new RecordImpl(null);
+    }
+
+    @Test
+    public void testFailIfNoValues() throws DomainException {
+        expectedEx.expect(DomainException.class);
+        expectedEx.expectMessage(MISSING_VALUES_MESSAGE);
+        List<Double> values = new ArrayList<Double>();
+        underTest = new RecordImpl(values);
+    }
 
 }
