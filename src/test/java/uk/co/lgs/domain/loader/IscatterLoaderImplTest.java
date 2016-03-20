@@ -13,7 +13,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uk.co.lgs.domain.graph.Graph;
+import uk.co.lgs.domain.graph.GraphData;
 import uk.co.lgs.domain.loader.exception.LoaderException;
 import uk.co.lgs.domain.loader.iscatter.IscatterLoaderImpl;
 
@@ -134,9 +134,9 @@ public class IscatterLoaderImplTest {
     public void sunnyDayScenario() throws LoaderException {
         givenILoadTheContentsOfDirectory("simpleGraph");
         whenICallIscatterLoader();
-        Graph graph = this.underTest.getGraph();
-        assertEquals(12, graph.getDataRecordCount());
-        assertEquals(3, graph.getSchemaAttributeCount());
+        GraphData graphData = this.underTest.getGraph();
+        assertEquals(12, graphData.getDataRecordCount());
+        assertEquals(3, graphData.getSchemaAttributeCount());
     }
 
     private void whenICallIscatterLoader() throws LoaderException {

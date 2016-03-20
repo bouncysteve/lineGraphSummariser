@@ -4,7 +4,7 @@ import java.util.List;
 
 import uk.co.lgs.domain.graph.iscatter.schema.Schema;
 
-public interface Graph {
+public interface GraphData {
 
     int getDataRecordCount();
 

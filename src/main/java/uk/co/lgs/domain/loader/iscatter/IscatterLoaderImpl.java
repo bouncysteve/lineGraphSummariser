@@ -11,8 +11,8 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 
 import uk.co.lgs.domain.exception.DomainException;
-import uk.co.lgs.domain.graph.Graph;
-import uk.co.lgs.domain.graph.GraphImpl;
+import uk.co.lgs.domain.graph.GraphData;
+import uk.co.lgs.domain.graph.GraphDataImpl;
 import uk.co.lgs.domain.graph.iscatter.schema.Schema;
 import uk.co.lgs.domain.graph.iscatter.schema.SchemaImpl;
 import uk.co.lgs.domain.graph.iscatter.schema.exception.SchemaException;
@@ -35,7 +35,7 @@ public class IscatterLoaderImpl implements Loader {
 
     private List<List<String>> dataRecords;
 
-    private Graph graph;
+    private GraphData graphData;
 
     private Schema schema;
 
@@ -70,7 +70,7 @@ public class IscatterLoaderImpl implements Loader {
     }
 
     private void createGraph() throws DomainException {
-        this.graph = new GraphImpl(this.schema, this.dataRecords);
+        this.graphData = new GraphDataImpl(this.schema, this.dataRecords);
     }
 
     private void createRecords() throws LoaderException {
@@ -82,8 +82,8 @@ public class IscatterLoaderImpl implements Loader {
     }
 
     @Override
-    public Graph getGraph() {
-        return this.graph;
+    public GraphData getGraph() {
+        return this.graphData;
     }
 
     private List<List<String>> parseFileIntoStringCollection(File csvFile) throws LoaderException {

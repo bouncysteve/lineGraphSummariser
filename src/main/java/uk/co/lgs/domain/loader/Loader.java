@@ -1,9 +1,9 @@
 package uk.co.lgs.domain.loader;
 
-import uk.co.lgs.domain.graph.Graph;
+import uk.co.lgs.domain.graph.GraphData;
 
 public interface Loader {
 
-    Graph getGraph();
+    GraphData getGraph();
 
 }

@@ -26,7 +26,7 @@ public class GraphTest {
     @Mock
     private Schema schema;
 
-    private Graph underTest;
+    private GraphData underTest;
 
     private void expectDomainExceptionWithMissingRecordMessage() {
         this.expectedEx.expect(DomainException.class);
@@ -62,17 +62,17 @@ public class GraphTest {
     }
 
     private void whenAGraphIsCreatedWithNoRecords() throws DomainException {
-        this.underTest = new GraphImpl(this.schema, this.header, this.records);
+        this.underTest = new GraphDataImpl(this.schema, this.header, this.records);
     }
 
     private void whenAGraphIsCreatedWithRecords(List<String> record) throws DomainException {
         this.records.add(record);
-        this.underTest = new GraphImpl(this.schema, this.header, this.records);
+        this.underTest = new GraphDataImpl(this.schema, this.header, this.records);
     }
 
     private void whenAGraphIsCreatedWithRecords(List<String> record1, List<String> record2) throws DomainException {
         this.records.add(record1);
         this.records.add(record2);
-        this.underTest = new GraphImpl(this.schema, this.header, this.records);
+        this.underTest = new GraphDataImpl(this.schema, this.header, this.records);
     }
 }

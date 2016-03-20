@@ -12,7 +12,7 @@ import uk.co.lgs.domain.graph.iscatter.schema.Schema;
  * @author bouncysteve
  *
  */
-public class GraphImpl implements Graph {
+public class GraphDataImpl implements GraphData {
 
     private static String MISSING_RECORDS_MESSAGE = "Graph must contain at least two data records";
 
@@ -28,11 +28,11 @@ public class GraphImpl implements Graph {
      */
     private String title;
 
-    public GraphImpl(Schema schema, List<List<String>> records) throws DomainException {
+    public GraphDataImpl(Schema schema, List<List<String>> records) throws DomainException {
         this(schema, records.remove(0), records);
     }
 
-    public GraphImpl(Schema schema, List<String> header, List<List<String>> records) throws DomainException {
+    public GraphDataImpl(Schema schema, List<String> header, List<List<String>> records) throws DomainException {
         this.schema = schema;
         this.header = header;
         this.records = records;
@@ -53,7 +53,7 @@ public class GraphImpl implements Graph {
      *             if the title is missing or empty, or if at least two data
      *             series are not present.
      */
-    public GraphImpl(String title, Schema schema, List<String> header, List<List<String>> records)
+    public GraphDataImpl(String title, Schema schema, List<String> header, List<List<String>> records)
             throws DomainException {
         this(schema, header, records);
         this.title = title;
