@@ -2,19 +2,21 @@ package uk.co.lgs.domain.graph;
 
 import java.util.List;
 
-import org.apache.commons.csv.CSVRecord;
-
 import uk.co.lgs.domain.graph.iscatter.schema.Schema;
 
 public interface Graph {
 
-	CSVRecord getHeader();
+    int getDataRecordCount();
 
-	Schema getSchema();
+    List<String> getHeader();
 
-	int getSeriesCount();
-	
-	int getRecordCount();
+    List<List<String>> getRecords();
 
-	List<CSVRecord> getRecords();
+    Schema getSchema();
+
+    int getSchemaAttributeCount();
+
+    int getSeriesCount();
+
+    String getTitle();
 }

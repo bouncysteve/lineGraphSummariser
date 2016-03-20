@@ -2,8 +2,6 @@ package uk.co.lgs.domain.graph;
 
 import java.util.List;
 
-import org.apache.commons.csv.CSVRecord;
-
 import uk.co.lgs.domain.exception.DomainException;
 import uk.co.lgs.domain.graph.iscatter.schema.Schema;
 
@@ -16,73 +14,84 @@ import uk.co.lgs.domain.graph.iscatter.schema.Schema;
  */
 public class GraphImpl implements Graph {
 
-	private static String MISSING_RECORDS_MESSAGE = "Graph must contain at least two data records";
+    private static String MISSING_RECORDS_MESSAGE = "Graph must contain at least two data records";
 
-	/**
-	 * The title of the graph, as present in any original publication.
-	 * 
-	 */
-	private String title;
-	
-	private Schema schema;
+    private List<String> header;
 
-	private CSVRecord header;
+    private List<List<String>> records;
 
-	private List<CSVRecord> records;
+    private Schema schema;
 
-	/**
-	 * @param title
-	 *            The graph title (as present in the original presentation of
-	 *            the graph.
-	 * @param records
-	 *            The collection of data records which are displayed in the
-	 *            graph.
-	 * @throws DomainException
-	 *             if the title is missing or empty, or if at least two data
-	 *             series are not present.
-	*/
-	public GraphImpl(String title, Schema schema, CSVRecord header, List<CSVRecord> records) throws DomainException {
-		this(schema, header, records);
-		this.title = title;
-	}
+    /**
+     * The title of the graph, as present in any original publication.
+     * 
+     */
+    private String title;
 
-	public GraphImpl(Schema schema, CSVRecord header, List<CSVRecord> records) throws DomainException {
-		this.schema= schema;
-		this.header = header;
-		this.records = records;
-		
-		if (null == records || records.size() < 2) {
-			throw new DomainException(MISSING_RECORDS_MESSAGE);
-		}
-	}
+    public GraphImpl(Schema schema, List<List<String>> records) throws DomainException {
+        this(schema, records.remove(0), records);
+    }
 
-	@Override
-	public CSVRecord getHeader() {
-		return this.header;
-	}
+    public GraphImpl(Schema schema, List<String> header, List<List<String>> records) throws DomainException {
+        this.schema = schema;
+        this.header = header;
+        this.records = records;
 
-	@Override
-	public Schema getSchema() {
-		return this.schema;
-	}
+        if (null == records || records.size() < 2) {
+            throw new DomainException(MISSING_RECORDS_MESSAGE);
+        }
+    }
 
-	@Override
-	public int getSeriesCount() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
+    /**
+     * @param title
+     *            The graph title (as present in the original presentation of
+     *            the graph.
+     * @param records
+     *            The collection of data records which are displayed in the
+     *            graph.
+     * @throws DomainException
+     *             if the title is missing or empty, or if at least two data
+     *             series are not present.
+     */
+    public GraphImpl(String title, Schema schema, List<String> header, List<List<String>> records)
+            throws DomainException {
+        this(schema, header, records);
+        this.title = title;
+    }
 
-	@Override
-	public int getRecordCount() {
-		return this.records.size();
-	}
+    @Override
+    public int getDataRecordCount() {
+        return this.records.size();
+    }
 
-	@Override
-	public List<CSVRecord> getRecords() {
-		return this.records;
-	}
+    @Override
+    public List<String> getHeader() {
+        return this.header;
+    }
 
-	public String getTitle() {
-		return title;
-	}
+    @Override
+    public List<List<String>> getRecords() {
+        return this.records;
+    }
+
+    @Override
+    public Schema getSchema() {
+        return this.schema;
+    }
+
+    @Override
+    public int getSchemaAttributeCount() {
+        return this.schema.getAttributesCount();
+    }
+
+    @Override
+    public int getSeriesCount() {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    @Override
+    public String getTitle() {
+        return this.title;
+    }
 }
