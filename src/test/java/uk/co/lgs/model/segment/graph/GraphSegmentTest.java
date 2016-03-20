@@ -1,6 +1,10 @@
 package uk.co.lgs.model.segment.graph;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.when;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -10,11 +14,8 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import uk.co.lgs.model.gradient.GradientType;
 import uk.co.lgs.model.segment.exception.SegmentCategoryNotFoundException;
-import uk.co.lgs.model.segment.graph.GraphSegmentImpl;
 import uk.co.lgs.model.segment.graph.category.GraphSegmentCategory;
 import uk.co.lgs.model.segment.series.SeriesSegment;
-
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class GraphSegmentTest {
