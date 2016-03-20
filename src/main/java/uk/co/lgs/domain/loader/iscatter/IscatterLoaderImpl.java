@@ -9,8 +9,6 @@ import java.util.List;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import uk.co.lgs.domain.exception.DomainException;
 import uk.co.lgs.domain.graph.Graph;
@@ -38,8 +36,6 @@ public class IscatterLoaderImpl implements Loader {
     private List<List<String>> dataRecords;
 
     private Graph graph;
-
-    private final Logger logger = LoggerFactory.getLogger(IscatterLoaderImpl.class);
 
     private Schema schema;
 

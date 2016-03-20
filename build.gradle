@@ -18,3 +18,14 @@ dependencies {
         'org.mockito:mockito-core:1.+'
     )
 }
+
+jar {
+  manifest {
+    attributes(
+      'Main-Class': 'uk.co.lgs.Controller'
+    )
+  }
+  from {
+    configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+  }
+}
