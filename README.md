@@ -1,5 +1,5 @@
 # lineGraphSummariser
-Eventually will generate a text summary of [a line graph containing two series](e.g. https://en.wikipedia.org/wiki/Wikipedia:Size_of_Wikipedia#/media/File:PercentWikipediasGraph.png)
+Eventually will generate a text summary of [a line graph containing two series](https://en.wikipedia.org/wiki/Wikipedia:Size_of_Wikipedia#/media/File:PercentWikipediasGraph.png)
 
 At the moment it outputs:
 
