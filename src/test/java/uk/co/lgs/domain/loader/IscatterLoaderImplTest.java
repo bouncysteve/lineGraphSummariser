@@ -27,7 +27,7 @@ public class IscatterLoaderImplTest extends AbstractTest {
 
     ClassLoader classLoader;
 
-    private final Logger logger = LoggerFactory.getLogger(IscatterLoaderImplTest.class);
+    private static final Logger LOG = LoggerFactory.getLogger(IscatterLoaderImplTest.class);
 
     private File parentDir;
 
@@ -124,8 +124,8 @@ public class IscatterLoaderImplTest extends AbstractTest {
         try {
             this.parentDir = new File(this.classLoader.getResource(dirName).getFile());
         } catch (NullPointerException e) {
-            if (this.logger.isDebugEnabled()) {
-                this.logger.debug("The file doesn't exist: " + dirName);
+            if (this.LOG.isDebugEnabled()) {
+                this.LOG.debug("The file doesn't exist: " + dirName);
             }
         }
     }
