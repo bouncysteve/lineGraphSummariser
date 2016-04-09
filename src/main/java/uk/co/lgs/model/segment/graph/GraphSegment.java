@@ -1,5 +1,7 @@
 package uk.co.lgs.model.segment.graph;
 
+import java.text.DecimalFormat;
+
 import uk.co.lgs.model.segment.exception.SegmentAppendException;
 import uk.co.lgs.model.segment.exception.SegmentCategoryNotFoundException;
 import uk.co.lgs.model.segment.graph.category.GraphSegmentCategory;
@@ -13,6 +15,8 @@ import uk.co.lgs.model.segment.series.SeriesSegment;
  *
  */
 public interface GraphSegment {
+
+    static DecimalFormat df = new DecimalFormat("#.00");
 
     boolean isIntersecting();
 
@@ -33,4 +37,5 @@ public interface GraphSegment {
     SeriesSegment getSecondSeriesSegment();
 
     int getLength();
+
 }

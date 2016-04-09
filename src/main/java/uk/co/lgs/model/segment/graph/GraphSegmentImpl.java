@@ -79,9 +79,16 @@ public class GraphSegmentImpl implements GraphSegment {
         StringBuilder sb = new StringBuilder();
         sb.append("Start: ").append(this.getStartTime()).append("\t");
         sb.append("End: ").append(this.getEndTime()).append("\t");
+        sb.append("Length: ").append(this.getLength()).append("\t");
         sb.append("Cat: ").append(this.getSegmentCategory()).append("\t");
-        sb.append("S1 gradient: ").append(this.firstSeriesSegment.getGradient()).append("\t");
-        sb.append("S2 gradient: ").append(this.secondSeriesSegment.getGradient()).append("\t");
+        if (!this.getSegmentCategory().isIntersecting()) {
+            sb.append("\t").append("\t");
+        }
+        if (GraphSegmentCategory.ZERO_ZERO_INTERSECTING.equals(this.getSegmentCategory())) {
+            sb.append("\t");
+        }
+        sb.append("S1 gradient: ").append(df.format(this.firstSeriesSegment.getGradient())).append("\t");
+        sb.append("S2 gradient: ").append(df.format(this.secondSeriesSegment.getGradient())).append("\t");
         if (this.isIntersecting()) {
             sb.append("Intersection: ").append(this.getValueAtIntersection()).append("\t");
         }
