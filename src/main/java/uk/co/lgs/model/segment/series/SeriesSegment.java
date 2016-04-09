@@ -14,6 +14,10 @@ public interface SeriesSegment {
 
     GradientType getGradientType();
 
+    double getGradient();
+
     int getSegmentLength();
+
+    SeriesSegment append(SeriesSegment segmentToAppend);
 
 }

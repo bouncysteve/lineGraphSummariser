@@ -3,31 +3,48 @@ package uk.co.lgs;
 import java.io.File;
 import java.util.Scanner;
 
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+
 import uk.co.lgs.domain.graph.GraphData;
 import uk.co.lgs.domain.loader.Loader;
 import uk.co.lgs.domain.loader.exception.LoaderException;
-import uk.co.lgs.domain.loader.iscatter.IscatterLoaderImpl;
+import uk.co.lgs.model.graph.GraphModel;
+import uk.co.lgs.model.graph.GraphModelImpl;
+import uk.co.lgs.model.graph.collator.exception.CollatorException;
+import uk.co.lgs.model.graph.service.ModelCollator;
+import uk.co.lgs.model.segment.exception.SegmentCategoryNotFoundException;
 
+@Configuration
+@ComponentScan
 public class Controller {
 
     // TODO: error handling
-    public static void main(String[] args) throws LoaderException {
+    public static void main(String[] args) throws LoaderException, SegmentCategoryNotFoundException, CollatorException {
 
         String directory = args[0];
         File parentDir = new File(directory);
         if (!parentDir.exists() || args.length < 1) {
-            // create a scanner so we can read the command-line input
             Scanner scanner = new Scanner(System.in);
-            // prompt for the directory path
             System.out.print("Enter the FULL PATH of the directory containing data.csv and schema.csv");
-            // get their input as a String
             directory = scanner.next();
             scanner.close();
             parentDir = new File(directory);
         }
 
-        Loader loader = new IscatterLoaderImpl(parentDir);
-        GraphData graphData = loader.getGraph();
+        ApplicationContext context = new AnnotationConfigApplicationContext(Controller.class);
+        Loader loader = context.getBean(Loader.class);
+        GraphData graphData = loader.getGraph(parentDir);
+
         System.out.print(graphData.toString());
+
+        GraphModel model = new GraphModelImpl(graphData);
+        System.out.print(model.toString());
+
+        ModelCollator collator = context.getBean(ModelCollator.class);
+        GraphModel collectedModel = collator.collate(model);
+        System.out.print(collectedModel.toString());
     }
 }

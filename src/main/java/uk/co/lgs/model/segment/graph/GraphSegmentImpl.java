@@ -11,13 +11,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.co.lgs.model.gradient.GradientType;
+import uk.co.lgs.model.segment.exception.SegmentAppendException;
 import uk.co.lgs.model.segment.exception.SegmentCategoryNotFoundException;
 import uk.co.lgs.model.segment.graph.category.GraphSegmentCategory;
 import uk.co.lgs.model.segment.series.SeriesSegment;
 
 public class GraphSegmentImpl implements GraphSegment {
 
-    private final Logger logger = LoggerFactory.getLogger(GraphSegmentImpl.class);
+    private static final String APPEND_INVALID_GRADIENT_MESSAGE = "Cannot append segment, the gradient types do not match";
+
+    private static final Logger LOG = LoggerFactory.getLogger(GraphSegmentImpl.class);
 
     private GraphSegmentCategory segmentCategory;
 
@@ -47,18 +50,13 @@ public class GraphSegmentImpl implements GraphSegment {
     }
 
     @Override
-    public Object getPointOfIntersection() {
-        return valueAtIntersection;
-    }
-
-    @Override
-    public GraphSegmentCategory getRecordCategory() {
-        return segmentCategory;
+    public Double getValueAtIntersection() {
+        return this.valueAtIntersection;
     }
 
     @Override
     public boolean isParallel() {
-        return parallel;
+        return this.parallel;
     }
 
     @Override
@@ -66,16 +64,44 @@ public class GraphSegmentImpl implements GraphSegment {
         return this.segmentCategory;
     }
 
+    @Override
+    public String getStartTime() {
+        return this.firstSeriesSegment.getStartTime();
+    }
+
+    @Override
+    public String getEndTime() {
+        return this.firstSeriesSegment.getEndTime();
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Start: ").append(this.getStartTime()).append("\t");
+        sb.append("End: ").append(this.getEndTime()).append("\t");
+        sb.append("Cat: ").append(this.getSegmentCategory()).append("\t");
+        sb.append("S1 gradient: ").append(this.firstSeriesSegment.getGradient()).append("\t");
+        sb.append("S2 gradient: ").append(this.secondSeriesSegment.getGradient()).append("\t");
+        if (this.isIntersecting()) {
+            sb.append("Intersection: ").append(this.getValueAtIntersection()).append("\t");
+        }
+        if (this.isParallel()) {
+            sb.append("Segments are parallel").append("\t");
+        }
+        return sb.toString();
+    }
+
     private void determineIntersectionDetails() {
-        double firstSeriesStartValue = firstSeriesSegment.getStartValue();
-        double firstSeriesEndValue = firstSeriesSegment.getEndValue();
-        double secondSeriesStartValue = secondSeriesSegment.getStartValue();
-        double secondSeriesEndValue = secondSeriesSegment.getEndValue();
+        double firstSeriesStartValue = this.firstSeriesSegment.getStartValue();
+        double firstSeriesEndValue = this.firstSeriesSegment.getEndValue();
+        double secondSeriesStartValue = this.secondSeriesSegment.getStartValue();
+        double secondSeriesEndValue = this.secondSeriesSegment.getEndValue();
 
         /*
-         * equation of series: y = mx + c y = (endValue - startValue)x +
-         * startValue -y = (startValue - endValue)x - startValue (startValue -
-         * endValue)x + y = startValue {startValue - endValue, 1} = {startValue}
+         * equation of series: y = mx + c; y = (endValue - startValue)x +
+         * startValue; -y = (startValue - endValue)x - startValue; (startValue -
+         * endValue)x + y = startValue; {startValue - endValue, 1} =
+         * {startValue}
          * http://commons.apache.org/proper/commons-math/userguide/linear.html
          */
         RealMatrix coefficients = new Array2DRowRealMatrix(
@@ -94,11 +120,11 @@ public class GraphSegmentImpl implements GraphSegment {
              */
             if (this.segmentDistanceToIntersection >= 0 && this.segmentDistanceToIntersection <= 1) {
                 this.valueAtIntersection = solution.getEntry(1);
-                this.intersecting = (null != valueAtIntersection);
+                this.intersecting = (null != this.valueAtIntersection);
             }
         } catch (SingularMatrixException e) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Lines are parallel, they either don't intersect or they are the identical");
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Lines are parallel, they either don't intersect or they are the identical");
             }
             this.parallel = true;
             if (firstSeriesStartValue == secondSeriesStartValue) {
@@ -112,12 +138,12 @@ public class GraphSegmentImpl implements GraphSegment {
     }
 
     private void determineSegmentCategory() throws SegmentCategoryNotFoundException {
-        GradientType firstSeriesGradient = firstSeriesSegment.getGradientType();
-        GradientType secondSeriesGradient = secondSeriesSegment.getGradientType();
+        GradientType firstSeriesGradient = this.firstSeriesSegment.getGradientType();
+        GradientType secondSeriesGradient = this.secondSeriesSegment.getGradientType();
         for (GraphSegmentCategory category : GraphSegmentCategory.values()) {
             if (category.getFirstSeriesGradient().equals(firstSeriesGradient)
                     && category.getSecondSeriesGradient().equals(secondSeriesGradient)
-                    && category.isIntersecting() == intersecting) {
+                    && category.isIntersecting() == this.intersecting) {
                 this.segmentCategory = category;
                 break;
             }
@@ -127,11 +153,36 @@ public class GraphSegmentImpl implements GraphSegment {
         }
     }
 
-    /*
-     * public Object getDependentValue(){ //TODO: do something with time series
-     * value from domainRecord
-     * 
-     * }
-     */
+    @Override
+    public GraphSegment append(GraphSegment newSegment)
+            throws SegmentCategoryNotFoundException, SegmentAppendException {
+        // check that the type is the same, if not, throw an exception.
+        // TODO: handle near same type (same but with/without intersection)
+        if (this.firstSeriesSegment.getGradientType().equals(newSegment.getFirstSeriesSegment().getGradientType())) {
+            this.firstSeriesSegment = this.firstSeriesSegment.append(newSegment.getFirstSeriesSegment());
+        } else
+            throw new SegmentAppendException(APPEND_INVALID_GRADIENT_MESSAGE);
+        if (this.secondSeriesSegment.getGradientType().equals(newSegment.getSecondSeriesSegment().getGradientType())) {
+            this.secondSeriesSegment = this.secondSeriesSegment.append(newSegment.getSecondSeriesSegment());
+        } else
+            throw new SegmentAppendException(APPEND_INVALID_GRADIENT_MESSAGE);
+        determineIntersectionDetails();
+        determineSegmentCategory();
+        return this;
+    }
 
+    @Override
+    public SeriesSegment getFirstSeriesSegment() {
+        return this.firstSeriesSegment;
+    }
+
+    @Override
+    public SeriesSegment getSecondSeriesSegment() {
+        return this.secondSeriesSegment;
+    }
+
+    @Override
+    public int getLength() {
+        return this.firstSeriesSegment.getSegmentLength();
+    }
 }

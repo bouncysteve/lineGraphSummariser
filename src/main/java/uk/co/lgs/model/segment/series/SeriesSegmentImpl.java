@@ -1,14 +1,9 @@
 package uk.co.lgs.model.segment.series;
 
-import java.util.Map;
-
 import uk.co.lgs.model.gradient.GradientType;
+import uk.co.lgs.model.point.Point;
 
 public class SeriesSegmentImpl implements SeriesSegment {
-
-    private Map<String, Double> startTimeAndValue;
-
-    private Map<String, Double> endTimeAndValue;
 
     GradientType gradientType;
 
@@ -19,82 +14,76 @@ public class SeriesSegmentImpl implements SeriesSegment {
      */
     private int segmentLength;
 
-    public SeriesSegmentImpl(Map<String, Double> startTimeAndValue, Map<String, Double> endTimeAndValue) {
-        this(startTimeAndValue, endTimeAndValue, 1);
+    private double startValue;
+
+    private double endValue;
+
+    private String startTime;
+
+    private String endTime;
+
+    public SeriesSegmentImpl(Point startPoint, Point endPoint) {
+        this(startPoint, endPoint, 1);
     }
 
-    public SeriesSegmentImpl(Map<String, Double> startTimeAndValue, Map<String, Double> endTimeAndValue,
-            int segmentLength) {
-        this.startTimeAndValue = startTimeAndValue;
-        this.endTimeAndValue = endTimeAndValue;
-        this.segmentLength = segmentLength;
-        this.gradientType = calculateGradient();
-    }
-
-    /*
-     * (non-Javadoc)
+    /**
+     * For collated segments, the segment length will be a multiple of the base
+     * segment length, 1.
      * 
-     * @see uk.co.lgs.model.segment.SeriesSegment#getStartValue()
+     * @param startTimeAndValue
+     * @param endTimeAndValue
+     * @param segmentLength
      */
+    public SeriesSegmentImpl(Point startPoint, Point endPoint, int segmentLength) {
+        this.startTime = startPoint.getTime();
+        this.startValue = startPoint.getValue();
+        this.endTime = endPoint.getTime();
+        this.endValue = endPoint.getValue();
+        this.segmentLength = segmentLength;
+        this.gradientType = determineGradientType();
+    }
+
     @Override
     public double getStartValue() {
-        return this.startTimeAndValue.values().iterator().next();
+        return this.startValue;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see uk.co.lgs.model.segment.SeriesSegment#getStartTime()
-     */
     @Override
     public String getStartTime() {
-        return this.startTimeAndValue.keySet().iterator().next();
+        return this.startTime;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see uk.co.lgs.model.segment.SeriesSegment#getEndValue()
-     */
     @Override
     public double getEndValue() {
-        return this.endTimeAndValue.values().iterator().next();
+        return this.endValue;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see uk.co.lgs.model.segment.SeriesSegment#getEndTime()
-     */
     @Override
     public String getEndTime() {
-        return this.endTimeAndValue.keySet().iterator().next();
+        return this.endTime;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see uk.co.lgs.model.segment.SeriesSegment#getGradientType()
-     */
     @Override
     public GradientType getGradientType() {
         return this.gradientType;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see uk.co.lgs.model.segment.SeriesSegment#getSegmentLength()
-     */
     @Override
     public int getSegmentLength() {
         return this.segmentLength;
     }
 
-    private GradientType calculateGradient() {
-        double valueAtStart = startTimeAndValue.values().iterator().next();
-        double valueAtEnd = endTimeAndValue.values().iterator().next();
-        double numericGradient = (valueAtEnd - valueAtStart) / segmentLength;
+    @Override
+    public SeriesSegment append(SeriesSegment newSegment) {
+        this.endTime = newSegment.getEndTime();
+        this.endValue = newSegment.getEndValue();
+        this.segmentLength++;
+        this.gradientType = determineGradientType();
+        return this;
+    }
+
+    private GradientType determineGradientType() {
+        double numericGradient = (this.getEndValue() - this.getStartValue()) / this.segmentLength;
         GradientType gradientType;
         if (0 == numericGradient) {
             gradientType = GradientType.ZERO;
@@ -104,6 +93,11 @@ public class SeriesSegmentImpl implements SeriesSegment {
             gradientType = GradientType.NEGATIVE;
         }
         return gradientType;
+    }
+
+    @Override
+    public double getGradient() {
+        return (this.endValue - this.startValue) / this.segmentLength;
     }
 
 }

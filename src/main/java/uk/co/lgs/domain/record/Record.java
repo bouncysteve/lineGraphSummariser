@@ -8,6 +8,6 @@ public interface Record {
 
     int getCount();
 
-    String getLabel();
+    String getPointInTime();
 
 }

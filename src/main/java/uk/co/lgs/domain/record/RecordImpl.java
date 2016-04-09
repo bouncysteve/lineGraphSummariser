@@ -13,10 +13,12 @@ import uk.co.lgs.domain.exception.DomainException;
 public class RecordImpl implements Record {
 
     private static String MISSING_VALUES_MESSAGE = "Record cannot be created without values";
+    private String pointInTime;
+    private List<Double> values;
 
-    public RecordImpl(String label, List<Double> values) throws DomainException {
+    public RecordImpl(String pointInTime, List<Double> values) throws DomainException {
         this(values);
-        this.label = label;
+        this.pointInTime = pointInTime;
     }
 
     public RecordImpl(List<Double> values) throws DomainException {
@@ -27,9 +29,6 @@ public class RecordImpl implements Record {
         this.values = values;
     }
 
-    String label;
-    List<Double> values;
-
     /*
      * (non-Javadoc)
      * 
@@ -37,7 +36,7 @@ public class RecordImpl implements Record {
      */
     @Override
     public List<Double> getValues() {
-        return values;
+        return this.values;
     }
 
     /*
@@ -47,7 +46,7 @@ public class RecordImpl implements Record {
      */
     @Override
     public int getCount() {
-        return values.size();
+        return this.values.size();
     }
 
     /*
@@ -56,7 +55,17 @@ public class RecordImpl implements Record {
      * @see uk.co.lgs.domain.Record#getLabel()
      */
     @Override
-    public String getLabel() {
-        return label;
+    public String getPointInTime() {
+        return this.pointInTime;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(this.pointInTime).append("\t");
+        for (Double value : this.values) {
+            sb.append(value).append("\t");
+        }
+        return sb.toString();
     }
 }

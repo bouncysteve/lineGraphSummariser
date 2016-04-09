@@ -9,6 +9,7 @@ import java.util.List;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
+import org.springframework.stereotype.Component;
 
 import uk.co.lgs.domain.exception.DomainException;
 import uk.co.lgs.domain.graph.GraphData;
@@ -18,7 +19,10 @@ import uk.co.lgs.domain.graph.iscatter.schema.SchemaImpl;
 import uk.co.lgs.domain.graph.iscatter.schema.exception.SchemaException;
 import uk.co.lgs.domain.loader.Loader;
 import uk.co.lgs.domain.loader.exception.LoaderException;
+import uk.co.lgs.domain.record.Record;
+import uk.co.lgs.domain.record.RecordImpl;
 
+@Component
 public class IscatterLoaderImpl implements Loader {
 
     private static final String BAD_OR_EMPTY_FILE_MESSAGE = "File exists but is empty or malformed";
@@ -33,16 +37,21 @@ public class IscatterLoaderImpl implements Loader {
 
     private static final String SCHEMA_FILENAME = "schema.csv";
 
-    private List<List<String>> dataRecords;
+    private List<Record> dataRecords;
 
     private GraphData graphData;
 
     private Schema schema;
 
+    private List<String> header;
+
     private File schemaFile, dataFile;
 
-    public IscatterLoaderImpl(File parentFolder) throws LoaderException {
+    public IscatterLoaderImpl() {
         super();
+    }
+
+    private void initialise(File parentFolder) throws LoaderException {
         if (!parentFolder.isDirectory()) {
             throw new LoaderException(MISSING_FOLDER_MESSAGE_PREFIX + parentFolder);
         }
@@ -70,23 +79,24 @@ public class IscatterLoaderImpl implements Loader {
     }
 
     private void createGraph() throws DomainException {
-        this.graphData = new GraphDataImpl(this.schema, this.dataRecords);
+        this.graphData = new GraphDataImpl(this.schema, this.header, this.dataRecords);
     }
 
     private void createRecords() throws LoaderException {
-        this.dataRecords = parseFileIntoStringCollection(this.dataFile);
+        this.dataRecords = parseFileIntoRecordCollection(this.dataFile);
     }
 
     private void createSchema() throws LoaderException, SchemaException {
-        this.schema = new SchemaImpl(parseFileIntoStringCollection(this.schemaFile));
+        this.schema = new SchemaImpl(parseFileIntoSchema(this.schemaFile));
     }
 
     @Override
-    public GraphData getGraph() {
+    public GraphData getGraph(File parentFolder) throws LoaderException {
+        initialise(parentFolder);
         return this.graphData;
     }
 
-    private List<List<String>> parseFileIntoStringCollection(File csvFile) throws LoaderException {
+    private List<List<String>> parseFileIntoSchema(File csvFile) throws LoaderException {
         List<List<String>> rows = new ArrayList<List<String>>();
         try {
             CSVParser parser = CSVParser.parse(csvFile, Charset.defaultCharset(), CSVFormat.DEFAULT);
@@ -106,5 +116,40 @@ public class IscatterLoaderImpl implements Loader {
             throw new LoaderException(BAD_OR_EMPTY_FILE_MESSAGE + ": " + csvFile.getName());
         }
         return rows;
+    }
+
+    private List<Record> parseFileIntoRecordCollection(File csvFile) throws LoaderException {
+        List<Record> records = new ArrayList<Record>();
+        try {
+            CSVParser parser = CSVParser.parse(csvFile, Charset.defaultCharset(), CSVFormat.DEFAULT);
+            String timePoint;
+            boolean gotHeader = false;
+            for (CSVRecord csvRecord : parser) {
+                List<Double> values = new ArrayList<Double>();
+                java.util.Iterator<String> it = csvRecord.iterator();
+                if (!gotHeader) {
+                    List<String> header = new ArrayList<String>();
+                    while (it.hasNext()) {
+                        header.add(it.next());
+                    }
+                    this.header = header;
+                    gotHeader = true;
+                } else {
+                    timePoint = it.next();
+                    while (it.hasNext()) {
+                        values.add(Double.parseDouble(it.next()));
+                    }
+                    records.add(new RecordImpl(timePoint, values));
+                }
+            }
+        } catch (IOException ioe) {
+            throw new LoaderException(BAD_OR_EMPTY_FILE_MESSAGE + ": " + csvFile.getName());
+        } catch (DomainException de) {
+            throw new LoaderException("Unable to create record");
+        }
+        if (records.isEmpty()) {
+            throw new LoaderException(BAD_OR_EMPTY_FILE_MESSAGE + ": " + csvFile.getName());
+        }
+        return records;
     }
 }

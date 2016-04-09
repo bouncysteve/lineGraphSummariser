@@ -11,22 +11,23 @@ import org.mockito.Mock;
 
 import uk.co.lgs.domain.exception.DomainException;
 import uk.co.lgs.domain.graph.iscatter.schema.Schema;
+import uk.co.lgs.domain.record.Record;
+import uk.co.lgs.test.AbstractTest;
 
-public class GraphTest {
+public class GraphTest extends AbstractTest {
 
     private static String MISSING_RECORD_MESSAGE = "Graph must contain at least two data records";
 
     @Rule
     public ExpectedException expectedEx = ExpectedException.none();
 
-    private List<String> header, record1, record2;
+    private List<String> header;
+    private Record record1, record2;
 
-    private List<List<String>> records;
+    private List<Record> records;
 
     @Mock
     private Schema schema;
-
-    private GraphData underTest;
 
     private void expectDomainExceptionWithMissingRecordMessage() {
         this.expectedEx.expect(DomainException.class);
@@ -35,7 +36,7 @@ public class GraphTest {
 
     @Before
     public void setup() {
-        this.records = new ArrayList<List<String>>();
+        this.records = new ArrayList<Record>();
     }
 
     @Test
@@ -62,17 +63,17 @@ public class GraphTest {
     }
 
     private void whenAGraphIsCreatedWithNoRecords() throws DomainException {
-        this.underTest = new GraphDataImpl(this.schema, this.header, this.records);
+        new GraphDataImpl(this.schema, this.header, this.records);
     }
 
-    private void whenAGraphIsCreatedWithRecords(List<String> record) throws DomainException {
+    private void whenAGraphIsCreatedWithRecords(Record record) throws DomainException {
         this.records.add(record);
-        this.underTest = new GraphDataImpl(this.schema, this.header, this.records);
+        new GraphDataImpl(this.schema, this.header, this.records);
     }
 
-    private void whenAGraphIsCreatedWithRecords(List<String> record1, List<String> record2) throws DomainException {
+    private void whenAGraphIsCreatedWithRecords(Record record1, Record record2) throws DomainException {
         this.records.add(record1);
         this.records.add(record2);
-        this.underTest = new GraphDataImpl(this.schema, this.header, this.records);
+        new GraphDataImpl(this.schema, this.header, this.records);
     }
 }

@@ -9,15 +9,13 @@ import java.util.List;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
 
 import uk.co.lgs.domain.exception.DomainException;
+import uk.co.lgs.test.AbstractTest;
 
-@RunWith(MockitoJUnitRunner.class)
-public class RecordTest {
+public class RecordTest extends AbstractTest {
 
-    Record underTest;
+    private Record underTest;
 
     private static String MISSING_VALUES_MESSAGE = "Record cannot be created without values";
 
@@ -30,26 +28,26 @@ public class RecordTest {
         values.add(5.2);
         values.add(4.5);
         values.add(3.9);
-        underTest = new RecordImpl(values);
-        assertEquals(3, underTest.getCount());
-        List<Double> returnedValues = underTest.getValues();
+        this.underTest = new RecordImpl(values);
+        assertEquals(3, this.underTest.getCount());
+        List<Double> returnedValues = this.underTest.getValues();
         assertEquals(values, returnedValues);
-        assertNull(underTest.getLabel());
+        assertNull(this.underTest.getPointInTime());
     }
 
     @Test
     public void testFailIfNullValueList() throws DomainException {
-        expectedEx.expect(DomainException.class);
-        expectedEx.expectMessage(MISSING_VALUES_MESSAGE);
-        underTest = new RecordImpl(null);
+        this.expectedEx.expect(DomainException.class);
+        this.expectedEx.expectMessage(MISSING_VALUES_MESSAGE);
+        this.underTest = new RecordImpl(null);
     }
 
     @Test
     public void testFailIfNoValues() throws DomainException {
-        expectedEx.expect(DomainException.class);
-        expectedEx.expectMessage(MISSING_VALUES_MESSAGE);
+        this.expectedEx.expect(DomainException.class);
+        this.expectedEx.expectMessage(MISSING_VALUES_MESSAGE);
         List<Double> values = new ArrayList<Double>();
-        underTest = new RecordImpl(values);
+        this.underTest = new RecordImpl(values);
     }
 
 }

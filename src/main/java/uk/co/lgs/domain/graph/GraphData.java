@@ -3,6 +3,7 @@ package uk.co.lgs.domain.graph;
 import java.util.List;
 
 import uk.co.lgs.domain.graph.iscatter.schema.Schema;
+import uk.co.lgs.domain.record.Record;
 
 public interface GraphData {
 
@@ -10,7 +11,7 @@ public interface GraphData {
 
     List<String> getHeader();
 
-    List<List<String>> getRecords();
+    List<Record> getRecords();
 
     Schema getSchema();
 

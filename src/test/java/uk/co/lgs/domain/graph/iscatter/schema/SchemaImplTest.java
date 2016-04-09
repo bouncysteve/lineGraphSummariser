@@ -7,16 +7,12 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import uk.co.lgs.domain.graph.iscatter.schema.exception.SchemaException;
+import uk.co.lgs.test.AbstractTest;
 
-public class SchemaImplTest {
-
-    @Rule
-    public ExpectedException expectedEx = ExpectedException.none();
+public class SchemaImplTest extends AbstractTest {
 
     private List<List<String>> inputRecords;
 

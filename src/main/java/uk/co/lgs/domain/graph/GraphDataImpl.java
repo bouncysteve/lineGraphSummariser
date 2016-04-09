@@ -4,6 +4,7 @@ import java.util.List;
 
 import uk.co.lgs.domain.exception.DomainException;
 import uk.co.lgs.domain.graph.iscatter.schema.Schema;
+import uk.co.lgs.domain.record.Record;
 
 /**
  * Domain class representing a multi-series line graph. A graph consists of a
@@ -18,7 +19,7 @@ public class GraphDataImpl implements GraphData {
 
     private List<String> header;
 
-    private List<List<String>> records;
+    private List<Record> records;
 
     private Schema schema;
 
@@ -28,11 +29,7 @@ public class GraphDataImpl implements GraphData {
      */
     private String title;
 
-    public GraphDataImpl(Schema schema, List<List<String>> records) throws DomainException {
-        this(schema, records.remove(0), records);
-    }
-
-    public GraphDataImpl(Schema schema, List<String> header, List<List<String>> records) throws DomainException {
+    public GraphDataImpl(Schema schema, List<String> header, List<Record> records) throws DomainException {
         this.schema = schema;
         this.header = header;
         this.records = records;
@@ -53,7 +50,7 @@ public class GraphDataImpl implements GraphData {
      *             if the title is missing or empty, or if at least two data
      *             series are not present.
      */
-    public GraphDataImpl(String title, Schema schema, List<String> header, List<List<String>> records)
+    public GraphDataImpl(String title, Schema schema, List<String> header, List<Record> records)
             throws DomainException {
         this(schema, header, records);
         this.title = title;
@@ -70,7 +67,7 @@ public class GraphDataImpl implements GraphData {
     }
 
     @Override
-    public List<List<String>> getRecords() {
+    public List<Record> getRecords() {
         return this.records;
     }
 
@@ -102,7 +99,10 @@ public class GraphDataImpl implements GraphData {
         builder.append("Title: ").append(this.getTitle()).append("\n");
         builder.append("Series: ").append(this.getSeriesCount()).append("\n");
         builder.append("Header: ").append(this.getHeader()).append("\n");
-        builder.append("Records: ").append(this.getRecords().toString()).append("\n");
+        builder.append("Records: ").append("\n");
+        for (Record record : this.records) {
+            builder.append("\t").append(record).append("\n");
+        }
         builder.append("RecordCount: ").append(this.getDataRecordCount()).append("\n");
         builder.append("\n");
         return builder.toString();

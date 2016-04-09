@@ -5,20 +5,17 @@ import static org.junit.Assert.assertEquals;
 import java.io.File;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.co.lgs.domain.graph.GraphData;
 import uk.co.lgs.domain.loader.exception.LoaderException;
 import uk.co.lgs.domain.loader.iscatter.IscatterLoaderImpl;
+import uk.co.lgs.domain.record.Record;
+import uk.co.lgs.test.AbstractTest;
 
-@RunWith(MockitoJUnitRunner.class)
-public class IscatterLoaderImplTest {
+public class IscatterLoaderImplTest extends AbstractTest {
 
     private static final String BAD_OR_EMPTY_HEADER_MESSAGE = "File exists but is empty or malformed";
 
@@ -30,14 +27,18 @@ public class IscatterLoaderImplTest {
 
     ClassLoader classLoader;
 
-    @Rule
-    public ExpectedException expectedEx = ExpectedException.none();
-
     private final Logger logger = LoggerFactory.getLogger(IscatterLoaderImplTest.class);
 
     private File parentDir;
 
     Loader underTest;
+
+    private GraphData graphData;
+
+    @Before
+    public void setup() {
+        this.classLoader = getClass().getClassLoader();
+    }
 
     @Test
     public void dataFileIsEmpty() throws LoaderException {
@@ -46,36 +47,11 @@ public class IscatterLoaderImplTest {
         whenICallIscatterLoader();
     }
 
-    private void expectLoaderExceptionWithMessage(String message) {
-        this.expectedEx.expect(LoaderException.class);
-        this.expectedEx.expectMessage(message);
-    }
-
-    private void expectNullPointerException() {
-        this.expectedEx.expect(NullPointerException.class);
-    }
-
-    private void givenILoadTheContentsOfDirectory(String dirName) {
-        try {
-            this.parentDir = new File(this.classLoader.getResource(dirName).getFile());
-        } catch (NullPointerException e) {
-            if (this.logger.isDebugEnabled()) {
-                this.logger.debug("The file doesn't exist: " + dirName);
-            }
-        }
-    }
-
-    private void givenILoadTheContentsOfDirectoryDoesNotExist() {
-        String dirName = "doesNotExist";
-        this.parentDir = new File(dirName);
-        this.expectedEx.expect(LoaderException.class);
-        this.expectedEx.expectMessage(MISSING_FOLDER_MESSAGE_PREFIX + dirName);
-    }
-
     @Test
     public void nullFolderPassed() throws LoaderException {
+        givenILoadTheContentsOfDirectory(null);
         expectNullPointerException();
-        this.underTest = new IscatterLoaderImpl(null);
+        whenICallIscatterLoader();
     }
 
     @Test
@@ -101,13 +77,7 @@ public class IscatterLoaderImplTest {
     @Test
     public void parentFolderDoesNotExist() throws LoaderException {
         expectLoaderExceptionWithMessage(MISSING_FOLDER_MESSAGE_PREFIX + "doesNotExist");
-        givenILoadTheContentsOfDirectoryDoesNotExist();
-        whenICallIscatterLoader();
-    }
-
-    @Test
-    public void parentFolderExists() throws LoaderException {
-        givenILoadTheContentsOfDirectory("simpleGraph");
+        givenILoadTheContentsOfADirectoryWhichDoesNotExist();
         whenICallIscatterLoader();
     }
 
@@ -125,21 +95,46 @@ public class IscatterLoaderImplTest {
         whenICallIscatterLoader();
     }
 
-    @Before
-    public void setup() {
-        this.classLoader = getClass().getClassLoader();
-    }
-
     @Test
     public void sunnyDayScenario() throws LoaderException {
         givenILoadTheContentsOfDirectory("simpleGraph");
         whenICallIscatterLoader();
-        GraphData graphData = this.underTest.getGraph();
-        assertEquals(12, graphData.getDataRecordCount());
-        assertEquals(3, graphData.getSchemaAttributeCount());
+        assertEquals(12, this.graphData.getDataRecordCount());
+        assertEquals(3, this.graphData.getSchemaAttributeCount());
+        for (Record record : this.graphData.getRecords()) {
+            assertEquals(2, record.getValues().size());
+        }
     }
 
     private void whenICallIscatterLoader() throws LoaderException {
-        this.underTest = new IscatterLoaderImpl(this.parentDir);
+        this.underTest = new IscatterLoaderImpl();
+        this.graphData = this.underTest.getGraph(this.parentDir);
     }
+
+    private void expectLoaderExceptionWithMessage(String message) {
+        this.expectedEx.expect(LoaderException.class);
+        this.expectedEx.expectMessage(message);
+    }
+
+    private void expectNullPointerException() {
+        this.expectedEx.expect(NullPointerException.class);
+    }
+
+    private void givenILoadTheContentsOfDirectory(String dirName) {
+        try {
+            this.parentDir = new File(this.classLoader.getResource(dirName).getFile());
+        } catch (NullPointerException e) {
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("The file doesn't exist: " + dirName);
+            }
+        }
+    }
+
+    private void givenILoadTheContentsOfADirectoryWhichDoesNotExist() {
+        String dirName = "doesNotExist";
+        this.parentDir = new File(dirName);
+        this.expectedEx.expect(LoaderException.class);
+        this.expectedEx.expectMessage(MISSING_FOLDER_MESSAGE_PREFIX + dirName);
+    }
+
 }
