@@ -16,6 +16,8 @@ public class GraphModelImpl implements GraphModel {
 
     private String title;
 
+    private boolean collated = false;
+
     public GraphModelImpl(GraphData graphData) throws SegmentCategoryNotFoundException {
         this.graphSegments = new SegmentationServiceImpl().segment(graphData);
         this.labels = graphData.getHeader();
@@ -50,7 +52,11 @@ public class GraphModelImpl implements GraphModel {
     public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append("\n");
-        builder.append("***************GRAPH MODEL OBJECT (SEGMENTS)***************").append("\n");
+        if (this.isCollated()) {
+            builder.append("*********GRAPH MODEL OBJECT (COLLATED SEGMENTS)*********").append("\n");
+        } else {
+            builder.append("*********GRAPH MODEL OBJECT (SEGMENTS)*********").append("\n");
+        }
         builder.append("Title: ").append(this.getTitle()).append("\n");
         builder.append("Labels: ").append(this.getLabels()).append("\n");
         builder.append("Segments: ").append("\n");
@@ -74,7 +80,6 @@ public class GraphModelImpl implements GraphModel {
 
     @Override
     public void append(GraphSegment segment) {
-
         this.graphSegments.add(segment);
     }
 
@@ -88,4 +93,13 @@ public class GraphModelImpl implements GraphModel {
         this.title = title;
     }
 
+    @Override
+    public boolean isCollated() {
+        return this.collated;
+    }
+
+    @Override
+    public void setCollated(boolean collated) {
+        this.collated = collated;
+    }
 }

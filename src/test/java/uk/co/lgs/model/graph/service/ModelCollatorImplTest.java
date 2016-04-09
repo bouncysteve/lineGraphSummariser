@@ -48,6 +48,7 @@ public class ModelCollatorImplTest extends AbstractTest {
         whenTheModelIsCollated();
         thenTheModelHasSegments(Arrays.asList(GraphSegmentCategory.NEGATIVE_NEGATIVE));
         andTheLengthsOfTheSegmentsAre(Arrays.asList(2));
+        andTheModelSaysItIsCollated(true);
         // TODO: handle intersections
     }
 
@@ -87,5 +88,9 @@ public class ModelCollatorImplTest extends AbstractTest {
         for (GraphSegment segment : this.outputGraphModel.getGraphSegments()) {
             assertEquals(expectedSegmentLengths.iterator().next().intValue(), segment.getLength());
         }
+    }
+
+    private void andTheModelSaysItIsCollated(boolean expectedCollatedStatus) {
+        assertEquals(expectedCollatedStatus, this.outputGraphModel.isCollated());
     }
 }

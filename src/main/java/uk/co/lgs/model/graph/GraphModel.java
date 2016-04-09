@@ -21,4 +21,8 @@ public interface GraphModel {
     void setTitle(String title);
 
     int getLength();
+
+    boolean isCollated();
+
+    void setCollated(boolean collated);
 }

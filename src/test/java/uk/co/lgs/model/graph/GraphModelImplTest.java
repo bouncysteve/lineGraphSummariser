@@ -48,6 +48,7 @@ public class GraphModelImplTest extends AbstractTest {
         whenTheGraphModelIsCreated();
         thenItWillContainThisManySegments(2);
         thenItWillHaveLength(2);
+        thenItIsCollated(false);
     }
 
     @Test
@@ -57,11 +58,7 @@ public class GraphModelImplTest extends AbstractTest {
         whenASegmentIsAppendedWithLength(1);
         thenItWillContainThisManySegments(3);
         thenItWillHaveLength(3);
-    }
-
-    private void whenASegmentIsAppendedWithLength(int length) {
-        when(this.mockGraphSegment.getLength()).thenReturn(length);
-        this.underTest.append(this.mockGraphSegment);
+        thenItIsCollated(false);
     }
 
     @Test
@@ -71,6 +68,12 @@ public class GraphModelImplTest extends AbstractTest {
         whenASegmentIsAppendedWithLength(2);
         thenItWillContainThisManySegments(3);
         thenItWillHaveLength(4);
+        thenItIsCollated(false);
+    }
+
+    private void whenASegmentIsAppendedWithLength(int length) {
+        when(this.mockGraphSegment.getLength()).thenReturn(length);
+        this.underTest.append(this.mockGraphSegment);
     }
 
     private void thenItWillHaveLength(int i) {
@@ -91,4 +94,9 @@ public class GraphModelImplTest extends AbstractTest {
     private void thenItWillContainThisManySegments(int i) {
         assertEquals(i, this.underTest.getSegmentCount());
     }
+
+    private void thenItIsCollated(boolean collated) {
+        assertEquals(collated, this.underTest.isCollated());
+    }
+
 }
