@@ -3,6 +3,7 @@ apply plugin: 'eclipse'
 
 repositories {
     jcenter()
+    mavenCentral()
 }
 
 dependencies {
@@ -11,7 +12,8 @@ dependencies {
         'org.apache.commons:commons-lang3:3.+',
         'org.apache.commons:commons-csv:1.+',
         'org.apache.commons:commons-math3:3+',
-        'org.springframework:spring-context:4.+'
+        'org.springframework:spring-context:4.+',
+        'uk.ac.abdn:SimpleNLG:4.+'
     )
 
     testCompile (
