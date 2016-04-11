@@ -97,7 +97,7 @@ public class GraphDataImpl implements GraphData {
         builder.append("\n");
         builder.append("***************GRAPH DOMAIN OBJECT (RAW DATA)***************").append("\n");
         builder.append("Title: ").append(this.getTitle()).append("\n");
-        builder.append("Series: ").append(this.getSeriesCount()).append("\n");
+        builder.append("Series Count: ").append(this.getSeriesCount()).append("\n");
         builder.append("Header: ").append(this.getHeader()).append("\n");
         builder.append("Records: ").append("\n");
         for (Record record : this.records) {
