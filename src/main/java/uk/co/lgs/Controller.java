@@ -16,6 +16,7 @@ import uk.co.lgs.model.graph.GraphModelImpl;
 import uk.co.lgs.model.graph.collator.exception.CollatorException;
 import uk.co.lgs.model.graph.service.ModelCollator;
 import uk.co.lgs.model.segment.exception.SegmentCategoryNotFoundException;
+import uk.co.lgs.text.service.TextSummaryService;
 
 @Configuration
 @ComponentScan
@@ -42,6 +43,10 @@ public class Controller {
 
         GraphModel model = new GraphModelImpl(graphData);
         System.out.print(model.toString());
+
+        TextSummaryService graphSummariser = context.getBean(TextSummaryService.class);
+        String graphSummary = graphSummariser.getSummary(model);
+        System.out.print(graphSummary);
 
         ModelCollator collator = context.getBean(ModelCollator.class);
         GraphModel collectedModel = collator.collate(model);
