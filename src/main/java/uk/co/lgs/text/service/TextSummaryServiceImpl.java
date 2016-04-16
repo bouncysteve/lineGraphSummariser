@@ -31,6 +31,24 @@ public class TextSummaryServiceImpl implements TextSummaryService {
     VPPhraseSpec show = nlgFactory.createVerbPhrase("show");
     NPPhraseSpec title = nlgFactory.createNounPhrase("title");
 
+    /*
+     * NLGElement getCannedSentence() { this.subject.addModifier("old");
+     * this.p.setSubject(this.subject);
+     * 
+     * this.verb.addPreModifier("carefully");// Adverb phrase, passed as a //
+     * string this.p.setVerb(this.verb);
+     * 
+     * this.p.setObject(this.object);
+     * 
+     * this.pp.addComplement(this.target); this.pp.setPreposition("for");
+     * this.p.addComplement(this.pp);
+     * 
+     * this.p.addComplement("despite the earliness of the hour"); //
+     * Prepositional // phrase, // string NLGElement s1 =
+     * nlgFactory.createSentence("Steve likes coffee"); // System.out.println(
+     * "1: " + realiser.realiseSentence(s1)); return s1; }
+     */
+
     List<DocumentElement> sentences = new ArrayList<DocumentElement>();
 
     @Override
@@ -39,12 +57,15 @@ public class TextSummaryServiceImpl implements TextSummaryService {
         if (null != title) {
             this.sentences.add(nlgFactory.createSentence(title));
         }
-        this.sentences.add(nlgFactory.createSentence((this.getLabelsAndTimeScale(model))));
+        SPhraseSpec labels = getLabelsAndTimeScale(model);
+        if (null != labels) {
+            this.sentences.add(nlgFactory.createSentence(labels));
+        }
         List<DocumentElement> segmentSummaries = getSegmentSummaries(model);
         this.sentences.addAll(segmentSummaries);
         DocumentElement par1 = nlgFactory.createParagraph(this.sentences);
 
-        return realiser.realise(par1).getRealisation();
+        return realiser.realise(par1).getRealisation().trim();
     }
 
     protected List<DocumentElement> getSegmentSummaries(GraphModel model) {
@@ -61,7 +82,6 @@ public class TextSummaryServiceImpl implements TextSummaryService {
     }
 
     protected SPhraseSpec getTitle(GraphModel model) {
-
         if (StringUtils.isNotEmpty(model.getTitle())) {
             return nlgFactory.createClause(this.graph, this.call, model.getTitle());
         }
@@ -82,10 +102,13 @@ public class TextSummaryServiceImpl implements TextSummaryService {
         PPPhraseSpec timeRage = nlgFactory.createPrepositionPhrase();
         timeRage.setPreposition("between");
         List<GraphSegment> graphSegments = model.getGraphSegments();
-        timeRage.addComplement(graphSegments.get(0).getStartTime());
-        timeRage.addComplement(graphSegments.get(graphSegments.size() - 1).getEndTime());
-        graphShowsSeries.addComplement(timeRage);
-        return graphShowsSeries;
+        if (!graphSegments.isEmpty()) {
+            timeRage.addComplement(graphSegments.get(0).getStartTime());
+            timeRage.addComplement(graphSegments.get(graphSegments.size() - 1).getEndTime());
+            graphShowsSeries.addComplement(timeRage);
+            return graphShowsSeries;
+        }
+        return null;
     }
 
 }
