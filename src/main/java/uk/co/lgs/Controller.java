@@ -3,7 +3,7 @@ package uk.co.lgs;
 import java.io.File;
 import java.util.Scanner;
 
-import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -16,7 +16,7 @@ import uk.co.lgs.model.graph.GraphModelImpl;
 import uk.co.lgs.model.graph.collator.exception.CollatorException;
 import uk.co.lgs.model.graph.service.ModelCollator;
 import uk.co.lgs.model.segment.exception.SegmentCategoryNotFoundException;
-import uk.co.lgs.text.service.TextSummaryService;
+import uk.co.lgs.text.service.graph.GraphSummaryService;
 
 @Configuration
 @ComponentScan
@@ -35,21 +35,24 @@ public class Controller {
             parentDir = new File(directory);
         }
 
-        ApplicationContext context = new AnnotationConfigApplicationContext(Controller.class);
-        Loader loader = context.getBean(Loader.class);
-        GraphData graphData = loader.getGraph(parentDir);
+        try (ConfigurableApplicationContext context = new AnnotationConfigApplicationContext(Controller.class)) {
 
-        System.out.print(graphData.toString());
+            // *************Domain (data) ***************************//
+            Loader loader = context.getBean(Loader.class);
+            GraphData graphData = loader.getGraph(parentDir);
+            System.out.print(graphData.toString());
 
-        GraphModel model = new GraphModelImpl(graphData);
-        System.out.print(model.toString());
+            // *************Model ***************************//
+            GraphModel model = new GraphModelImpl(graphData);
+            System.out.print(model.toString());
+            GraphSummaryService graphSummariser = context.getBean(GraphSummaryService.class);
+            System.out.print(graphSummariser.getSummary(model));
 
-        TextSummaryService graphSummariser = context.getBean(TextSummaryService.class);
-        String graphSummary = graphSummariser.getSummary(model);
-        System.out.print(graphSummary);
-
-        ModelCollator collator = context.getBean(ModelCollator.class);
-        GraphModel collectedModel = collator.collate(model);
-        System.out.print(collectedModel.toString());
+            // *************Collated Model ***************************//
+            ModelCollator collator = context.getBean(ModelCollator.class);
+            GraphModel collatedModel = collator.collate(model);
+            System.out.print(collatedModel.toString());
+            System.out.print(graphSummariser.getSummary(collatedModel));
+        }
     }
 }

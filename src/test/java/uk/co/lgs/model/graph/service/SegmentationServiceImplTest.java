@@ -34,6 +34,7 @@ public class SegmentationServiceImplTest extends AbstractTest {
     public void setup() {
         this.underTest = new SegmentationServiceImpl();
         this.records = new ArrayList<Record>();
+        when(this.mockGraphData.getHeader()).thenReturn(Arrays.asList(new String[] { "time", "series1", "series2" }));
     }
 
     @Test

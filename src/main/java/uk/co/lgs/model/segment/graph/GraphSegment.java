@@ -1,6 +1,7 @@
 package uk.co.lgs.model.segment.graph;
 
 import java.text.DecimalFormat;
+import java.util.List;
 
 import uk.co.lgs.model.segment.exception.SegmentAppendException;
 import uk.co.lgs.model.segment.exception.SegmentCategoryNotFoundException;
@@ -32,10 +33,10 @@ public interface GraphSegment {
 
     GraphSegment append(GraphSegment newSegment) throws SegmentCategoryNotFoundException, SegmentAppendException;
 
-    SeriesSegment getFirstSeriesSegment();
-
-    SeriesSegment getSecondSeriesSegment();
+    SeriesSegment getSeriesSegment(int index);
 
     int getLength();
+
+    List<SeriesSegment> getSeriesSegments();
 
 }

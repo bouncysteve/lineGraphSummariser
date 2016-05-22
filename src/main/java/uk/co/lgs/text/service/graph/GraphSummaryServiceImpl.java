@@ -1,9 +1,10 @@
-package uk.co.lgs.text.service;
+package uk.co.lgs.text.service.graph;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.codehaus.plexus.util.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import simplenlg.framework.CoordinatedPhraseElement;
@@ -17,19 +18,23 @@ import simplenlg.phrasespec.VPPhraseSpec;
 import simplenlg.realiser.english.Realiser;
 import uk.co.lgs.model.graph.GraphModel;
 import uk.co.lgs.model.segment.graph.GraphSegment;
+import uk.co.lgs.text.service.segment.graph.GraphSegmentSummaryService;
 
 @Component
-public class TextSummaryServiceImpl implements TextSummaryService {
+public class GraphSummaryServiceImpl implements GraphSummaryService {
 
     private static Lexicon lexicon = Lexicon.getDefaultLexicon();
     private static NLGFactory nlgFactory = new NLGFactory(lexicon);
     private static Realiser realiser = new Realiser(lexicon);
 
-    NPPhraseSpec graph = nlgFactory.createNounPhrase("this graph");
+    @Autowired
+    private GraphSegmentSummaryService graphSegmentSummaryService;
 
-    VPPhraseSpec call = nlgFactory.createVerbPhrase("is called");
-    VPPhraseSpec show = nlgFactory.createVerbPhrase("show");
-    NPPhraseSpec title = nlgFactory.createNounPhrase("title");
+    private NPPhraseSpec graph = nlgFactory.createNounPhrase("this graph");
+
+    private VPPhraseSpec call = nlgFactory.createVerbPhrase("is called");
+    private VPPhraseSpec show = nlgFactory.createVerbPhrase("show");
+    private NPPhraseSpec title = nlgFactory.createNounPhrase("title");
 
     /*
      * NLGElement getCannedSentence() { this.subject.addModifier("old");
@@ -71,14 +76,9 @@ public class TextSummaryServiceImpl implements TextSummaryService {
     protected List<DocumentElement> getSegmentSummaries(GraphModel model) {
         List<DocumentElement> segmentSummaries = new ArrayList<DocumentElement>();
         for (GraphSegment graphSegment : model.getGraphSegments()) {
-            segmentSummaries.add(summariseSegment(graphSegment));
+            segmentSummaries.add(this.graphSegmentSummaryService.getSummary(graphSegment));
         }
         return segmentSummaries;
-    }
-
-    protected DocumentElement summariseSegment(GraphSegment graphSegment) {
-        // TODO Auto-generated method stub
-        return null;
     }
 
     protected SPhraseSpec getTitle(GraphModel model) {
@@ -110,5 +110,4 @@ public class TextSummaryServiceImpl implements TextSummaryService {
         }
         return null;
     }
-
 }

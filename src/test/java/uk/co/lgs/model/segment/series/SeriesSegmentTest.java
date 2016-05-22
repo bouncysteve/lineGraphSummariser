@@ -21,6 +21,8 @@ public class SeriesSegmentTest extends AbstractTest {
 
     private static final String END_TIME = "2015";
 
+    private static final String SERIES_LABEL = "Sales of mushrooms";
+
     private Point firstValue;
     private Point secondValue;
 
@@ -32,46 +34,56 @@ public class SeriesSegmentTest extends AbstractTest {
 
     @Test
     public void testZeroGradient() {
-        givenASegmentWithStartAndEndValues(LOW_VALUE, LOW_VALUE);
+        givenASegmentWithStartAndEndValues(LOW_VALUE, LOW_VALUE, SERIES_LABEL);
         thenTheGradientShouldEqualZero();
         thenTheSegmentLengthShouldBe(1);
         thenTheStartValueShouldEqual(LOW_VALUE);
         thenTheEndValueShouldEqual(LOW_VALUE);
+        thenTheSeriesShouldBeCalled(SERIES_LABEL);
     }
 
     @Test
     public void testPositiveGradient() {
-        givenASegmentWithStartAndEndValues(LOW_VALUE, HIGH_VALUE);
+        givenASegmentWithStartAndEndValues(LOW_VALUE, HIGH_VALUE, SERIES_LABEL);
         thenTheGradientShouldBePositive();
         thenTheSegmentLengthShouldBe(1);
         thenTheStartValueShouldEqual(LOW_VALUE);
         thenTheEndValueShouldEqual(HIGH_VALUE);
+        thenTheSeriesShouldBeCalled(SERIES_LABEL);
     }
 
     @Test
     public void testNegativeGradient() {
-        givenASegmentWithStartAndEndValues(HIGH_VALUE, LOW_VALUE);
+        givenASegmentWithStartAndEndValues(HIGH_VALUE, LOW_VALUE, SERIES_LABEL);
         thenTheGradientShouldBeNegative();
         thenTheSegmentLengthShouldBe(1);
         thenTheStartValueShouldEqual(HIGH_VALUE);
         thenTheEndValueShouldEqual(LOW_VALUE);
+        thenTheSeriesShouldBeCalled(SERIES_LABEL);
     }
 
     @Test
     public void testGetSegmentLengthForCombinedSegments() {
-        givenASegmentWithStartAndEndValuesAndLength(HIGH_VALUE, LOW_VALUE, 2);
+        givenASegmentWithStartAndEndValuesAndLength(HIGH_VALUE, LOW_VALUE, SERIES_LABEL, 2);
         thenTheSegmentLengthShouldBe(2);
         thenTheStartValueShouldEqual(HIGH_VALUE);
         thenTheEndValueShouldEqual(LOW_VALUE);
+        thenTheSeriesShouldBeCalled(SERIES_LABEL);
     }
 
     @Test
     public void testThatTheStartAndEndTimesAreReturned() {
-        givenASegmentWithStartAndEndValues(HIGH_VALUE, LOW_VALUE);
+        givenASegmentWithStartAndEndValues(HIGH_VALUE, LOW_VALUE, SERIES_LABEL);
         thenTheStartTimeShouldBe(START_TIME);
         thenTheEndTimeShouldBe(END_TIME);
         thenTheStartValueShouldEqual(HIGH_VALUE);
         thenTheEndValueShouldEqual(LOW_VALUE);
+        thenTheSeriesShouldBeCalled(SERIES_LABEL);
+    }
+
+    private void thenTheSeriesShouldBeCalled(String seriesLabel) {
+        assertEquals(seriesLabel, this.underTest.getLabel());
+
     }
 
     private void thenTheEndTimeShouldBe(String endTime) {
@@ -98,16 +110,17 @@ public class SeriesSegmentTest extends AbstractTest {
         assertEquals(GradientType.ZERO, this.underTest.getGradientType());
     }
 
-    private void givenASegmentWithStartAndEndValues(double startValue, double endValue) {
+    private void givenASegmentWithStartAndEndValues(double startValue, double endValue, String seriesLabel) {
         this.firstValue = new PointImpl(START_TIME, startValue);
         this.secondValue = new PointImpl(END_TIME, endValue);
-        this.underTest = new SeriesSegmentImpl(this.firstValue, this.secondValue);
+        this.underTest = new SeriesSegmentImpl(this.firstValue, this.secondValue, seriesLabel);
     }
 
-    private void givenASegmentWithStartAndEndValuesAndLength(double startValue, double endValue, int i) {
+    private void givenASegmentWithStartAndEndValuesAndLength(double startValue, double endValue, String seriesLabel,
+            int i) {
         this.firstValue = new PointImpl(START_TIME, startValue);
         this.secondValue = new PointImpl(END_TIME, endValue);
-        this.underTest = new SeriesSegmentImpl(this.firstValue, this.secondValue, i);
+        this.underTest = new SeriesSegmentImpl(this.firstValue, this.secondValue, seriesLabel, i);
     }
 
     private void thenTheStartValueShouldEqual(double expectedValue) {

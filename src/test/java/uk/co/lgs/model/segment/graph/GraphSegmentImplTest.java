@@ -528,6 +528,7 @@ public class GraphSegmentImplTest extends AbstractTest {
         when(this.firstSeriesSegment.append(this.appendFirstSeriesSegment)).thenReturn(this.collatedFirstSeriesSegment);
         when(this.secondSeriesSegment.append(this.appendSecondSeriesSegment))
                 .thenReturn(this.collatedSecondSeriesSegment);
+        when(this.firstSeriesSegment.getSegmentLength()).thenReturn(2);
         this.underTest.append(new GraphSegmentImpl(this.appendFirstSeriesSegment, this.appendSecondSeriesSegment));
     }
 

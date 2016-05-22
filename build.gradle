@@ -1,5 +1,6 @@
 apply plugin: 'java'
 apply plugin: 'eclipse'
+apply plugin: "jacoco"
 
 repositories {
     jcenter()
@@ -18,7 +19,8 @@ dependencies {
 
     testCompile (
         'junit:junit:4.+',
-        'org.mockito:mockito-core:1.+'
+        'org.mockito:mockito-core:1.+',
+        'org.springframework:spring-test:4.+'
     )
 }
 
@@ -31,4 +33,12 @@ jar {
   from {
     configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
   }
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled false
+        csv.enabled false
+        html.destination "${buildDir}/jacocoHtml"
+    }
 }

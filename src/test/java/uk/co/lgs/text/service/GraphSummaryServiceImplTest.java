@@ -8,15 +8,17 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
 import uk.co.lgs.model.graph.GraphModel;
 import uk.co.lgs.model.segment.graph.GraphSegment;
 import uk.co.lgs.test.AbstractTest;
+import uk.co.lgs.text.service.graph.GraphSummaryService;
+import uk.co.lgs.text.service.graph.GraphSummaryServiceImpl;
+import uk.co.lgs.text.service.segment.graph.GraphSegmentSummaryService;
 
-public class TextSummaryServiceImplTest extends AbstractTest {
-
-    private TextSummaryServiceImpl underTest = new TextSummaryServiceImpl();
+public class GraphSummaryServiceImplTest extends AbstractTest {
 
     private static final String GRAPH_TITLE = "I am an important graph";
     private static final String THIS_GRAPH_IS_CALLED = "This graph is called ";
@@ -31,12 +33,18 @@ public class TextSummaryServiceImplTest extends AbstractTest {
     private List<GraphSegment> graphSegments;
 
     @Mock
+    private GraphSegmentSummaryService graphSegmentSummaryService;
+
+    @Mock
     private GraphModel mockGraphModel;
 
     @Mock
     private GraphSegment mockGraphSegment;
 
-    String graphSummary;
+    private String graphSummary;
+
+    @InjectMocks
+    private GraphSummaryService underTest = new GraphSummaryServiceImpl();
 
     @Before
     public void setup() {

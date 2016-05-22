@@ -64,8 +64,8 @@ public class ModelCollatorImplTest extends AbstractTest {
             // hack!
             when(segment.getLength()).thenReturn(2);
             when(segment.getEndTime()).thenReturn(DUMMY_END_TIME);
-            when(segment.getFirstSeriesSegment()).thenReturn(this.firstSeries);
-            when(segment.getSecondSeriesSegment()).thenReturn(this.secondSeries);
+            when(segment.getSeriesSegment(0)).thenReturn(this.firstSeries);
+            when(segment.getSeriesSegment(1)).thenReturn(this.secondSeries);
             when(segment.getStartTime()).thenReturn(DUMMY_START_TIME);
             when(segment.append(any(GraphSegment.class))).thenReturn(segment);
             segments.add(segment);

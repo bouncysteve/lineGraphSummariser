@@ -1,5 +1,8 @@
 package uk.co.lgs.model.segment.graph;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import org.apache.commons.math3.linear.ArrayRealVector;
 import org.apache.commons.math3.linear.DecompositionSolver;
@@ -26,9 +29,7 @@ public class GraphSegmentImpl implements GraphSegment {
 
     private Double valueAtIntersection = null;
 
-    private SeriesSegment firstSeriesSegment;
-
-    private SeriesSegment secondSeriesSegment;
+    private List<SeriesSegment> seriesSegments;
 
     private boolean intersecting;
 
@@ -38,8 +39,9 @@ public class GraphSegmentImpl implements GraphSegment {
 
     public GraphSegmentImpl(SeriesSegment firstSeriesSegment, SeriesSegment secondSeriesSegment)
             throws SegmentCategoryNotFoundException {
-        this.firstSeriesSegment = firstSeriesSegment;
-        this.secondSeriesSegment = secondSeriesSegment;
+        this.seriesSegments = new ArrayList<SeriesSegment>();
+        this.seriesSegments.add(firstSeriesSegment);
+        this.seriesSegments.add(secondSeriesSegment);
         determineIntersectionDetails();
         determineSegmentCategory();
     }
@@ -66,12 +68,12 @@ public class GraphSegmentImpl implements GraphSegment {
 
     @Override
     public String getStartTime() {
-        return this.firstSeriesSegment.getStartTime();
+        return this.seriesSegments.get(0).getStartTime();
     }
 
     @Override
     public String getEndTime() {
-        return this.firstSeriesSegment.getEndTime();
+        return this.seriesSegments.get(0).getEndTime();
     }
 
     @Override
@@ -87,8 +89,10 @@ public class GraphSegmentImpl implements GraphSegment {
         if (GraphSegmentCategory.ZERO_ZERO_INTERSECTING.equals(this.getSegmentCategory())) {
             sb.append("\t");
         }
-        sb.append("S1 gradient: ").append(df.format(this.firstSeriesSegment.getGradient())).append("\t");
-        sb.append("S2 gradient: ").append(df.format(this.secondSeriesSegment.getGradient())).append("\t");
+        for (SeriesSegment seriesSegment : this.seriesSegments) {
+            sb.append("S" + this.seriesSegments.indexOf(seriesSegment) + " gradient: ")
+                    .append(df.format(seriesSegment.getGradient())).append("\t");
+        }
         if (this.isIntersecting()) {
             sb.append("Intersection: ").append(this.getValueAtIntersection()).append("\t");
         }
@@ -98,11 +102,18 @@ public class GraphSegmentImpl implements GraphSegment {
         return sb.toString();
     }
 
+    /**
+     * This will need more work to be able to tell if there are intersections
+     * between n series (n>2)
+     * 
+     */
     private void determineIntersectionDetails() {
-        double firstSeriesStartValue = this.firstSeriesSegment.getStartValue();
-        double firstSeriesEndValue = this.firstSeriesSegment.getEndValue();
-        double secondSeriesStartValue = this.secondSeriesSegment.getStartValue();
-        double secondSeriesEndValue = this.secondSeriesSegment.getEndValue();
+        SeriesSegment segment1 = this.seriesSegments.get(0);
+        SeriesSegment segment2 = this.seriesSegments.get(1);
+        double firstSeriesStartValue = segment1.getStartValue();
+        double firstSeriesEndValue = segment1.getEndValue();
+        double secondSeriesStartValue = segment2.getStartValue();
+        double secondSeriesEndValue = segment2.getEndValue();
 
         /*
          * equation of series: y = mx + c; y = (endValue - startValue)x +
@@ -145,8 +156,8 @@ public class GraphSegmentImpl implements GraphSegment {
     }
 
     private void determineSegmentCategory() throws SegmentCategoryNotFoundException {
-        GradientType firstSeriesGradient = this.firstSeriesSegment.getGradientType();
-        GradientType secondSeriesGradient = this.secondSeriesSegment.getGradientType();
+        GradientType firstSeriesGradient = this.seriesSegments.get(0).getGradientType();
+        GradientType secondSeriesGradient = this.seriesSegments.get(1).getGradientType();
         for (GraphSegmentCategory category : GraphSegmentCategory.values()) {
             if (category.getFirstSeriesGradient().equals(firstSeriesGradient)
                     && category.getSecondSeriesGradient().equals(secondSeriesGradient)
@@ -165,31 +176,30 @@ public class GraphSegmentImpl implements GraphSegment {
             throws SegmentCategoryNotFoundException, SegmentAppendException {
         // check that the type is the same, if not, throw an exception.
         // TODO: handle near same type (same but with/without intersection)
-        if (this.firstSeriesSegment.getGradientType().equals(newSegment.getFirstSeriesSegment().getGradientType())) {
-            this.firstSeriesSegment = this.firstSeriesSegment.append(newSegment.getFirstSeriesSegment());
-        } else
-            throw new SegmentAppendException(APPEND_INVALID_GRADIENT_MESSAGE);
-        if (this.secondSeriesSegment.getGradientType().equals(newSegment.getSecondSeriesSegment().getGradientType())) {
-            this.secondSeriesSegment = this.secondSeriesSegment.append(newSegment.getSecondSeriesSegment());
-        } else
-            throw new SegmentAppendException(APPEND_INVALID_GRADIENT_MESSAGE);
+        for (SeriesSegment seriesSegment : this.seriesSegments) {
+            SeriesSegment segmentToAppend = newSegment.getSeriesSegment(this.seriesSegments.indexOf(seriesSegment));
+            if (seriesSegment.getGradientType().equals(segmentToAppend.getGradientType())) {
+                seriesSegment = seriesSegment.append(segmentToAppend);
+            } else
+                throw new SegmentAppendException(APPEND_INVALID_GRADIENT_MESSAGE);
+        }
         determineIntersectionDetails();
         determineSegmentCategory();
         return this;
     }
 
     @Override
-    public SeriesSegment getFirstSeriesSegment() {
-        return this.firstSeriesSegment;
-    }
-
-    @Override
-    public SeriesSegment getSecondSeriesSegment() {
-        return this.secondSeriesSegment;
-    }
-
-    @Override
     public int getLength() {
-        return this.firstSeriesSegment.getSegmentLength();
+        return this.seriesSegments.get(0).getSegmentLength();
+    }
+
+    @Override
+    public List<SeriesSegment> getSeriesSegments() {
+        return this.seriesSegments;
+    }
+
+    @Override
+    public SeriesSegment getSeriesSegment(int index) {
+        return this.seriesSegments.get(index);
     }
 }

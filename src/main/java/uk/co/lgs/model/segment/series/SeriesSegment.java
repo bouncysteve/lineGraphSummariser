@@ -20,4 +20,6 @@ public interface SeriesSegment {
 
     SeriesSegment append(SeriesSegment segmentToAppend);
 
+    String getLabel();
+
 }

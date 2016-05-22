@@ -40,6 +40,7 @@ public class GraphModelImplTest extends AbstractTest {
     @Before
     public void setup() {
         this.records = new ArrayList<Record>();
+        when(this.mockGraphData.getHeader()).thenReturn(Arrays.asList(new String[] { "time", "series1", "series2" }));
     }
 
     @Test

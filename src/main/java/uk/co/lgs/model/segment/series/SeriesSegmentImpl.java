@@ -22,8 +22,10 @@ public class SeriesSegmentImpl implements SeriesSegment {
 
     private String endTime;
 
-    public SeriesSegmentImpl(Point startPoint, Point endPoint) {
-        this(startPoint, endPoint, 1);
+    private String label;
+
+    public SeriesSegmentImpl(Point startPoint, Point endPoint, String label) {
+        this(startPoint, endPoint, label, 1);
     }
 
     /**
@@ -34,12 +36,13 @@ public class SeriesSegmentImpl implements SeriesSegment {
      * @param endTimeAndValue
      * @param segmentLength
      */
-    public SeriesSegmentImpl(Point startPoint, Point endPoint, int segmentLength) {
+    public SeriesSegmentImpl(Point startPoint, Point endPoint, String label, int segmentLength) {
         this.startTime = startPoint.getTime();
         this.startValue = startPoint.getValue();
         this.endTime = endPoint.getTime();
         this.endValue = endPoint.getValue();
         this.segmentLength = segmentLength;
+        this.label = label;
         this.gradientType = determineGradientType();
     }
 
@@ -98,6 +101,15 @@ public class SeriesSegmentImpl implements SeriesSegment {
     @Override
     public double getGradient() {
         return (this.endValue - this.startValue) / this.segmentLength;
+    }
+
+    @Override
+    public String getLabel() {
+        return this.label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
     }
 
 }
