@@ -16,6 +16,7 @@ bin/
 .settings/
 build/
 .gradle
+!gradle-wrapper.jar
 
 #eclipse
 .project
