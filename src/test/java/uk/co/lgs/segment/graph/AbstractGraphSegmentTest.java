@@ -94,6 +94,46 @@ public abstract class AbstractGraphSegmentTest extends AbstractTest {
             fail("gradient type not specified");
         }
         when(secondSeries.getEndValue()).thenReturn(this.secondSeriesEndValue);
+    }
 
+    private double calculateStartOfSecondSeriesGivenIntersect(SeriesSegment firstSeries, GradientType gradientType,
+            Intersection intersection) {
+        this.secondSeriesStartValue = 0d;
+        switch (intersection) {
+        case NEVER:
+            // Make the start value more than 2 away from both the start and end
+            // value of series 1.
+            this.secondSeriesStartValue = firstSeries.getStartValue() * 2;
+            break;
+        case START:
+            // Same start value as 1
+            this.secondSeriesStartValue = firstSeries.getStartValue();
+            break;
+        case END:
+            // Set the start value so that the end values will be the same
+            this.secondSeriesStartValue = firstSeries.getEndValue() - 2 * gradientType.getMultiplier();
+            break;
+        case WITHIN:
+            switch (firstSeries.getGradientType()) {
+            case ZERO:
+                this.secondSeriesStartValue = firstSeries.getStartValue() - gradientType.getMultiplier();
+                break;
+            case POSITIVE:
+                this.secondSeriesStartValue = firstSeries.getStartValue() + .5 - gradientType.getMultiplier();
+                break;
+            case NEGATIVE:
+                this.secondSeriesStartValue = firstSeries.getStartValue() - .5 - gradientType.getMultiplier();
+                break;
+            default:
+                fail("gradient type not specified");
+                break;
+            }
+            break;
+        default:
+            fail("intersection not specified");
+            break;
+        }
+
+        return this.secondSeriesStartValue;
     }
 }
