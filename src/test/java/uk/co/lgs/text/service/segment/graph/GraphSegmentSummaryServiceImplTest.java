@@ -1,22 +1,16 @@
-package uk.co.lgs.model.segment.graph;
+package uk.co.lgs.text.service.segment.graph;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.when;
-
+import org.junit.Ignore;
 import org.junit.Test;
 
 import uk.co.lgs.model.gradient.GradientType;
-import uk.co.lgs.model.segment.exception.SegmentAppendException;
 import uk.co.lgs.model.segment.exception.SegmentCategoryNotFoundException;
+import uk.co.lgs.model.segment.graph.Intersection;
 import uk.co.lgs.model.segment.graph.category.GraphSegmentCategory;
 import uk.co.lgs.segment.graph.AbstractGraphSegmentTest;
 
-public class GraphSegmentImplTest extends AbstractGraphSegmentTest {
-
-    private GraphSegmentImpl underTest;
+@Ignore
+public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest {
 
     @Test
     public void testZERO_ZERO() throws SegmentCategoryNotFoundException {
@@ -422,104 +416,4 @@ public class GraphSegmentImplTest extends AbstractGraphSegmentTest {
         andTheSeriesAreNotParallel();
         andTheGraphSegmentCategoryIs(GraphSegmentCategory.POSITIVE_NEGATIVE_INTERSECTING);
     }
-
-    @Test
-    public void testAppendThrowsExceptionIfGradientTypeDoesNotMatch()
-            throws SegmentCategoryNotFoundException, SegmentAppendException {
-        givenFirstSeriesWithGradient(this.firstSeriesSegment, GradientType.POSITIVE);
-        givenSecondSeriesWithGradientThatIntersectsAt(this.firstSeriesSegment, this.secondSeriesSegment,
-                GradientType.POSITIVE, Intersection.NEVER);
-        whenTheGraphSegmentIsConstructed();
-        expectAnExceptionOfType(SegmentAppendException.class);
-        whenASegmentWithSeriesGradientsIsAppended(GradientType.POSITIVE, GradientType.NEGATIVE, Intersection.NEVER);
-    }
-
-    @Test
-    public void testAppendMatchingSegment() throws SegmentCategoryNotFoundException, SegmentAppendException {
-        givenFirstSeriesWithGradient(this.firstSeriesSegment, GradientType.POSITIVE);
-        givenSecondSeriesWithGradientThatIntersectsAt(this.firstSeriesSegment, this.secondSeriesSegment,
-                GradientType.POSITIVE, Intersection.NEVER);
-        whenTheGraphSegmentIsConstructed();
-        whenASegmentWithSeriesGradientsIsAppended(GradientType.POSITIVE, GradientType.POSITIVE, Intersection.NEVER);
-        thenTheSegmentHasLength(2);
-        andTheGraphSegmentCategoryIs(GraphSegmentCategory.POSITIVE_POSITIVE);
-        // TODO: more to test here (gradient, end values, intersection, etc)
-    }
-
-    private void thenTheSegmentHasLength(int length) {
-        assertEquals(length, this.underTest.getLength());
-    }
-
-    private void whenASegmentWithSeriesGradientsIsAppended(GradientType series1GradientType,
-            GradientType series2GradientType, Intersection intersection)
-                    throws SegmentCategoryNotFoundException, SegmentAppendException {
-
-        givenFirstSeriesWithGradient(this.appendFirstSeriesSegment, series1GradientType);
-        givenSecondSeriesWithGradientThatIntersectsAt(this.appendFirstSeriesSegment, this.appendSecondSeriesSegment,
-                series2GradientType, intersection);
-        whenTheGraphSegmentIsAppended(series1GradientType, series2GradientType);
-    }
-
-    private void expectAnExceptionOfType(Class clazz) {
-        this.expectedEx.expect(clazz);
-    }
-
-    private void whenTheGraphSegmentIsConstructed() throws SegmentCategoryNotFoundException {
-        this.underTest = new GraphSegmentImpl(this.firstSeriesSegment, this.secondSeriesSegment);
-    }
-
-    private void whenTheGraphSegmentIsAppended(GradientType series1GradientType, GradientType series2GradientType)
-            throws SegmentAppendException, SegmentCategoryNotFoundException {
-        when(this.collatedFirstSeriesSegment.getEndTime()).thenReturn("2");
-        when(this.collatedFirstSeriesSegment.getEndValue()).thenReturn(DUMMY_END_VALUE);
-        when(this.collatedFirstSeriesSegment.getGradientType()).thenReturn(series1GradientType);
-        when(this.collatedFirstSeriesSegment.getSegmentLength()).thenReturn(2);
-        when(this.collatedFirstSeriesSegment.getStartTime()).thenReturn("0");
-        when(this.collatedFirstSeriesSegment.getStartValue()).thenReturn(FIRST_SERIES_START);
-        when(this.collatedFirstSeriesSegment.getGradient()).thenReturn((DUMMY_END_VALUE - FIRST_SERIES_START) / 2);
-
-        when(this.collatedSecondSeriesSegment.getEndTime()).thenReturn("2");
-        when(this.collatedSecondSeriesSegment.getEndValue()).thenReturn(DUMMY_END_VALUE);
-        when(this.collatedSecondSeriesSegment.getGradientType()).thenReturn(series2GradientType);
-        when(this.collatedSecondSeriesSegment.getSegmentLength()).thenReturn(2);
-        when(this.collatedSecondSeriesSegment.getStartTime()).thenReturn("0");
-        when(this.collatedSecondSeriesSegment.getStartValue()).thenReturn(this.secondSeriesStartValue);
-        when(this.collatedSecondSeriesSegment.getGradient()).thenReturn(((DUMMY_END_VALUE - FIRST_SERIES_START) / 2));
-
-        when(this.firstSeriesSegment.append(this.appendFirstSeriesSegment)).thenReturn(this.collatedFirstSeriesSegment);
-        when(this.secondSeriesSegment.append(this.appendSecondSeriesSegment))
-                .thenReturn(this.collatedSecondSeriesSegment);
-        when(this.firstSeriesSegment.getSegmentLength()).thenReturn(2);
-        this.underTest.append(new GraphSegmentImpl(this.appendFirstSeriesSegment, this.appendSecondSeriesSegment));
-    }
-
-    private void thenTheSegmentDoesNotContainIntersection() {
-        assertFalse("Series should not intersect", this.underTest.isIntersecting());
-        andTheValueAtTheIntersectionIs(null);
-    }
-
-    private void thenTheSegmentDoesContainIntersection() {
-        assertTrue("Series don't intersect", this.underTest.isIntersecting());
-    }
-
-    private void andTheValueAtTheIntersectionIs(Double intersectionValue) {
-        if (null == intersectionValue) {
-            assertNull(this.underTest.getValueAtIntersection());
-        } else {
-            assertEquals(intersectionValue, this.underTest.getValueAtIntersection(), 0);
-        }
-    }
-
-    private void andTheSeriesAreParallel() {
-        assertTrue("Series are not parallel", this.underTest.isParallel());
-    }
-
-    private void andTheGraphSegmentCategoryIs(GraphSegmentCategory category) {
-        assertEquals("incorrect segment category returned", category, this.underTest.getSegmentCategory());
-    }
-
-    private void andTheSeriesAreNotParallel() {
-        assertFalse("Series are parallel", this.underTest.isParallel());
-    }
-
 }
