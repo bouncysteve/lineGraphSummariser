@@ -21,3 +21,10 @@ build/
 #eclipse
 .project
 .classpath
+
+#UML diagrams for MSc
+*.png
+*.ucls
+
+#graph corpus for MSc
+src/main/resources/examples
