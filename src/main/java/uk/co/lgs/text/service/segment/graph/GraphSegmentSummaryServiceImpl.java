@@ -1,22 +1,17 @@
 package uk.co.lgs.text.service.segment.graph;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import simplenlg.features.Feature;
-import simplenlg.framework.CoordinatedPhraseElement;
 import simplenlg.framework.DocumentElement;
+import simplenlg.framework.NLGElement;
 import simplenlg.framework.NLGFactory;
 import simplenlg.lexicon.Lexicon;
 import simplenlg.phrasespec.NPPhraseSpec;
+import simplenlg.phrasespec.PPPhraseSpec;
 import simplenlg.phrasespec.SPhraseSpec;
 import simplenlg.realiser.english.Realiser;
-import uk.co.lgs.model.gradient.GradientType;
 import uk.co.lgs.model.segment.graph.GraphSegment;
-import uk.co.lgs.model.segment.series.SeriesSegment;
 import uk.co.lgs.text.service.segment.series.SeriesSegmentSummaryService;
 
 @Component
@@ -31,51 +26,48 @@ public class GraphSegmentSummaryServiceImpl implements GraphSegmentSummaryServic
 
     @Override
     public DocumentElement getSummary(GraphSegment graphSegment) {
+        this.seriesSegmentSummaryService.getSummary(graphSegment.getSeriesSegment(0));
+        this.seriesSegmentSummaryService.getSummary(graphSegment.getSeriesSegment(1));
 
-        nlgFactory.createClause("between", graphSegment.getStartTime(), graphSegment.getEndTime());
-        SeriesSegment firstSeriesSegment = graphSegment.getSeriesSegment(0);
-        SeriesSegment secondSeriesSegment = graphSegment.getSeriesSegment(1);
+        DocumentElement compareSeries = nlgFactory.createSentence();
+        PPPhraseSpec prep_1 = nlgFactory.createPrepositionPhrase();
 
-        firstSeriesSegment.getGradient();
-        secondSeriesSegment.getGradient();
+        NPPhraseSpec startTime = nlgFactory.createNounPhrase(graphSegment.getStartTime());
+        NPPhraseSpec endTime = nlgFactory.createNounPhrase(graphSegment.getEndTime());
+        prep_1.addComplement(startTime);
+        prep_1.setPreposition("between");
+        prep_1.addComplement(endTime);
+        SPhraseSpec clause_1 = nlgFactory.createClause();
+        clause_1.setObject(prep_1);
 
-        SPhraseSpec behaviour = nlgFactory.createClause();
-        behaviour.setSubject(firstSeriesSegment.getLabel());
-        behaviour.setVerb(gradientTypeDescription(firstSeriesSegment.getGradientType()));
-        NPPhraseSpec startValue = nlgFactory.createNounPhrase(firstSeriesSegment.getStartValue() + "");
-        NPPhraseSpec endValue = nlgFactory.createNounPhrase(firstSeriesSegment.getEndValue() + "");
-        CoordinatedPhraseElement valueChange = nlgFactory.createCoordinatedPhrase(startValue, endValue);
-        valueChange.setFeature(Feature.CONJUNCTION, "to");
+        compareSeries.addComponent(clause_1);
 
-        if (graphSegment.isIntersecting()) {
-            graphSegment.getValueAtIntersection();
-        }
-        graphSegment.getSegmentCategory();
-        return null;
-    }
+        // TODO: get actual series descriptions
+        NLGElement descriptionOfSeriesSegments = nlgFactory.createStringElement("nothing happened");
+        compareSeries.addComponent(descriptionOfSeriesSegments);
 
-    protected List<DocumentElement> getSegmentSummaries(GraphSegment graphSegment) {
-        List<DocumentElement> seriesSegmentSummaries = new ArrayList<DocumentElement>();
-        for (SeriesSegment seriesSegment : graphSegment.getSeriesSegments()) {
-            seriesSegmentSummaries.add(this.seriesSegmentSummaryService.getSummary(seriesSegment));
-        }
-        return seriesSegmentSummaries;
-    }
-
-    private String gradientTypeDescription(GradientType gradientType) {
-        String description = "";
-        switch (gradientType) {
-        case NEGATIVE:
-            description = "fall";
-            break;
-        case POSITIVE:
-            description = "rise";
-            break;
-        default:
-            description = "remain constant";
-            break;
-        }
-        return description;
+        /*
+         * SeriesSegment firstSeriesSegment = graphSegment.getSeriesSegment(0);
+         * SeriesSegment secondSeriesSegment = graphSegment.getSeriesSegment(1);
+         * 
+         * firstSeriesSegment.getGradient(); secondSeriesSegment.getGradient();
+         * 
+         * SPhraseSpec behaviour = nlgFactory.createClause();
+         * behaviour.setSubject(firstSeriesSegment.getLabel());
+         * behaviour.setVerb(gradientTypeDescription(firstSeriesSegment.
+         * getGradientType())); NPPhraseSpec startValue =
+         * nlgFactory.createNounPhrase(firstSeriesSegment.getStartValue() + "");
+         * NPPhraseSpec endValue =
+         * nlgFactory.createNounPhrase(firstSeriesSegment.getEndValue() + "");
+         * CoordinatedPhraseElement valueChange =
+         * nlgFactory.createCoordinatedPhrase(startValue, endValue);
+         * valueChange.setFeature(Feature.CONJUNCTION, "to");
+         * 
+         * if (graphSegment.isIntersecting()) {
+         * graphSegment.getValueAtIntersection(); }
+         * graphSegment.getSegmentCategory();
+         */
+        return nlgFactory.createSentence(compareSeries);
     }
 
 }

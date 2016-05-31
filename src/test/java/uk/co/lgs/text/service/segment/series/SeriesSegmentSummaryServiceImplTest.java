@@ -25,6 +25,7 @@ public class SeriesSegmentSummaryServiceImplTest {
     private static double LOW_VALUE = 2.5;
     private static double HIGH_VALUE = 7.0;
     private DocumentElement summary;
+    private String summaryText;
     private SeriesSegmentSummaryService underTest;
     private SeriesSegment seriesSegment;
 
@@ -61,11 +62,12 @@ public class SeriesSegmentSummaryServiceImplTest {
 
     private void whenTheSeriesSegmentIsSummarised() {
         this.summary = this.underTest.getSummary(this.seriesSegment);
+        this.summaryText = realiser.realise(this.summary).toString();
 
     }
 
     private void thenTheSummaryIs(String string) {
-        assertEquals(string, realiser.realise(this.summary).toString());
+        assertEquals(string, this.summaryText);
     }
 
 }
