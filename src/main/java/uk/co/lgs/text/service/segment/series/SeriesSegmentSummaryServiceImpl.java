@@ -1,64 +1,60 @@
 package uk.co.lgs.text.service.segment.series;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.springframework.stereotype.Component;
 
 import simplenlg.features.Feature;
-import simplenlg.features.Form;
-import simplenlg.framework.DocumentElement;
+import simplenlg.features.NumberAgreement;
 import simplenlg.framework.NLGFactory;
+import simplenlg.framework.PhraseElement;
 import simplenlg.lexicon.Lexicon;
-import simplenlg.phrasespec.NPPhraseSpec;
-import simplenlg.phrasespec.PPPhraseSpec;
-import simplenlg.phrasespec.SPhraseSpec;
-import simplenlg.phrasespec.VPPhraseSpec;
-import simplenlg.realiser.english.Realiser;
 import uk.co.lgs.model.gradient.GradientType;
 import uk.co.lgs.model.segment.series.SeriesSegment;
 
 @Component
 public class SeriesSegmentSummaryServiceImpl implements SeriesSegmentSummaryService {
 
-    private static Lexicon lexicon = Lexicon.getDefaultLexicon();
-    private static NLGFactory nlgFactory = new NLGFactory(lexicon);
-    private static Realiser realiser = new Realiser(lexicon);
+    private static final Lexicon lexicon = Lexicon.getDefaultLexicon();
+    private static final NLGFactory NLG_FACTORY = new NLGFactory(lexicon);
+
+    /**
+     * There is no easy way to tell if a label represents a plural term, so
+     * maintaining a list here for now. This is needed for agreement between the
+     * label and the rest of the phrase.
+     */
+    private static final List<String> COMMON_PLURAL_TERMS = Arrays.asList("Sales of");
 
     @Override
-    public DocumentElement getSummary(SeriesSegment seriesSegment) {
+    public PhraseElement getSummary(SeriesSegment seriesSegment) {
+        PhraseElement subject = pluralise(NLG_FACTORY.createNounPhrase(seriesSegment.getLabel()));
 
-        DocumentElement valueChange = nlgFactory.createSentence();
-        NPPhraseSpec series = nlgFactory.createNounPhrase(seriesSegment.getLabel());
-        VPPhraseSpec verb = nlgFactory.createVerbPhrase(gradientTypeDescription(seriesSegment.getGradientType()));
-        verb.setFeature(Feature.FORM, Form.NORMAL);
-        verb.setPlural(true);
-        PPPhraseSpec prep_1 = nlgFactory.createPrepositionPhrase();
-        NPPhraseSpec startValue = nlgFactory.createNounPhrase();
-        startValue.setNoun(seriesSegment.getStartValue() + "");
-        prep_1.addComplement(startValue);
+        PhraseElement gradient = NLG_FACTORY.createClause(subject,
+                gradientTypeDescription(seriesSegment.getGradientType()), null);
+        PhraseElement behaviour = null;
         if (seriesSegment.getGradientType().equals(GradientType.ZERO)) {
-            prep_1.setPreposition("at");
+            behaviour = NLG_FACTORY.createPrepositionPhrase("at", seriesSegment.getStartValue() + "");
         } else {
-            prep_1.setPreposition("from");
-        }
-        SPhraseSpec clause_1 = nlgFactory.createClause();
-        clause_1.setSubject(series);
-        clause_1.setVerbPhrase(verb);
-        clause_1.setObject(prep_1);
-        valueChange.addComponent(clause_1);
-        if (!seriesSegment.getGradientType().equals(GradientType.ZERO)) {
-            PPPhraseSpec prep_2 = nlgFactory.createPrepositionPhrase();
-            NPPhraseSpec object_2 = nlgFactory.createNounPhrase();
-            object_2.setNoun(seriesSegment.getEndValue() + "");
-            prep_2.addComplement(object_2);
-            prep_2.setPreposition("to");
-            SPhraseSpec clause_2 = nlgFactory.createClause();
-            clause_2.setObject(prep_2);
-            valueChange.addComponent(clause_2);
-        }
+            behaviour = NLG_FACTORY.createPrepositionPhrase("from", seriesSegment.getStartValue() + "");
+            behaviour.addPostModifier(NLG_FACTORY.createPrepositionPhrase("to", seriesSegment.getEndValue() + ""));
 
-        return nlgFactory.createSentence(valueChange);
+        }
+        gradient.addPostModifier(behaviour);
+        return gradient;
     }
 
-    private String gradientTypeDescription(GradientType gradientType) {
+    private PhraseElement pluralise(PhraseElement subject) {
+        for (String term : COMMON_PLURAL_TERMS) {
+            if (subject.toString().contains(term)) {
+                subject.setFeature(Feature.NUMBER, NumberAgreement.PLURAL);
+                break;
+            }
+        }
+        return subject;
+    }
+
+    private PhraseElement gradientTypeDescription(GradientType gradientType) {
         String description = "";
         switch (gradientType) {
         case NEGATIVE:
@@ -67,11 +63,12 @@ public class SeriesSegmentSummaryServiceImpl implements SeriesSegmentSummaryServ
         case POSITIVE:
             description = "rise";
             break;
+        case ZERO:
         default:
-            description = "are constant";
+            description = "is constant";
             break;
         }
-        return description;
+        return NLG_FACTORY.createVerbPhrase(description);
     }
 
 }

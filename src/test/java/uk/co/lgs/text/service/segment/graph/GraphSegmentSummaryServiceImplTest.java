@@ -1,13 +1,14 @@
 package uk.co.lgs.text.service.segment.graph;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import simplenlg.framework.DocumentElement;
 import simplenlg.framework.NLGFactory;
@@ -29,6 +30,7 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
     private static double HIGH_VALUE = 7.0;
     private static final String START_TIME = "2012";
     private static final String END_TIME = "2013";
+    private static final Logger LOG = LoggerFactory.getLogger(GraphSegmentSummaryServiceImplTest.class);
     private static Lexicon lexicon = Lexicon.getDefaultLexicon();
     private static NLGFactory nlgFactory = new NLGFactory(lexicon);
     private static Realiser realiser = new Realiser(lexicon);
@@ -48,23 +50,44 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
     /*
      * TODO: 1) Add tests for When the gradient types are the same (and
      * non-zero). First series should be steeper, less steep and parallel to
-     * second series. 2)
+     * second series.
      */
 
     @Before
     public void beforeEachTest() {
+        when(this.firstSeriesSegment.getLabel()).thenReturn(FIRST_SERIES_LABEL);
+        when(this.secondSeriesSegment.getLabel()).thenReturn(SECOND_SERIES_LABEL);
+        when(this.graphSegment.getSeriesSegment(0)).thenReturn(this.firstSeriesSegment);
+        when(this.graphSegment.getSeriesSegment(1)).thenReturn(this.secondSeriesSegment);
         when(this.graphSegment.getStartTime()).thenReturn(START_TIME);
         when(this.graphSegment.getEndTime()).thenReturn(END_TIME);
     }
 
+    /**
+     * "Between start time and end time...
+     * "series 1 remains constant at a value and series 2 remains constant at a (different) value"
+     * .
+     * 
+     * @throws SegmentCategoryNotFoundException
+     */
     @Test
     public void testZERO_ZERO() throws SegmentCategoryNotFoundException {
-        givenFirstSeriesWithGradient(this.firstSeriesSegment, GradientType.ZERO);
-        givenSecondSeriesWithGradientThatIntersectsAt(this.firstSeriesSegment, this.secondSeriesSegment,
-                GradientType.ZERO, Intersection.NEVER);
+        givenFirstSeriesWithConstantValue(LOW_VALUE);
+        givenSecondSeriesWithConstantValue(HIGH_VALUE);
         whenTheGraphSegmentIsSummarised();
         thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-        thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
+        thenTheSummaryDescribesTheSeriesRemainingConstantAtValue(this.firstSeriesSegment, LOW_VALUE);
+        thenTheSummaryDescribesTheSeriesRemainingConstantAtValue(this.secondSeriesSegment, HIGH_VALUE);
+    }
+
+    private void givenSecondSeriesWithConstantValue(double value) {
+        when(this.seriesSegmentSummaryService.getSummary(this.firstSeriesSegment))
+                .thenReturn(nlgFactory.createClause(SECOND_SERIES_LABEL, "is", "constant at " + value));
+    }
+
+    private void givenFirstSeriesWithConstantValue(double value) {
+        when(this.seriesSegmentSummaryService.getSummary(this.secondSeriesSegment))
+                .thenReturn(nlgFactory.createClause(FIRST_SERIES_LABEL, "is", "constant at " + value));
     }
 
     @Test
@@ -90,8 +113,6 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
                 GradientType.ZERO, Intersection.NEVER);
         whenTheGraphSegmentIsSummarised();
         thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-        thenTheSummaryDoesNotMentionAnIntersection();
-        andTheSummaryDoesNotClaimThatTheSeriesAreParallel();
     }
 
     @Test
@@ -101,8 +122,6 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
                 GradientType.POSITIVE, Intersection.NEVER);
         whenTheGraphSegmentIsSummarised();
         thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-        thenTheSummaryDoesNotMentionAnIntersection();
-        andTheSummaryDoesNotClaimThatTheSeriesAreParallel();
     }
 
     @Test
@@ -112,8 +131,6 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
                 GradientType.POSITIVE, Intersection.NEVER);
         whenTheGraphSegmentIsSummarised();
         thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-        thenTheSummaryDoesNotMentionAnIntersection();
-        andTheSummaryDoesNotClaimThatTheSeriesAreParallel();
     }
 
     @Test
@@ -123,9 +140,9 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
                 GradientType.POSITIVE, Intersection.NEVER);
         whenTheGraphSegmentIsSummarised();
         thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-        thenTheSummaryDoesNotMentionAnIntersection();
+
         thenTheSummaryMentionsThatTheSeriesIsSteeper(this.firstSeriesSegment);
-        andTheSummaryDoesNotClaimThatTheSeriesAreParallel();
+
     }
 
     @Test
@@ -135,9 +152,9 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
                 GradientType.POSITIVE, Intersection.NEVER);
         whenTheGraphSegmentIsSummarised();
         thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-        thenTheSummaryDoesNotMentionAnIntersection();
+
         thenTheSummaryMentionsThatTheSeriesIsSteeper(this.secondSeriesSegment);
-        andTheSummaryDoesNotClaimThatTheSeriesAreParallel();
+
     }
 
     @Test
@@ -147,8 +164,7 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
                 GradientType.POSITIVE, Intersection.NEVER);
         whenTheGraphSegmentIsSummarised();
         thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-        thenTheSummaryDoesNotMentionAnIntersection();
-        andTheSummaryNotesThatTheSeriesAreParallel();
+
     }
 
     @Test
@@ -158,8 +174,7 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
                 GradientType.NEGATIVE, Intersection.NEVER);
         whenTheGraphSegmentIsSummarised();
         thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-        thenTheSummaryDoesNotMentionAnIntersection();
-        andTheSummaryDoesNotClaimThatTheSeriesAreParallel();
+
     }
 
     @Test
@@ -169,9 +184,9 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
                 GradientType.NEGATIVE, Intersection.NEVER);
         whenTheGraphSegmentIsSummarised();
         thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-        thenTheSummaryDoesNotMentionAnIntersection();
+
         thenTheSummaryMentionsThatTheSeriesIsSteeper(this.firstSeriesSegment);
-        andTheSummaryDoesNotClaimThatTheSeriesAreParallel();
+
     }
 
     @Test
@@ -181,9 +196,9 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
                 GradientType.NEGATIVE, Intersection.NEVER);
         whenTheGraphSegmentIsSummarised();
         thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-        thenTheSummaryDoesNotMentionAnIntersection();
+
         thenTheSummaryMentionsThatTheSeriesIsSteeper(this.secondSeriesSegment);
-        andTheSummaryDoesNotClaimThatTheSeriesAreParallel();
+
     }
 
     @Test
@@ -193,8 +208,7 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
                 GradientType.NEGATIVE, Intersection.NEVER);
         whenTheGraphSegmentIsSummarised();
         thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-        thenTheSummaryDoesNotMentionAnIntersection();
-        andTheSummaryNotesThatTheSeriesAreParallel();
+
     }
 
     @Test
@@ -204,8 +218,7 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
                 GradientType.NEGATIVE, Intersection.NEVER);
         whenTheGraphSegmentIsSummarised();
         thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-        thenTheSummaryDoesNotMentionAnIntersection();
-        andTheSummaryDoesNotClaimThatTheSeriesAreParallel();
+
     }
 
     @Test
@@ -215,9 +228,8 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
                 GradientType.ZERO, Intersection.START);
         whenTheGraphSegmentIsSummarised();
         thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-        thenTheSummaryMentionsTheIntersection();
-        andTheSummaryMentionsTheValueAtTheIntersection(FIRST_SERIES_START);
-        andTheSummaryNotesThatTheSeriesAreParallel();
+
+        thenTheSummaryMentionsTheSeriesIntersectAtTheStart();
     }
 
     @Test
@@ -227,9 +239,8 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
                 GradientType.ZERO, Intersection.START);
         whenTheGraphSegmentIsSummarised();
         thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-        thenTheSummaryMentionsTheIntersection();
-        andTheSummaryMentionsTheValueAtTheIntersection(FIRST_SERIES_START);
-        andTheSummaryDoesNotClaimThatTheSeriesAreParallel();
+
+        thenTheSummaryMentionsTheSeriesIntersectAtTheStart();
     }
 
     @Test
@@ -239,9 +250,8 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
                 GradientType.ZERO, Intersection.START);
         whenTheGraphSegmentIsSummarised();
         thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-        thenTheSummaryMentionsTheIntersection();
-        andTheSummaryMentionsTheValueAtTheIntersection(FIRST_SERIES_START);
-        andTheSummaryDoesNotClaimThatTheSeriesAreParallel();
+
+        thenTheSummaryMentionsTheSeriesIntersectAtTheStart();
     }
 
     @Test
@@ -251,9 +261,8 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
                 GradientType.POSITIVE, Intersection.START);
         whenTheGraphSegmentIsSummarised();
         thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-        thenTheSummaryMentionsTheIntersection();
-        andTheSummaryMentionsTheValueAtTheIntersection(FIRST_SERIES_START);
-        andTheSummaryDoesNotClaimThatTheSeriesAreParallel();
+
+        thenTheSummaryMentionsTheSeriesIntersectAtTheStart();
     }
 
     @Test
@@ -263,9 +272,8 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
                 GradientType.POSITIVE, Intersection.START);
         whenTheGraphSegmentIsSummarised();
         thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-        thenTheSummaryMentionsTheIntersection();
-        andTheSummaryMentionsTheValueAtTheIntersection(FIRST_SERIES_START);
-        andTheSummaryDoesNotClaimThatTheSeriesAreParallel();
+
+        thenTheSummaryMentionsTheSeriesIntersectAtTheStart();
     }
 
     @Test
@@ -275,9 +283,8 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
                 GradientType.POSITIVE, Intersection.START);
         whenTheGraphSegmentIsSummarised();
         thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-        thenTheSummaryMentionsTheIntersection();
-        andTheSummaryMentionsTheValueAtTheIntersection(FIRST_SERIES_START);
-        andTheSummaryDoesNotClaimThatTheSeriesAreParallel();
+
+        thenTheSummaryMentionsTheSeriesIntersectAtTheStart();
         thenTheSummaryMentionsThatTheSeriesIsSteeper(this.firstSeriesSegment);
     }
 
@@ -288,10 +295,9 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
                 GradientType.POSITIVE, Intersection.START);
         whenTheGraphSegmentIsSummarised();
         thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-        thenTheSummaryMentionsTheIntersection();
+
         thenTheSummaryMentionsThatTheSeriesIsSteeper(this.secondSeriesSegment);
-        andTheSummaryMentionsTheValueAtTheIntersection(FIRST_SERIES_START);
-        andTheSummaryDoesNotClaimThatTheSeriesAreParallel();
+        thenTheSummaryMentionsTheSeriesIntersectAtTheStart();
     }
 
     @Test
@@ -301,9 +307,8 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
                 GradientType.POSITIVE, Intersection.START);
         whenTheGraphSegmentIsSummarised();
         thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-        thenTheSummaryMentionsTheIntersection();
-        andTheSummaryMentionsTheValueAtTheIntersection(FIRST_SERIES_START);
-        andTheSummaryNotesThatTheSeriesAreParallel();
+
+        thenTheSummaryMentionsTheSeriesIntersectAtTheStart();
     }
 
     @Test
@@ -313,9 +318,8 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
                 GradientType.NEGATIVE, Intersection.START);
         whenTheGraphSegmentIsSummarised();
         thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-        thenTheSummaryMentionsTheIntersection();
-        andTheSummaryMentionsTheValueAtTheIntersection(FIRST_SERIES_START);
-        andTheSummaryDoesNotClaimThatTheSeriesAreParallel();
+
+        thenTheSummaryMentionsTheSeriesIntersectAtTheStart();
     }
 
     @Test
@@ -325,10 +329,10 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
                 GradientType.NEGATIVE, Intersection.START);
         whenTheGraphSegmentIsSummarised();
         thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-        thenTheSummaryMentionsTheIntersection();
-        andTheSummaryMentionsTheValueAtTheIntersection(FIRST_SERIES_START);
+
+        thenTheSummaryMentionsTheSeriesIntersectAtTheStart();
         thenTheSummaryMentionsThatTheSeriesIsSteeper(this.firstSeriesSegment);
-        andTheSummaryDoesNotClaimThatTheSeriesAreParallel();
+
     }
 
     @Test
@@ -338,10 +342,10 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
                 GradientType.NEGATIVE, Intersection.START);
         whenTheGraphSegmentIsSummarised();
         thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-        thenTheSummaryMentionsTheIntersection();
-        andTheSummaryMentionsTheValueAtTheIntersection(FIRST_SERIES_START);
+
+        thenTheSummaryMentionsTheSeriesIntersectAtTheStart();
         thenTheSummaryMentionsThatTheSeriesIsSteeper(this.secondSeriesSegment);
-        andTheSummaryDoesNotClaimThatTheSeriesAreParallel();
+
     }
 
     @Test
@@ -351,9 +355,8 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
                 GradientType.NEGATIVE, Intersection.START);
         whenTheGraphSegmentIsSummarised();
         thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-        thenTheSummaryMentionsTheIntersection();
-        andTheSummaryMentionsTheValueAtTheIntersection(FIRST_SERIES_START);
-        andTheSummaryNotesThatTheSeriesAreParallel();
+
+        thenTheSummaryMentionsTheSeriesIntersectAtTheStart();
     }
 
     @Test
@@ -363,9 +366,9 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
                 GradientType.NEGATIVE, Intersection.START);
         whenTheGraphSegmentIsSummarised();
         thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-        thenTheSummaryMentionsTheIntersection();
-        andTheSummaryMentionsTheValueAtTheIntersection(FIRST_SERIES_START);
-        andTheSummaryDoesNotClaimThatTheSeriesAreParallel();
+
+        thenTheSummaryMentionsTheSeriesIntersectAtTheStart();
+
     }
 
     @Test
@@ -375,9 +378,9 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
                 GradientType.ZERO, Intersection.END);
         whenTheGraphSegmentIsSummarised();
         thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-        thenTheSummaryMentionsTheIntersection();
-        andTheSummaryMentionsTheValueAtTheIntersection(FIRST_SERIES_START - 1);
-        andTheSummaryDoesNotClaimThatTheSeriesAreParallel();
+
+        thenTheSummaryMentionsTheSeriesIntersectAtTheEnd();
+
     }
 
     @Test
@@ -387,9 +390,9 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
                 GradientType.ZERO, Intersection.END);
         whenTheGraphSegmentIsSummarised();
         thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-        thenTheSummaryMentionsTheIntersection();
-        andTheSummaryMentionsTheValueAtTheIntersection(FIRST_SERIES_START + 1);
-        andTheSummaryDoesNotClaimThatTheSeriesAreParallel();
+
+        thenTheSummaryMentionsTheSeriesIntersectAtTheEnd();
+
     }
 
     @Test
@@ -399,9 +402,8 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
                 GradientType.POSITIVE, Intersection.END);
         whenTheGraphSegmentIsSummarised();
         thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-        thenTheSummaryMentionsTheIntersection();
-        andTheSummaryMentionsTheValueAtTheIntersection(FIRST_SERIES_START);
-        andTheSummaryDoesNotClaimThatTheSeriesAreParallel();
+
+        thenTheSummaryMentionsTheSeriesIntersectAtTheEnd();
     }
 
     @Test
@@ -411,9 +413,8 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
                 GradientType.POSITIVE, Intersection.END);
         whenTheGraphSegmentIsSummarised();
         thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-        thenTheSummaryMentionsTheIntersection();
-        andTheSummaryMentionsTheValueAtTheIntersection(FIRST_SERIES_START - 1);
-        andTheSummaryDoesNotClaimThatTheSeriesAreParallel();
+
+        thenTheSummaryMentionsTheSeriesIntersectAtTheEnd();
     }
 
     @Test
@@ -423,10 +424,10 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
                 GradientType.POSITIVE, Intersection.END);
         whenTheGraphSegmentIsSummarised();
         thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-        thenTheSummaryMentionsTheIntersection();
-        andTheSummaryMentionsTheValueAtTheIntersection(FIRST_SERIES_START + 1);
+
+        thenTheSummaryMentionsTheSeriesIntersectAtTheEnd();
         thenTheSummaryMentionsThatTheSeriesIsSteeper(this.firstSeriesSegment);
-        andTheSummaryDoesNotClaimThatTheSeriesAreParallel();
+
     }
 
     @Test
@@ -436,10 +437,10 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
                 GradientType.POSITIVE, Intersection.END);
         whenTheGraphSegmentIsSummarised();
         thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-        thenTheSummaryMentionsTheIntersection();
-        andTheSummaryMentionsTheValueAtTheIntersection(FIRST_SERIES_START + 1);
+
+        thenTheSummaryMentionsTheSeriesIntersectAtTheEnd();
         thenTheSummaryMentionsThatTheSeriesIsSteeper(this.secondSeriesSegment);
-        andTheSummaryDoesNotClaimThatTheSeriesAreParallel();
+
     }
 
     @Test
@@ -449,9 +450,9 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
                 GradientType.POSITIVE, Intersection.END);
         whenTheGraphSegmentIsSummarised();
         thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-        thenTheSummaryMentionsTheIntersection();
-        andTheSummaryMentionsTheValueAtTheIntersection(FIRST_SERIES_START + 1);
-        andTheSummaryNotesThatTheSeriesAreParallel();
+
+        thenTheSummaryMentionsTheSeriesIntersectAtTheEnd();
+
     }
 
     @Test
@@ -461,9 +462,8 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
                 GradientType.NEGATIVE, Intersection.END);
         whenTheGraphSegmentIsSummarised();
         thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-        thenTheSummaryMentionsTheIntersection();
-        andTheSummaryMentionsTheValueAtTheIntersection(FIRST_SERIES_START);
-        andTheSummaryDoesNotClaimThatTheSeriesAreParallel();
+
+        thenTheSummaryMentionsTheSeriesIntersectAtTheEnd();
     }
 
     @Test
@@ -473,10 +473,10 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
                 GradientType.NEGATIVE, Intersection.END);
         whenTheGraphSegmentIsSummarised();
         thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-        thenTheSummaryMentionsTheIntersection();
-        andTheSummaryMentionsTheValueAtTheIntersection(FIRST_SERIES_START - 1);
+
+        thenTheSummaryMentionsTheSeriesIntersectAtTheEnd();
         thenTheSummaryMentionsThatTheSeriesIsSteeper(this.firstSeriesSegment);
-        andTheSummaryDoesNotClaimThatTheSeriesAreParallel();
+
     }
 
     @Test
@@ -486,10 +486,10 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
                 GradientType.NEGATIVE, Intersection.END);
         whenTheGraphSegmentIsSummarised();
         thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-        thenTheSummaryMentionsTheIntersection();
-        andTheSummaryMentionsTheValueAtTheIntersection(FIRST_SERIES_START - 1);
+
+        thenTheSummaryMentionsTheSeriesIntersectAtTheEnd();
         thenTheSummaryMentionsThatTheSeriesIsSteeper(this.secondSeriesSegment);
-        andTheSummaryDoesNotClaimThatTheSeriesAreParallel();
+
     }
 
     @Test
@@ -499,9 +499,8 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
                 GradientType.NEGATIVE, Intersection.END);
         whenTheGraphSegmentIsSummarised();
         thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-        thenTheSummaryMentionsTheIntersection();
-        andTheSummaryMentionsTheValueAtTheIntersection(FIRST_SERIES_START - 1);
-        andTheSummaryNotesThatTheSeriesAreParallel();
+
+        thenTheSummaryMentionsTheSeriesIntersectAtTheEnd();
     }
 
     @Test
@@ -511,9 +510,9 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
                 GradientType.NEGATIVE, Intersection.END);
         whenTheGraphSegmentIsSummarised();
         thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-        thenTheSummaryMentionsTheIntersection();
-        andTheSummaryMentionsTheValueAtTheIntersection(FIRST_SERIES_START + 1);
-        andTheSummaryDoesNotClaimThatTheSeriesAreParallel();
+
+        thenTheSummaryMentionsTheSeriesIntersectAtTheEnd();
+
     }
 
     @Test
@@ -523,10 +522,7 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
                 GradientType.ZERO, Intersection.WITHIN);
         whenTheGraphSegmentIsSummarised();
         thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-        thenTheSummaryMentionsTheIntersection();
-        andTheSummaryDoesNotMentionTheValueAtTheIntersection(this.firstSeriesSegment.getStartValue()
-                + (this.firstSeriesSegment.getEndValue() - this.firstSeriesSegment.getStartValue()) / 2);
-        andTheSummaryDoesNotClaimThatTheSeriesAreParallel();
+        thenTheSummaryMentionsTheSeriesIntersectWithin();
     }
 
     @Test
@@ -536,10 +532,7 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
                 GradientType.ZERO, Intersection.WITHIN);
         whenTheGraphSegmentIsSummarised();
         thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-        thenTheSummaryMentionsTheIntersection();
-        andTheSummaryDoesNotMentionTheValueAtTheIntersection(this.firstSeriesSegment.getStartValue()
-                + (this.firstSeriesSegment.getEndValue() - this.firstSeriesSegment.getStartValue()) / 2);
-        andTheSummaryDoesNotClaimThatTheSeriesAreParallel();
+        thenTheSummaryMentionsTheSeriesIntersectWithin();
     }
 
     @Test
@@ -549,9 +542,7 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
                 GradientType.POSITIVE, Intersection.WITHIN);
         whenTheGraphSegmentIsSummarised();
         thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-        thenTheSummaryMentionsTheIntersection();
-        andTheSummaryDoesNotMentionTheValueAtTheIntersection(FIRST_SERIES_START);
-        andTheSummaryDoesNotClaimThatTheSeriesAreParallel();
+        thenTheSummaryMentionsTheSeriesIntersectWithin();
     }
 
     @Test
@@ -561,10 +552,7 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
                 GradientType.POSITIVE, Intersection.WITHIN);
         whenTheGraphSegmentIsSummarised();
         thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-        thenTheSummaryMentionsTheIntersection();
-        andTheSummaryDoesNotMentionTheValueAtTheIntersection(this.firstSeriesSegment.getStartValue()
-                + (this.firstSeriesSegment.getEndValue() - this.firstSeriesSegment.getStartValue()) / 2);
-        andTheSummaryDoesNotClaimThatTheSeriesAreParallel();
+        thenTheSummaryMentionsTheSeriesIntersectWithin();
     }
 
     @Test
@@ -574,11 +562,8 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
                 GradientType.POSITIVE, Intersection.WITHIN);
         whenTheGraphSegmentIsSummarised();
         thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-        thenTheSummaryMentionsTheIntersection();
-        andTheSummaryDoesNotMentionTheValueAtTheIntersection(this.firstSeriesSegment.getStartValue()
-                + (this.firstSeriesSegment.getEndValue() - this.firstSeriesSegment.getStartValue()) / 2);
         thenTheSummaryMentionsThatTheSeriesIsSteeper(this.firstSeriesSegment);
-        andTheSummaryDoesNotClaimThatTheSeriesAreParallel();
+        thenTheSummaryMentionsTheSeriesIntersectWithin();
     }
 
     @Test
@@ -588,11 +573,9 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
                 GradientType.POSITIVE, Intersection.WITHIN);
         whenTheGraphSegmentIsSummarised();
         thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-        thenTheSummaryMentionsTheIntersection();
-        andTheSummaryDoesNotMentionTheValueAtTheIntersection(this.firstSeriesSegment.getStartValue()
-                + (this.firstSeriesSegment.getEndValue() - this.firstSeriesSegment.getStartValue()) / 2);
         thenTheSummaryMentionsThatTheSeriesIsSteeper(this.secondSeriesSegment);
-        andTheSummaryDoesNotClaimThatTheSeriesAreParallel();
+        thenTheSummaryMentionsTheSeriesIntersectWithin();
+
     }
 
     @Test
@@ -602,10 +585,7 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
                 GradientType.POSITIVE, Intersection.WITHIN);
         whenTheGraphSegmentIsSummarised();
         thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-        thenTheSummaryMentionsTheIntersection();
-        andTheSummaryDoesNotMentionTheValueAtTheIntersection(this.firstSeriesSegment.getStartValue()
-                + (this.firstSeriesSegment.getEndValue() - this.firstSeriesSegment.getStartValue()) / 2);
-        andTheSummaryNotesThatTheSeriesAreParallel();
+        thenTheSummaryMentionsTheSeriesIntersectWithin();
     }
 
     @Test
@@ -615,9 +595,7 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
                 GradientType.NEGATIVE, Intersection.WITHIN);
         whenTheGraphSegmentIsSummarised();
         thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-        thenTheSummaryMentionsTheIntersection();
-        andTheSummaryDoesNotMentionTheValueAtTheIntersection(FIRST_SERIES_START);
-        andTheSummaryDoesNotClaimThatTheSeriesAreParallel();
+        thenTheSummaryMentionsTheSeriesIntersectWithin();
     }
 
     @Test
@@ -627,11 +605,8 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
                 GradientType.NEGATIVE, Intersection.WITHIN);
         whenTheGraphSegmentIsSummarised();
         thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-        thenTheSummaryMentionsTheIntersection();
-        andTheSummaryDoesNotMentionTheValueAtTheIntersection(this.firstSeriesSegment.getStartValue()
-                + (this.firstSeriesSegment.getEndValue() - this.firstSeriesSegment.getStartValue()) / 2);
         thenTheSummaryMentionsThatTheSeriesIsSteeper(this.firstSeriesSegment);
-        andTheSummaryDoesNotClaimThatTheSeriesAreParallel();
+        thenTheSummaryMentionsTheSeriesIntersectWithin();
     }
 
     @Test
@@ -641,11 +616,8 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
                 GradientType.NEGATIVE, Intersection.WITHIN);
         whenTheGraphSegmentIsSummarised();
         thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-        thenTheSummaryMentionsTheIntersection();
-        andTheSummaryDoesNotMentionTheValueAtTheIntersection(this.firstSeriesSegment.getStartValue()
-                + (this.firstSeriesSegment.getEndValue() - this.firstSeriesSegment.getStartValue()) / 2);
         thenTheSummaryMentionsThatTheSeriesIsSteeper(this.secondSeriesSegment);
-        andTheSummaryDoesNotClaimThatTheSeriesAreParallel();
+        thenTheSummaryMentionsTheSeriesIntersectWithin();
     }
 
     @Test
@@ -655,10 +627,6 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
                 GradientType.NEGATIVE, Intersection.WITHIN);
         whenTheGraphSegmentIsSummarised();
         thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-        thenTheSummaryMentionsTheIntersection();
-        andTheSummaryDoesNotMentionTheValueAtTheIntersection(this.firstSeriesSegment.getStartValue()
-                + (this.firstSeriesSegment.getEndValue() - this.firstSeriesSegment.getStartValue()) / 2);
-        andTheSummaryNotesThatTheSeriesAreParallel();
     }
 
     @Test
@@ -668,53 +636,37 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
                 GradientType.NEGATIVE, Intersection.WITHIN);
         whenTheGraphSegmentIsSummarised();
         thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-        thenTheSummaryMentionsTheIntersection();
-        andTheSummaryDoesNotMentionTheValueAtTheIntersection(this.firstSeriesSegment.getStartValue()
-                + (this.firstSeriesSegment.getEndValue() - this.firstSeriesSegment.getStartValue()) / 2);
-        andTheSummaryDoesNotClaimThatTheSeriesAreParallel();
-    }
-
-    private void thenTheSummaryMentionsThatTheSeriesIsSteeper(SeriesSegment firstSeriesSegment) {
-        // TODO Auto-generated method stub
-
-    }
-
-    private void thenTheSummaryDoesNotMentionAnIntersection() {
-        assertFalse("Should not mention intersections",
-                realiser.realise(this.summary).toString().contains("intersects"));
-    }
-
-    private void andTheSummaryNotesThatTheSeriesAreParallel() {
-        // TODO Auto-generated method stub
-
-    }
-
-    private void andTheSummaryDoesNotClaimThatTheSeriesAreParallel() {
-        // TODO Auto-generated method stub
-
-    }
-
-    private void andTheSummaryDoesNotMentionTheValueAtTheIntersection(double d) {
-        // TODO Auto-generated method stub
-
-    }
-
-    private void andTheSummaryMentionsTheValueAtTheIntersection(double d) {
-        // TODO Auto-generated method stub
-
-    }
-
-    private void thenTheSummaryMentionsTheIntersection() {
-        // TODO Auto-generated method stub
-
+        thenTheSummaryMentionsTheSeriesIntersectWithin();
     }
 
     private void whenTheGraphSegmentIsSummarised() throws SegmentCategoryNotFoundException {
         this.summary = this.underTest.getSummary(this.graphSegment);
         this.summaryText = realiser.realise(this.summary).toString();
+        LOG.debug(this.summaryText);
     }
 
     private void thenTheSummaryStartsByDescribingTheTimescale(String startTime, String endTime) {
-        assertEquals("Between " + startTime + " and " + endTime + " nothing happened.", this.summaryText);
+        assertTrue(this.summaryText.startsWith("Between " + startTime + " and " + endTime));
+    }
+
+    private void thenTheSummaryDescribesTheSeriesRemainingConstantAtValue(SeriesSegment seriesSegment, double value) {
+        assertTrue(this.summaryText.contains(seriesSegment.getLabel() + " is constant at " + value));
+    }
+
+    private void thenTheSummaryMentionsTheSeriesIntersectAtTheStart() {
+        // TODO Auto-generated method stub
+    }
+
+    private void thenTheSummaryMentionsTheSeriesIntersectAtTheEnd() {
+        // TODO Auto-generated method stub
+    }
+
+    private void thenTheSummaryMentionsTheSeriesIntersectWithin() {
+        // TODO Auto-generated method stub
+    }
+
+    private void thenTheSummaryMentionsThatTheSeriesIsSteeper(SeriesSegment firstSeriesSegment) {
+        // TODO Auto-generated method stub
+
     }
 }

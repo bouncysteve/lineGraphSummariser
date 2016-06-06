@@ -1,8 +1,8 @@
 package uk.co.lgs.text.service.segment.series;
 
-import simplenlg.framework.DocumentElement;
+import simplenlg.framework.PhraseElement;
 import uk.co.lgs.model.segment.series.SeriesSegment;
 
 public interface SeriesSegmentSummaryService {
-    DocumentElement getSummary(SeriesSegment seriesSegment);
+    PhraseElement getSummary(SeriesSegment seriesSegment);
 }
