@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/bouncysteve/lineGraphSummariser.svg?branch=master)](https://travis-ci.org/bouncysteve/lineGraphSummariser)
 # lineGraphSummariser
 Eventually will generate a text summary of [a line graph containing two series](https://en.wikipedia.org/wiki/Wikipedia:Size_of_Wikipedia#/media/File:PercentWikipediasGraph.png)
 
