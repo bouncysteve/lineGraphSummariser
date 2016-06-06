@@ -13,6 +13,12 @@ import simplenlg.lexicon.Lexicon;
 import uk.co.lgs.model.gradient.GradientType;
 import uk.co.lgs.model.segment.series.SeriesSegment;
 
+/**
+ * TODO: Incorporate the units into the values.
+ * 
+ * @author bouncysteve
+ *
+ */
 @Component
 public class SeriesSegmentSummaryServiceImpl implements SeriesSegmentSummaryService {
 

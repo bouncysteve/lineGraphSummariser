@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import simplenlg.framework.CoordinatedPhraseElement;
 import simplenlg.framework.DocumentElement;
+import simplenlg.framework.NLGElement;
 import simplenlg.framework.NLGFactory;
 import simplenlg.lexicon.Lexicon;
 import simplenlg.phrasespec.NPPhraseSpec;
@@ -23,54 +24,60 @@ import uk.co.lgs.text.service.segment.graph.GraphSegmentSummaryService;
 @Component
 public class GraphSummaryServiceImpl implements GraphSummaryService {
 
-    private static Lexicon lexicon = Lexicon.getDefaultLexicon();
-    private static NLGFactory nlgFactory = new NLGFactory(lexicon);
-    private static Realiser realiser = new Realiser(lexicon);
+    private static final Lexicon LEXICON = Lexicon.getDefaultLexicon();
+    private static final NLGFactory NLG_FACTORY = new NLGFactory(LEXICON);
+    private static final Realiser REALISER = new Realiser(LEXICON);
+
+    /*
+     * It should be OK for these to be static, but they must not be modified!!!
+     */
+    private static final NPPhraseSpec GRAPH = NLG_FACTORY.createNounPhrase("this graph");
+    private static final VPPhraseSpec CALL = NLG_FACTORY.createVerbPhrase("is called");
+    private static final VPPhraseSpec SHOW = NLG_FACTORY.createVerbPhrase("show");
+    private static final NPPhraseSpec TITLE = NLG_FACTORY.createNounPhrase("title");
 
     @Autowired
     private GraphSegmentSummaryService graphSegmentSummaryService;
 
-    private NPPhraseSpec graph = nlgFactory.createNounPhrase("this graph");
-
-    private VPPhraseSpec call = nlgFactory.createVerbPhrase("is called");
-    private VPPhraseSpec show = nlgFactory.createVerbPhrase("show");
-    private NPPhraseSpec title = nlgFactory.createNounPhrase("title");
-
-    /*
-     * NLGElement getCannedSentence() { this.subject.addModifier("old");
-     * this.p.setSubject(this.subject);
-     * 
-     * this.verb.addPreModifier("carefully");// Adverb phrase, passed as a //
-     * string this.p.setVerb(this.verb);
-     * 
-     * this.p.setObject(this.object);
-     * 
-     * this.pp.addComplement(this.target); this.pp.setPreposition("for");
-     * this.p.addComplement(this.pp);
-     * 
-     * this.p.addComplement("despite the earliness of the hour"); //
-     * Prepositional // phrase, // string NLGElement s1 =
-     * nlgFactory.createSentence("Steve likes coffee"); // System.out.println(
-     * "1: " + realiser.realiseSentence(s1)); return s1; }
-     */
-
-    List<DocumentElement> sentences = new ArrayList<DocumentElement>();
-
     @Override
     public String getSummary(GraphModel model) {
-        SPhraseSpec title = getTitle(model);
-        if (null != title) {
-            this.sentences.add(nlgFactory.createSentence(title));
-        }
+        DocumentElement wholeSummary = NLG_FACTORY.createDocument();
+
+        wholeSummary.addComponent(getIntro(model));
+        wholeSummary.addComponent(getBody(model));
+        wholeSummary.addComponent(getAnalysis(model));
+
+        return REALISER.realise(wholeSummary).getRealisation().trim();
+    }
+
+    /**
+     * Eventually this will generate a final paragraph describing the overall
+     * message of the graph.
+     * 
+     * @param model
+     * @return
+     */
+    private NLGElement getAnalysis(GraphModel model) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    private DocumentElement getIntro(GraphModel model) {
+        DocumentElement intro = NLG_FACTORY.createParagraph();
+        intro.addComponent(getTitle(model));
         SPhraseSpec labels = getLabelsAndTimeScale(model);
         if (null != labels) {
-            this.sentences.add(nlgFactory.createSentence(labels));
+            intro.addComponent(NLG_FACTORY.createSentence(labels));
         }
-        List<DocumentElement> segmentSummaries = getSegmentSummaries(model);
-        this.sentences.addAll(segmentSummaries);
-        DocumentElement par1 = nlgFactory.createParagraph(this.sentences);
+        return intro;
+    }
 
-        return realiser.realise(par1).getRealisation().trim();
+    private DocumentElement getBody(GraphModel model) {
+        DocumentElement body = NLG_FACTORY.createParagraph();
+        for (DocumentElement sentence : getSegmentSummaries(model)) {
+            body.addComponent(sentence);
+        }
+        return body;
     }
 
     protected List<DocumentElement> getSegmentSummaries(GraphModel model) {
@@ -83,13 +90,13 @@ public class GraphSummaryServiceImpl implements GraphSummaryService {
 
     protected SPhraseSpec getTitle(GraphModel model) {
         if (StringUtils.isNotEmpty(model.getTitle())) {
-            return nlgFactory.createClause(this.graph, this.call, model.getTitle());
+            return NLG_FACTORY.createClause(GRAPH, CALL, model.getTitle());
         }
         return null;
     }
 
     protected SPhraseSpec getLabelsAndTimeScale(GraphModel model) {
-        CoordinatedPhraseElement series = nlgFactory.createCoordinatedPhrase();
+        CoordinatedPhraseElement series = NLG_FACTORY.createCoordinatedPhrase();
         String timeLabel = "";
         for (String label : model.getLabels()) {
             if (StringUtils.isEmpty(timeLabel)) {
@@ -98,8 +105,8 @@ public class GraphSummaryServiceImpl implements GraphSummaryService {
                 series.addCoordinate(label);
             }
         }
-        SPhraseSpec graphShowsSeries = nlgFactory.createClause(this.graph, "show", series);
-        PPPhraseSpec timeRage = nlgFactory.createPrepositionPhrase();
+        SPhraseSpec graphShowsSeries = NLG_FACTORY.createClause(GRAPH, "show", series);
+        PPPhraseSpec timeRage = NLG_FACTORY.createPrepositionPhrase();
         timeRage.setPreposition("between");
         List<GraphSegment> graphSegments = model.getGraphSegments();
         if (!graphSegments.isEmpty()) {
