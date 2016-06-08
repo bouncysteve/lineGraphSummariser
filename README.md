@@ -1,14 +1,14 @@
 # lineGraphSummariser [![Build Status](https://travis-ci.org/bouncysteve/lineGraphSummariser.svg?branch=master)](https://travis-ci.org/bouncysteve/lineGraphSummariser)
 
-Eventually will generate a text summary of [a line graph containing two series](https://en.wikipedia.org/wiki/Wikipedia:Size_of_Wikipedia#/media/File:PercentWikipediasGraph.png)
-
-At the moment it outputs:
-
-1. A String representation of the csv file containing the graph data
-2. A String representation of the individual graph segments (including gradients of each segment)
-3. A String representation of collated segments (where segments with the same gradient type (positive/negative/0) are "squished" together
+This program generates a text summary of [a line graph containing two series](https://en.wikipedia.org/wiki/Wikipedia:Size_of_Wikipedia#/media/File:PercentWikipediasGraph.png)
 
 At the moment the graphs must be in [iScatter](http://michel.wermelinger.ws/chezmichel/iscatter/) format, i.e. comprise two csv files, one for the data, and one for the schema.
+
+The program writes two files in the same directory as the original data:
+
+1. "summary.txt", a paragraph containing details about the graph (title, labels, etc.) and a paragraph containing, for subsequent pairs of values, a sentence about the behaviour of both series (rising/falling/constant).
+2. "collatedSummary.txt", as above, but where consecutive segments with the same gradient type (positive/negative/0) are "squished" together.
+
 
 To build:
 
