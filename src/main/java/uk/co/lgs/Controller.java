@@ -70,12 +70,8 @@ public class Controller {
         try {
             targetFile = new File(parentDir, fileName);
             output = new BufferedWriter(new FileWriter(targetFile));
-
             output.write(content);
-
             output.close();
-            System.out.println("File has been written");
-
         } catch (Exception e) {
             System.out.println("Could not create file");
         }

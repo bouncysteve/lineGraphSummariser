@@ -28,3 +28,7 @@ build/
 
 #graph corpus for MSc
 src/main/resources/examples
+
+#generatedSummaries
+summary.txt
+collatedSummary.txt
