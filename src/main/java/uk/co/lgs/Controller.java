@@ -1,6 +1,9 @@
 package uk.co.lgs;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.Writer;
 import java.util.Scanner;
 
 import org.springframework.context.ConfigurableApplicationContext;
@@ -46,13 +49,35 @@ public class Controller {
             GraphModel model = new GraphModelImpl(graphData);
             System.out.print(model.toString());
             GraphSummaryService graphSummariser = context.getBean(GraphSummaryService.class);
-            System.out.print(graphSummariser.getSummary(model));
+            String summary = graphSummariser.getSummary(model);
+            System.out.print(summary);
+            writeToFile(parentDir, "summary.txt", summary);
 
             // *************Collated Model ***************************//
             ModelCollator collator = context.getBean(ModelCollator.class);
             GraphModel collatedModel = collator.collate(model);
             System.out.print(collatedModel.toString());
-            System.out.print(graphSummariser.getSummary(collatedModel));
+            String collatedSummary = graphSummariser.getSummary(collatedModel);
+            System.out.print(collatedSummary);
+
+            writeToFile(parentDir, "collatedSummary.txt", collatedSummary);
+        }
+    }
+
+    private static void writeToFile(File parentDir, String fileName, String content) {
+        File targetFile = null;
+        Writer output = null;
+        try {
+            targetFile = new File(parentDir, fileName);
+            output = new BufferedWriter(new FileWriter(targetFile));
+
+            output.write(content);
+
+            output.close();
+            System.out.println("File has been written");
+
+        } catch (Exception e) {
+            System.out.println("Could not create file");
         }
     }
 }
