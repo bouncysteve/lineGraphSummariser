@@ -111,4 +111,41 @@ public class GraphModelImpl implements GraphModel {
     public void setCollated(boolean collated) {
         this.collated = collated;
     }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((this.graphSegments == null) ? 0 : this.graphSegments.hashCode());
+        result = prime * result + ((this.labels == null) ? 0 : this.labels.hashCode());
+        result = prime * result + ((this.title == null) ? 0 : this.title.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        GraphModelImpl other = (GraphModelImpl) obj;
+        if (this.graphSegments == null) {
+            if (other.graphSegments != null)
+                return false;
+        } else if (!this.graphSegments.equals(other.graphSegments))
+            return false;
+        if (this.labels == null) {
+            if (other.labels != null)
+                return false;
+        } else if (!this.labels.equals(other.labels))
+            return false;
+        if (this.title == null) {
+            if (other.title != null)
+                return false;
+        } else if (!this.title.equals(other.title))
+            return false;
+        return true;
+    }
 }

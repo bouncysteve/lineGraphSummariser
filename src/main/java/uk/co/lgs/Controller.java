@@ -3,9 +3,13 @@ package uk.co.lgs;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.Writer;
+import java.nio.file.Files;
 import java.util.Scanner;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
@@ -24,6 +28,10 @@ import uk.co.lgs.text.service.graph.GraphSummaryService;
 @Configuration
 @ComponentScan
 public class Controller {
+
+    private static final Logger LOG = LoggerFactory.getLogger(Controller.class);
+    private static final String COLLATED_SUMMARY_FILENAME = "collatedSummary.txt";
+    private static final String SUMMARY_FILENAME = "summary.txt";
 
     // TODO: error handling
     public static void main(String[] args) throws LoaderException, SegmentCategoryNotFoundException, CollatorException {
@@ -50,17 +58,27 @@ public class Controller {
             System.out.print(model.toString());
             GraphSummaryService graphSummariser = context.getBean(GraphSummaryService.class);
             String summary = graphSummariser.getSummary(model);
-            System.out.print(summary);
-            writeToFile(parentDir, "summary.txt", summary);
+            System.out.print(summary + "\n" + "\n");
+            writeToFile(parentDir, SUMMARY_FILENAME, summary);
 
             // *************Collated Model ***************************//
             ModelCollator collator = context.getBean(ModelCollator.class);
             GraphModel collatedModel = collator.collate(model);
-            System.out.print(collatedModel.toString());
-            String collatedSummary = graphSummariser.getSummary(collatedModel);
-            System.out.print(collatedSummary);
 
-            writeToFile(parentDir, "collatedSummary.txt", collatedSummary);
+            if (collatedModel.equals(model)) {
+                System.out.println("COLLATION HAS NO EFFECT, NOT WRITING A COLLATED SUMMARY");
+                try {
+                    Files.deleteIfExists(new File(parentDir, COLLATED_SUMMARY_FILENAME).toPath());
+                } catch (IOException e) {
+                    LOG.error("Unable to delete existing collated summary", e);
+                }
+
+            } else {
+                System.out.print(collatedModel.toString());
+                String collatedSummary = graphSummariser.getSummary(collatedModel);
+                System.out.print(collatedSummary + "\n" + "\n");
+                writeToFile(parentDir, COLLATED_SUMMARY_FILENAME, collatedSummary);
+            }
         }
     }
 
