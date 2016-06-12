@@ -9,4 +9,7 @@ public interface Schema {
     IScatterAttribute getAttribute(int position);
 
     List<IScatterAttribute> getAttributes();
+
+    String getDescription(String id);
+
 }

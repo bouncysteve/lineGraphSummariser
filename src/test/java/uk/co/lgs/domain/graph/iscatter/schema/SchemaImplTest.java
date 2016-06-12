@@ -1,6 +1,7 @@
 package uk.co.lgs.domain.graph.iscatter.schema;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -163,6 +164,9 @@ public class SchemaImplTest extends AbstractTest {
         assertEquals(unit, attribute.getUnit());
         assertEquals(type, attribute.getType());
         assertEquals(level, attribute.getLevel());
+        assertEquals(description, this.underTest.getDescription(id));
+        assertNull(this.underTest.getDescription(unit));
+        assertNull(this.underTest.getDescription(null));
     }
 
     private void thenTheSchemaContainsThisManyAttributes(int i) {

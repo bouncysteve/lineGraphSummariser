@@ -32,8 +32,8 @@ public class SchemaImpl implements Schema {
     private void validateHeader(List<String> inputRow) throws SchemaException {
         for (int i = 0; i < this.expectedHeaders.size(); i++) {
             if (!this.expectedHeaders.get(i).equalsIgnoreCase(inputRow.get(i))) {
-                throw new SchemaException("Invalid header, expected: " + this.expectedHeaders.get(i) + " but was : "
-                        + inputRow.get(i));
+                throw new SchemaException(
+                        "Invalid header, expected: " + this.expectedHeaders.get(i) + " but was : " + inputRow.get(i));
             }
         }
     }
@@ -75,4 +75,17 @@ public class SchemaImpl implements Schema {
     public List<IScatterAttribute> getAttributes() {
         return this.attributes;
     }
+
+    @Override
+    public String getDescription(String id) {
+        if (null != id) {
+            for (IScatterAttribute attribute : this.attributes) {
+                if (id.equals(attribute.getId())) {
+                    return attribute.getDescription();
+                }
+            }
+        }
+        return null;
+    }
+
 }

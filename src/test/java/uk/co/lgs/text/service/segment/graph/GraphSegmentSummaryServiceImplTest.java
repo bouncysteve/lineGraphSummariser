@@ -80,16 +80,6 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
         thenTheSummaryDescribesTheSeriesRemainingConstantAtValue(this.secondSeriesSegment, HIGH_VALUE);
     }
 
-    private void givenSecondSeriesWithConstantValue(double value) {
-        when(this.seriesSegmentSummaryService.getSummary(this.firstSeriesSegment))
-                .thenReturn(nlgFactory.createClause(SECOND_SERIES_LABEL, "is", "constant at " + value));
-    }
-
-    private void givenFirstSeriesWithConstantValue(double value) {
-        when(this.seriesSegmentSummaryService.getSummary(this.secondSeriesSegment))
-                .thenReturn(nlgFactory.createClause(FIRST_SERIES_LABEL, "is", "constant at " + value));
-    }
-
     @Test
     public void testNEGATIVE_ZERO() throws SegmentCategoryNotFoundException {
         givenFirstSeriesWithGradient(this.firstSeriesSegment, GradientType.NEGATIVE);
@@ -637,6 +627,16 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
         whenTheGraphSegmentIsSummarised();
         thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
         thenTheSummaryMentionsTheSeriesIntersectWithin();
+    }
+
+    private void givenSecondSeriesWithConstantValue(double value) {
+        when(this.seriesSegmentSummaryService.getSummary(this.firstSeriesSegment))
+                .thenReturn(nlgFactory.createClause(SECOND_SERIES_LABEL, "is", "constant at " + value));
+    }
+
+    private void givenFirstSeriesWithConstantValue(double value) {
+        when(this.seriesSegmentSummaryService.getSummary(this.secondSeriesSegment))
+                .thenReturn(nlgFactory.createClause(FIRST_SERIES_LABEL, "is", "constant at " + value));
     }
 
     private void whenTheGraphSegmentIsSummarised() throws SegmentCategoryNotFoundException {
