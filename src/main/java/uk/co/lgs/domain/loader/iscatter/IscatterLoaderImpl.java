@@ -105,7 +105,7 @@ public class IscatterLoaderImpl implements Loader {
                 row = new ArrayList<String>();
                 java.util.Iterator<String> it = csvRecord.iterator();
                 while (it.hasNext()) {
-                    row.add(it.next());
+                    row.add(it.next().trim());
                 }
                 rows.add(row);
             }
@@ -130,14 +130,14 @@ public class IscatterLoaderImpl implements Loader {
                 if (!gotHeader) {
                     List<String> header = new ArrayList<String>();
                     while (it.hasNext()) {
-                        header.add(it.next());
+                        header.add(it.next().trim());
                     }
                     this.header = header;
                     gotHeader = true;
                 } else {
                     timePoint = it.next();
                     while (it.hasNext()) {
-                        values.add(Double.parseDouble(it.next()));
+                        values.add(Double.parseDouble(it.next().trim()));
                     }
                     records.add(new RecordImpl(timePoint, values));
                 }

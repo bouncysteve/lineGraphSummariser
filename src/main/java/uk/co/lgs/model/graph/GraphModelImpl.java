@@ -33,7 +33,7 @@ public class GraphModelImpl implements GraphModel {
         for (String seriesId : header) {
             String description = "";
             if (null != schema) {
-                description = schema.getDescription(seriesId);
+                description = schema.getDescription(seriesId.toLowerCase());
             }
             if (StringUtils.isNotEmpty(description)) {
                 labels.add(description);
