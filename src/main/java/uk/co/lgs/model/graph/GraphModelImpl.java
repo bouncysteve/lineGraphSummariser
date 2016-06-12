@@ -3,10 +3,7 @@ package uk.co.lgs.model.graph;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
-
 import uk.co.lgs.domain.graph.GraphData;
-import uk.co.lgs.domain.graph.iscatter.schema.Schema;
 import uk.co.lgs.model.graph.service.SegmentationServiceImpl;
 import uk.co.lgs.model.segment.exception.SegmentCategoryNotFoundException;
 import uk.co.lgs.model.segment.graph.GraphSegment;
@@ -24,24 +21,8 @@ public class GraphModelImpl implements GraphModel {
 
     public GraphModelImpl(GraphData graphData) throws SegmentCategoryNotFoundException {
         this.graphSegments = new SegmentationServiceImpl().segment(graphData);
-        this.labels = parseLabels(graphData.getHeader(), graphData.getSchema());
+        this.labels = graphData.getHeader();
         this.title = graphData.getTitle();
-    }
-
-    private List<String> parseLabels(List<String> header, Schema schema) {
-        List<String> labels = new ArrayList<>();
-        for (String seriesId : header) {
-            String description = "";
-            if (null != schema) {
-                description = schema.getDescription(seriesId.toLowerCase());
-            }
-            if (StringUtils.isNotEmpty(description)) {
-                labels.add(description);
-            } else {
-                labels.add(seriesId);
-            }
-        }
-        return labels;
     }
 
     public GraphModelImpl() {

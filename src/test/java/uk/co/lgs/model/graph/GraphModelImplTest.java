@@ -13,7 +13,6 @@ import org.mockito.Mock;
 
 import uk.co.lgs.domain.exception.DomainException;
 import uk.co.lgs.domain.graph.GraphData;
-import uk.co.lgs.domain.graph.iscatter.schema.Schema;
 import uk.co.lgs.domain.record.Record;
 import uk.co.lgs.domain.record.RecordImpl;
 import uk.co.lgs.model.segment.exception.SegmentCategoryNotFoundException;
@@ -34,25 +33,14 @@ public class GraphModelImplTest extends AbstractTest {
     @Mock
     private GraphSegment mockGraphSegment;
 
-    @Mock
-    private Schema mockSchema;
-
     private List<Record> records;
 
     private GraphModel underTest;
 
-    private static final String SERIES_ONE_SCHEMA_DESCRIPTION = "series1Label";
-    private static final String SERIES_TWO_SCHEMA_DESCRIPTION = "series2Label";
-
-    private static final String SERIES_ONE_LABEL = "series1";
-    private static final String SERIES_TWO_LABEL = "series2";
-    private static final String TIME_SERIES_LABEL = "time";
-
     @Before
     public void setup() {
         this.records = new ArrayList<Record>();
-        when(this.mockGraphData.getHeader())
-                .thenReturn(Arrays.asList(new String[] { TIME_SERIES_LABEL, SERIES_ONE_LABEL, SERIES_TWO_LABEL }));
+        when(this.mockGraphData.getHeader()).thenReturn(Arrays.asList(new String[] { "time", "series1", "series2" }));
     }
 
     @Test
@@ -61,18 +49,6 @@ public class GraphModelImplTest extends AbstractTest {
         whenTheGraphModelIsCreated();
         thenItWillContainThisManySegments(2);
         thenItWillHaveLength(2);
-        thenTheseLabelsAreUsed(TIME_SERIES_LABEL, SERIES_ONE_LABEL, SERIES_TWO_LABEL);
-        thenItIsCollated(false);
-    }
-
-    @Test
-    public void testWithDescriptionsInSchema() throws DomainException, SegmentCategoryNotFoundException {
-        givenAGraphWithTwoSeriesAndRecords(3);
-        givenTheSchemaHasDescriptions(SERIES_ONE_SCHEMA_DESCRIPTION, SERIES_TWO_SCHEMA_DESCRIPTION);
-        whenTheGraphModelIsCreated();
-        thenItWillContainThisManySegments(2);
-        thenItWillHaveLength(2);
-        thenTheseLabelsAreUsed(TIME_SERIES_LABEL, SERIES_ONE_SCHEMA_DESCRIPTION, SERIES_TWO_SCHEMA_DESCRIPTION);
         thenItIsCollated(false);
     }
 
@@ -83,7 +59,6 @@ public class GraphModelImplTest extends AbstractTest {
         whenASegmentIsAppendedWithLength(1);
         thenItWillContainThisManySegments(3);
         thenItWillHaveLength(3);
-        thenTheseLabelsAreUsed(TIME_SERIES_LABEL, SERIES_ONE_LABEL, SERIES_TWO_LABEL);
         thenItIsCollated(false);
     }
 
@@ -94,14 +69,7 @@ public class GraphModelImplTest extends AbstractTest {
         whenASegmentIsAppendedWithLength(2);
         thenItWillContainThisManySegments(3);
         thenItWillHaveLength(4);
-        thenTheseLabelsAreUsed(TIME_SERIES_LABEL, SERIES_ONE_LABEL, SERIES_TWO_LABEL);
         thenItIsCollated(false);
-    }
-
-    private void givenTheSchemaHasDescriptions(String seriesOneSchemaDescription, String seriesTwoSchemaDescription) {
-        when(this.mockGraphData.getSchema()).thenReturn(this.mockSchema);
-        when(this.mockSchema.getDescription("series1")).thenReturn(seriesOneSchemaDescription);
-        when(this.mockSchema.getDescription("series2")).thenReturn(seriesTwoSchemaDescription);
     }
 
     private void whenASegmentIsAppendedWithLength(int length) {
@@ -111,12 +79,6 @@ public class GraphModelImplTest extends AbstractTest {
 
     private void thenItWillHaveLength(int i) {
         assertEquals(i, this.underTest.getLength());
-    }
-
-    private void thenTheseLabelsAreUsed(String timeSeriesLabel, String seriesOneLabel, String seriesTwoLabel) {
-        assertEquals(timeSeriesLabel, this.underTest.getLabels().get(0));
-        assertEquals(seriesOneLabel, this.underTest.getLabels().get(1));
-        assertEquals(seriesTwoLabel, this.underTest.getLabels().get(2));
     }
 
     private void givenAGraphWithTwoSeriesAndRecords(int recordCount) throws DomainException {
@@ -137,4 +99,5 @@ public class GraphModelImplTest extends AbstractTest {
     private void thenItIsCollated(boolean collated) {
         assertEquals(collated, this.underTest.isCollated());
     }
+
 }

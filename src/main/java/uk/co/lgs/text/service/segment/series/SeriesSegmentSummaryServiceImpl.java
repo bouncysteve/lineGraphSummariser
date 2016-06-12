@@ -10,6 +10,7 @@ import simplenlg.features.NumberAgreement;
 import simplenlg.framework.NLGFactory;
 import simplenlg.framework.PhraseElement;
 import simplenlg.lexicon.Lexicon;
+import simplenlg.realiser.english.Realiser;
 import uk.co.lgs.model.gradient.GradientType;
 import uk.co.lgs.model.segment.series.SeriesSegment;
 
@@ -24,13 +25,14 @@ public class SeriesSegmentSummaryServiceImpl implements SeriesSegmentSummaryServ
 
     private static final Lexicon lexicon = Lexicon.getDefaultLexicon();
     private static final NLGFactory NLG_FACTORY = new NLGFactory(lexicon);
+    private static Realiser realiser = new Realiser(lexicon);
 
     /**
      * There is no easy way to tell if a label represents a plural term, so
      * maintaining a list here for now. This is needed for agreement between the
      * label and the rest of the phrase.
      */
-    private static final List<String> COMMON_PLURAL_TERMS = Arrays.asList("Sales of");
+    private static final List<String> COMMON_PLURAL_TERMS = Arrays.asList("sales");
 
     @Override
     public PhraseElement getSummary(SeriesSegment seriesSegment) {
@@ -52,7 +54,7 @@ public class SeriesSegmentSummaryServiceImpl implements SeriesSegmentSummaryServ
 
     private PhraseElement pluralise(PhraseElement subject) {
         for (String term : COMMON_PLURAL_TERMS) {
-            if (subject.toString().contains(term)) {
+            if (subject.getHead().toString().toLowerCase().contains(term)) {
                 subject.setFeature(Feature.NUMBER, NumberAgreement.PLURAL);
                 break;
             }

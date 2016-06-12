@@ -1,6 +1,9 @@
 package uk.co.lgs.domain.graph;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
 
 import uk.co.lgs.domain.exception.DomainException;
 import uk.co.lgs.domain.graph.iscatter.schema.Schema;
@@ -31,7 +34,7 @@ public class GraphDataImpl implements GraphData {
 
     public GraphDataImpl(Schema schema, List<String> header, List<Record> records) throws DomainException {
         this.schema = schema;
-        this.header = header;
+        this.header = parseLabels(header, schema);
         this.records = records;
 
         if (null == records || records.size() < 2) {
@@ -106,5 +109,23 @@ public class GraphDataImpl implements GraphData {
         builder.append("RecordCount: ").append(this.getDataRecordCount()).append("\n");
         builder.append("\n");
         return builder.toString();
+    }
+
+    private List<String> parseLabels(List<String> header, Schema schema) {
+        List<String> labels = new ArrayList<>();
+        if (null != header) {
+            for (String seriesId : header) {
+                String description = "";
+                if (null != schema) {
+                    description = schema.getDescription(seriesId.toLowerCase());
+                }
+                if (StringUtils.isNotEmpty(description)) {
+                    labels.add(description);
+                } else {
+                    labels.add(seriesId);
+                }
+            }
+        }
+        return labels;
     }
 }
