@@ -28,7 +28,10 @@ build/
 
 #graph corpus for MSc
 src/main/resources/examples
+summarise*.sh
 
 #generatedSummaries
 summary.txt
 collatedSummary.txt
+
+

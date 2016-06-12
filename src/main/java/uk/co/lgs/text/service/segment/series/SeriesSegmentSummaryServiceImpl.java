@@ -3,6 +3,7 @@ package uk.co.lgs.text.service.segment.series;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.configuration2.Configuration;
 import org.springframework.stereotype.Component;
 
 import simplenlg.features.Feature;
@@ -10,9 +11,9 @@ import simplenlg.features.NumberAgreement;
 import simplenlg.framework.NLGFactory;
 import simplenlg.framework.PhraseElement;
 import simplenlg.lexicon.Lexicon;
-import simplenlg.realiser.english.Realiser;
 import uk.co.lgs.model.gradient.GradientType;
 import uk.co.lgs.model.segment.series.SeriesSegment;
+import uk.co.lgs.text.service.graph.PropertyNames;
 
 /**
  * TODO: Incorporate the units into the values.
@@ -25,7 +26,6 @@ public class SeriesSegmentSummaryServiceImpl implements SeriesSegmentSummaryServ
 
     private static final Lexicon lexicon = Lexicon.getDefaultLexicon();
     private static final NLGFactory NLG_FACTORY = new NLGFactory(lexicon);
-    private static Realiser realiser = new Realiser(lexicon);
 
     /**
      * There is no easy way to tell if a label represents a plural term, so
@@ -35,17 +35,25 @@ public class SeriesSegmentSummaryServiceImpl implements SeriesSegmentSummaryServ
     private static final List<String> COMMON_PLURAL_TERMS = Arrays.asList("sales");
 
     @Override
-    public PhraseElement getSummary(SeriesSegment seriesSegment) {
-        PhraseElement subject = pluralise(NLG_FACTORY.createNounPhrase(seriesSegment.getLabel()));
+    public PhraseElement getSummary(SeriesSegment mainSeriesSegment, SeriesSegment minorSeriesSegment,
+            Configuration config) {
 
-        PhraseElement gradient = NLG_FACTORY.createClause(subject,
-                gradientTypeDescription(seriesSegment.getGradientType()), null);
-        PhraseElement behaviour = null;
-        if (seriesSegment.getGradientType().equals(GradientType.ZERO)) {
-            behaviour = NLG_FACTORY.createPrepositionPhrase("at", seriesSegment.getStartValue() + "");
+        PhraseElement subject1 = pluralise(NLG_FACTORY.createNounPhrase(mainSeriesSegment.getLabel()));
+        Object subject;
+        if (null != config && config.getBoolean(PropertyNames.BOTH_SAME, false)) {
+            subject = NLG_FACTORY.createCoordinatedPhrase(subject1,
+                    pluralise(NLG_FACTORY.createNounPhrase(minorSeriesSegment.getLabel())));
         } else {
-            behaviour = NLG_FACTORY.createPrepositionPhrase("from", seriesSegment.getStartValue() + "");
-            behaviour.addPostModifier(NLG_FACTORY.createPrepositionPhrase("to", seriesSegment.getEndValue() + ""));
+            subject = subject1;
+        }
+        PhraseElement gradient = NLG_FACTORY.createClause(subject,
+                gradientTypeDescription(mainSeriesSegment.getGradientType()), null);
+        PhraseElement behaviour = null;
+        if (mainSeriesSegment.getGradientType().equals(GradientType.ZERO)) {
+            behaviour = NLG_FACTORY.createPrepositionPhrase("at", mainSeriesSegment.getStartValue() + "");
+        } else {
+            behaviour = NLG_FACTORY.createPrepositionPhrase("from", mainSeriesSegment.getStartValue() + "");
+            behaviour.addPostModifier(NLG_FACTORY.createPrepositionPhrase("to", mainSeriesSegment.getEndValue() + ""));
 
         }
         gradient.addPostModifier(behaviour);

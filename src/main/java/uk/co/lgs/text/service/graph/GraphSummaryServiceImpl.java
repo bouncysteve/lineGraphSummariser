@@ -33,8 +33,6 @@ public class GraphSummaryServiceImpl implements GraphSummaryService {
      */
     private static final NPPhraseSpec GRAPH = NLG_FACTORY.createNounPhrase("this graph");
     private static final VPPhraseSpec CALL = NLG_FACTORY.createVerbPhrase("is called");
-    private static final VPPhraseSpec SHOW = NLG_FACTORY.createVerbPhrase("show");
-    private static final NPPhraseSpec TITLE = NLG_FACTORY.createNounPhrase("title");
 
     @Autowired
     private GraphSegmentSummaryService graphSegmentSummaryService;

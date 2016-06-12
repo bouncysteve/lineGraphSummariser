@@ -1,8 +1,11 @@
 package uk.co.lgs.text.service.segment.graph;
 
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.when;
 
+import org.apache.commons.configuration2.Configuration;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -16,7 +19,6 @@ import simplenlg.lexicon.Lexicon;
 import simplenlg.realiser.english.Realiser;
 import uk.co.lgs.model.gradient.GradientType;
 import uk.co.lgs.model.segment.exception.SegmentCategoryNotFoundException;
-import uk.co.lgs.model.segment.graph.GraphSegment;
 import uk.co.lgs.model.segment.graph.Intersection;
 import uk.co.lgs.model.segment.series.SeriesSegment;
 import uk.co.lgs.segment.graph.AbstractGraphSegmentTest;
@@ -37,9 +39,6 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
 
     @Mock
     private SeriesSegmentSummaryService seriesSegmentSummaryService;
-
-    @Mock
-    private GraphSegment graphSegment;
 
     @InjectMocks
     private GraphSegmentSummaryService underTest = new GraphSegmentSummaryServiceImpl();
@@ -474,6 +473,7 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
         givenFirstSeriesWithGradient(this.firstSeriesSegment, GradientType.NEGATIVE);
         givenSecondSeriesWithGradientThatIntersectsAt(this.firstSeriesSegment, this.secondSeriesSegment,
                 GradientType.NEGATIVE, Intersection.END);
+
         whenTheGraphSegmentIsSummarised();
         thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
 
@@ -630,13 +630,15 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
     }
 
     private void givenSecondSeriesWithConstantValue(double value) {
-        when(this.seriesSegmentSummaryService.getSummary(this.firstSeriesSegment))
-                .thenReturn(nlgFactory.createClause(SECOND_SERIES_LABEL, "is", "constant at " + value));
+        when(this.seriesSegmentSummaryService.getSummary(eq(this.firstSeriesSegment), eq(this.secondSeriesSegment),
+                any(Configuration.class)))
+                        .thenReturn(nlgFactory.createClause(SECOND_SERIES_LABEL, "is", "constant at " + value));
     }
 
     private void givenFirstSeriesWithConstantValue(double value) {
-        when(this.seriesSegmentSummaryService.getSummary(this.secondSeriesSegment))
-                .thenReturn(nlgFactory.createClause(FIRST_SERIES_LABEL, "is", "constant at " + value));
+        when(this.seriesSegmentSummaryService.getSummary(eq(this.secondSeriesSegment), eq(this.firstSeriesSegment),
+                any(Configuration.class)))
+                        .thenReturn(nlgFactory.createClause(FIRST_SERIES_LABEL, "is", "constant at " + value));
     }
 
     private void whenTheGraphSegmentIsSummarised() throws SegmentCategoryNotFoundException {
@@ -662,7 +664,7 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
     }
 
     private void thenTheSummaryMentionsTheSeriesIntersectWithin() {
-        // TODO Auto-generated method stub
+        // assertTrue(this.summaryText.contains("intersect"));
     }
 
     private void thenTheSummaryMentionsThatTheSeriesIsSteeper(SeriesSegment firstSeriesSegment) {

@@ -460,7 +460,7 @@ public class GraphSegmentImplTest extends AbstractGraphSegmentTest {
         whenTheGraphSegmentIsAppended(series1GradientType, series2GradientType);
     }
 
-    private void expectAnExceptionOfType(Class clazz) {
+    private void expectAnExceptionOfType(Class<SegmentAppendException> clazz) {
         this.expectedEx.expect(clazz);
     }
 

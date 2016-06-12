@@ -38,9 +38,6 @@ public class Controller {
 
         String directory = args[0];
 
-        /*************** REMOVE ************************/
-        directory = "/home/bouncysteve/Dropbox/T802/Questionnaire/fastFood/";
-
         File parentDir = new File(directory);
         if (!parentDir.exists() || args.length < 1) {
             Scanner scanner = new Scanner(System.in);

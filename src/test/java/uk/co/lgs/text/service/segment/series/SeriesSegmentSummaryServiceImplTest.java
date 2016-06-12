@@ -68,7 +68,7 @@ public class SeriesSegmentSummaryServiceImplTest {
     }
 
     /**
-     * Sales of soup rise from 2.5 to 7.0
+     * sales of soup rise from 2.5 to 7.0
      * 
      */
     @Test
@@ -79,7 +79,7 @@ public class SeriesSegmentSummaryServiceImplTest {
     }
 
     /**
-     * Sales of soup fall from 7.0 to 2.5
+     * sales of soup fall from 7.0 to 2.5
      * 
      */
     @Test
@@ -90,7 +90,7 @@ public class SeriesSegmentSummaryServiceImplTest {
     }
 
     /**
-     * Sales of soup are constant at 7.0
+     * sales of soup are constant at 7.0
      * 
      */
     @Test
@@ -139,7 +139,7 @@ public class SeriesSegmentSummaryServiceImplTest {
     }
 
     private void whenTheSeriesSegmentIsSummarised() {
-        this.summary = this.underTest.getSummary(this.seriesSegment);
+        this.summary = this.underTest.getSummary(this.seriesSegment, null, null);
         this.summaryText = realiser.realise(this.summary).toString();
 
     }
