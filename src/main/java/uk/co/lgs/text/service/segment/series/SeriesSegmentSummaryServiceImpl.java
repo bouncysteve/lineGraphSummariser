@@ -34,6 +34,8 @@ public class SeriesSegmentSummaryServiceImpl implements SeriesSegmentSummaryServ
      * label and the rest of the phrase.
      */
     private static final List<String> COMMON_PLURAL_TERMS = Arrays.asList("sales");
+    private static final List<String> PREFIX = Arrays.asList("£", "$");
+    private static final List<String> NEEDS_PADDING = Arrays.asList("per", "out of");
 
     @Override
     public PhraseElement getSummary(SeriesSegment mainSeriesSegment, SeriesSegment minorSeriesSegment,
@@ -52,15 +54,43 @@ public class SeriesSegmentSummaryServiceImpl implements SeriesSegmentSummaryServ
         PhraseElement behaviour = null;
         if (mainSeriesSegment.getGradientType().equals(GradientType.ZERO)) {
             behaviour = NLG_FACTORY.createPrepositionPhrase("at",
-                    f.format(mainSeriesSegment.getStartValue()) + mainSeriesSegment.getUnits());
+                    formatValueWithUnits(mainSeriesSegment.getStartValue(), mainSeriesSegment.getUnits()));
         } else {
             behaviour = NLG_FACTORY.createPrepositionPhrase("from",
-                    f.format(mainSeriesSegment.getStartValue()) + mainSeriesSegment.getUnits());
+                    formatValueWithUnits(mainSeriesSegment.getStartValue(), mainSeriesSegment.getUnits()));
             behaviour.addPostModifier(NLG_FACTORY.createPrepositionPhrase("to",
-                    f.format(mainSeriesSegment.getEndValue()) + mainSeriesSegment.getUnits()));
+                    formatValueWithUnits(mainSeriesSegment.getEndValue(), mainSeriesSegment.getUnits())));
         }
         gradient.addPostModifier(behaviour);
         return gradient;
+    }
+
+    private String formatValueWithUnits(double value, String units) {
+        String valueString = f.format(value);
+        if (isPrefixable(units)) {
+            valueString = units + valueString;
+        } else {
+            valueString = valueString + (needsLeadingSpace(units) ? " " : "") + units;
+        }
+        return valueString;
+    }
+
+    private boolean needsLeadingSpace(String units) {
+        for (String needsPadding : NEEDS_PADDING) {
+            if (units.toLowerCase().startsWith(needsPadding)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isPrefixable(String units) {
+        for (String prefix : PREFIX) {
+            if (prefix.equals(units)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private PhraseElement pluralise(PhraseElement subject) {
