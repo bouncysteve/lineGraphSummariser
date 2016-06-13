@@ -80,7 +80,7 @@ public class SchemaImpl implements Schema {
     public String getDescription(String id) {
         if (null != id) {
             for (IScatterAttribute attribute : this.attributes) {
-                if (id.equals(attribute.getId())) {
+                if (id.equalsIgnoreCase(attribute.getId())) {
                     return attribute.getDescription();
                 }
             }
@@ -88,4 +88,15 @@ public class SchemaImpl implements Schema {
         return null;
     }
 
+    @Override
+    public String getUnit(String id) {
+        if (null != id) {
+            for (IScatterAttribute attribute : this.attributes) {
+                if (id.equalsIgnoreCase(attribute.getId())) {
+                    return attribute.getUnit();
+                }
+            }
+        }
+        return null;
+    }
 }

@@ -24,6 +24,7 @@ public class SeriesSegmentSummaryServiceImplTest {
     private static final String END_TIME = "2013";
     private static double LOW_VALUE = 2.5;
     private static double HIGH_VALUE = 7.0;
+    private static String HIGH_VALUE_FORMAT = "7";
     private PhraseElement summary;
     private String summaryText;
     private SeriesSegmentSummaryService underTest;
@@ -42,7 +43,7 @@ public class SeriesSegmentSummaryServiceImplTest {
     public void testRisingSeriesPluralLabelUpper() {
         givenASeriesSegment(LOW_VALUE, HIGH_VALUE, PLURAL_SERIES_LABEL_UPPER);
         whenTheSeriesSegmentIsSummarised();
-        thenTheSummaryIs(PLURAL_SERIES_LABEL_UPPER + " rise from " + LOW_VALUE + " to " + HIGH_VALUE);
+        thenTheSummaryIs(PLURAL_SERIES_LABEL_UPPER + " rise from " + LOW_VALUE + " to " + HIGH_VALUE_FORMAT);
     }
 
     /**
@@ -53,7 +54,7 @@ public class SeriesSegmentSummaryServiceImplTest {
     public void testFallingSeriesPluralLabelUpper() {
         givenASeriesSegment(HIGH_VALUE, LOW_VALUE, PLURAL_SERIES_LABEL_UPPER);
         whenTheSeriesSegmentIsSummarised();
-        thenTheSummaryIs(PLURAL_SERIES_LABEL_UPPER + " fall from " + HIGH_VALUE + " to " + LOW_VALUE);
+        thenTheSummaryIs(PLURAL_SERIES_LABEL_UPPER + " fall from " + HIGH_VALUE_FORMAT + " to " + LOW_VALUE);
     }
 
     /**
@@ -64,7 +65,7 @@ public class SeriesSegmentSummaryServiceImplTest {
     public void testConstantSeriesPluralLabelUpper() {
         givenASeriesSegment(HIGH_VALUE, HIGH_VALUE, PLURAL_SERIES_LABEL_UPPER);
         whenTheSeriesSegmentIsSummarised();
-        thenTheSummaryIs(PLURAL_SERIES_LABEL_UPPER + " are constant at " + HIGH_VALUE);
+        thenTheSummaryIs(PLURAL_SERIES_LABEL_UPPER + " are constant at " + HIGH_VALUE_FORMAT);
     }
 
     /**
@@ -75,7 +76,7 @@ public class SeriesSegmentSummaryServiceImplTest {
     public void testRisingSeriesPluralLabelLower() {
         givenASeriesSegment(LOW_VALUE, HIGH_VALUE, PLURAL_SERIES_LABEL_LOWER);
         whenTheSeriesSegmentIsSummarised();
-        thenTheSummaryIs(PLURAL_SERIES_LABEL_LOWER + " rise from " + LOW_VALUE + " to " + HIGH_VALUE);
+        thenTheSummaryIs(PLURAL_SERIES_LABEL_LOWER + " rise from " + LOW_VALUE + " to " + HIGH_VALUE_FORMAT);
     }
 
     /**
@@ -86,7 +87,7 @@ public class SeriesSegmentSummaryServiceImplTest {
     public void testFallingSeriesPluralLabelLower() {
         givenASeriesSegment(HIGH_VALUE, LOW_VALUE, PLURAL_SERIES_LABEL_LOWER);
         whenTheSeriesSegmentIsSummarised();
-        thenTheSummaryIs(PLURAL_SERIES_LABEL_LOWER + " fall from " + HIGH_VALUE + " to " + LOW_VALUE);
+        thenTheSummaryIs(PLURAL_SERIES_LABEL_LOWER + " fall from " + HIGH_VALUE_FORMAT + " to " + LOW_VALUE);
     }
 
     /**
@@ -97,7 +98,7 @@ public class SeriesSegmentSummaryServiceImplTest {
     public void testConstantSeriesPluralLabelLower() {
         givenASeriesSegment(HIGH_VALUE, HIGH_VALUE, PLURAL_SERIES_LABEL_LOWER);
         whenTheSeriesSegmentIsSummarised();
-        thenTheSummaryIs(PLURAL_SERIES_LABEL_LOWER + " are constant at " + HIGH_VALUE);
+        thenTheSummaryIs(PLURAL_SERIES_LABEL_LOWER + " are constant at " + HIGH_VALUE_FORMAT);
     }
 
     /**
@@ -108,7 +109,7 @@ public class SeriesSegmentSummaryServiceImplTest {
     public void testRisingSeriesSinglularLabel() {
         givenASeriesSegment(LOW_VALUE, HIGH_VALUE, SINGULAR_SERIES_LABEL);
         whenTheSeriesSegmentIsSummarised();
-        thenTheSummaryIs(SINGULAR_SERIES_LABEL + " rises from " + LOW_VALUE + " to " + HIGH_VALUE);
+        thenTheSummaryIs(SINGULAR_SERIES_LABEL + " rises from " + LOW_VALUE + " to " + HIGH_VALUE_FORMAT);
     }
 
     /**
@@ -119,7 +120,7 @@ public class SeriesSegmentSummaryServiceImplTest {
     public void testFallingSeriesSinglularLabel() {
         givenASeriesSegment(HIGH_VALUE, LOW_VALUE, SINGULAR_SERIES_LABEL);
         whenTheSeriesSegmentIsSummarised();
-        thenTheSummaryIs(SINGULAR_SERIES_LABEL + " falls from " + HIGH_VALUE + " to " + LOW_VALUE);
+        thenTheSummaryIs(SINGULAR_SERIES_LABEL + " falls from " + HIGH_VALUE_FORMAT + " to " + LOW_VALUE);
     }
 
     /**
@@ -130,12 +131,12 @@ public class SeriesSegmentSummaryServiceImplTest {
     public void testConstantSeriesSinglularLabel() {
         givenASeriesSegment(HIGH_VALUE, HIGH_VALUE, SINGULAR_SERIES_LABEL);
         whenTheSeriesSegmentIsSummarised();
-        thenTheSummaryIs(SINGULAR_SERIES_LABEL + " is constant at " + HIGH_VALUE);
+        thenTheSummaryIs(SINGULAR_SERIES_LABEL + " is constant at " + HIGH_VALUE_FORMAT);
     }
 
     private void givenASeriesSegment(double startValue, double endValue, String seriesLabel) {
         this.seriesSegment = new SeriesSegmentImpl(new PointImpl(START_TIME, startValue),
-                new PointImpl(END_TIME, endValue), seriesLabel);
+                new PointImpl(END_TIME, endValue), seriesLabel, "");
     }
 
     private void whenTheSeriesSegmentIsSummarised() {

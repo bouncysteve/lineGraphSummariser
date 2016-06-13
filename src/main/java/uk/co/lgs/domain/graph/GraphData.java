@@ -20,4 +20,6 @@ public interface GraphData {
     int getSeriesCount();
 
     String getTitle();
+
+    List<String> getUnits();
 }

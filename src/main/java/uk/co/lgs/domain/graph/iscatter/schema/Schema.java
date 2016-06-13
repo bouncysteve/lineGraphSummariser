@@ -12,4 +12,6 @@ public interface Schema {
 
     String getDescription(String id);
 
+    String getUnit(String seriesId);
+
 }

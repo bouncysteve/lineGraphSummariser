@@ -113,14 +113,14 @@ public class SeriesSegmentTest extends AbstractTest {
     private void givenASegmentWithStartAndEndValues(double startValue, double endValue, String seriesLabel) {
         this.firstValue = new PointImpl(START_TIME, startValue);
         this.secondValue = new PointImpl(END_TIME, endValue);
-        this.underTest = new SeriesSegmentImpl(this.firstValue, this.secondValue, seriesLabel);
+        this.underTest = new SeriesSegmentImpl(this.firstValue, this.secondValue, seriesLabel, "");
     }
 
     private void givenASegmentWithStartAndEndValuesAndLength(double startValue, double endValue, String seriesLabel,
             int i) {
         this.firstValue = new PointImpl(START_TIME, startValue);
         this.secondValue = new PointImpl(END_TIME, endValue);
-        this.underTest = new SeriesSegmentImpl(this.firstValue, this.secondValue, seriesLabel, i);
+        this.underTest = new SeriesSegmentImpl(this.firstValue, this.secondValue, seriesLabel, "", i);
     }
 
     private void thenTheStartValueShouldEqual(double expectedValue) {

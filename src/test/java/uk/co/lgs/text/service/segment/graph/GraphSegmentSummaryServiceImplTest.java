@@ -667,7 +667,7 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
         // assertTrue(this.summaryText.contains("intersect"));
     }
 
-    private void thenTheSummaryMentionsThatTheSeriesIsSteeper(SeriesSegment firstSeriesSegment) {
+    private void thenTheSummaryMentionsThatTheSeriesIsSteeper(SeriesSegment seriesSegment) {
         // TODO Auto-generated method stub
 
     }

@@ -22,4 +22,6 @@ public interface SeriesSegment {
 
     String getLabel();
 
+    String getUnits();
+
 }

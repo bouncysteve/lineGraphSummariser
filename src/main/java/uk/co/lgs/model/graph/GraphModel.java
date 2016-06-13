@@ -25,4 +25,8 @@ public interface GraphModel {
     boolean isCollated();
 
     void setCollated(boolean collated);
+
+    List<String> getUnits();
+
+    void setUnits(List<String> units);
 }

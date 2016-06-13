@@ -1,5 +1,6 @@
 package uk.co.lgs.text.service.segment.series;
 
+import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.List;
 
@@ -26,7 +27,7 @@ public class SeriesSegmentSummaryServiceImpl implements SeriesSegmentSummaryServ
 
     private static final Lexicon lexicon = Lexicon.getDefaultLexicon();
     private static final NLGFactory NLG_FACTORY = new NLGFactory(lexicon);
-
+    private static final DecimalFormat f = new DecimalFormat("0.##");
     /**
      * There is no easy way to tell if a label represents a plural term, so
      * maintaining a list here for now. This is needed for agreement between the
@@ -50,11 +51,13 @@ public class SeriesSegmentSummaryServiceImpl implements SeriesSegmentSummaryServ
                 gradientTypeDescription(mainSeriesSegment.getGradientType()), null);
         PhraseElement behaviour = null;
         if (mainSeriesSegment.getGradientType().equals(GradientType.ZERO)) {
-            behaviour = NLG_FACTORY.createPrepositionPhrase("at", mainSeriesSegment.getStartValue() + "");
+            behaviour = NLG_FACTORY.createPrepositionPhrase("at",
+                    f.format(mainSeriesSegment.getStartValue()) + mainSeriesSegment.getUnits());
         } else {
-            behaviour = NLG_FACTORY.createPrepositionPhrase("from", mainSeriesSegment.getStartValue() + "");
-            behaviour.addPostModifier(NLG_FACTORY.createPrepositionPhrase("to", mainSeriesSegment.getEndValue() + ""));
-
+            behaviour = NLG_FACTORY.createPrepositionPhrase("from",
+                    f.format(mainSeriesSegment.getStartValue()) + mainSeriesSegment.getUnits());
+            behaviour.addPostModifier(NLG_FACTORY.createPrepositionPhrase("to",
+                    f.format(mainSeriesSegment.getEndValue()) + mainSeriesSegment.getUnits()));
         }
         gradient.addPostModifier(behaviour);
         return gradient;

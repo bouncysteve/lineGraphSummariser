@@ -19,10 +19,13 @@ public class GraphModelImpl implements GraphModel {
 
     private boolean collated = false;
 
+    private List<String> units;
+
     public GraphModelImpl(GraphData graphData) throws SegmentCategoryNotFoundException {
         this.graphSegments = new SegmentationServiceImpl().segment(graphData);
         this.labels = graphData.getHeader();
         this.title = graphData.getTitle();
+        this.units = graphData.getUnits();
     }
 
     public GraphModelImpl() {
@@ -62,6 +65,7 @@ public class GraphModelImpl implements GraphModel {
             builder.append("Title: ").append(this.getTitle()).append("\n");
         }
         builder.append("Labels: ").append(this.getLabels()).append("\n");
+        builder.append("Units: ").append(this.getUnits()).append("\n");
         builder.append("Segments: ").append("\n");
         GraphSegmentCategory previousSegmentCategory = null;
         for (GraphSegment segment : this.getGraphSegments()) {
@@ -147,5 +151,15 @@ public class GraphModelImpl implements GraphModel {
         } else if (!this.title.equals(other.title))
             return false;
         return true;
+    }
+
+    @Override
+    public List<String> getUnits() {
+        return this.units;
+    }
+
+    @Override
+    public void setUnits(List<String> units) {
+        this.units = units;
     }
 }

@@ -20,6 +20,7 @@ public class ModelCollatorImpl implements ModelCollator {
         GraphSegment segmentBeingBuilt = null;
         GraphModel collatedModel = new GraphModelImpl();
         collatedModel.setLabels(model.getLabels());
+        collatedModel.setUnits(model.getUnits());
         collatedModel.setTitle(model.getTitle());
         collatedModel.setCollated(true);
         for (GraphSegment segment : model.getGraphSegments()) {

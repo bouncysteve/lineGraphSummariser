@@ -89,6 +89,7 @@ public class GraphModelImplTest extends AbstractTest {
 
     private void whenTheGraphModelIsCreated() throws SegmentCategoryNotFoundException {
         when(this.mockGraphData.getRecords()).thenReturn(this.records);
+        when(this.mockGraphData.getUnits()).thenReturn(Arrays.asList("", "", ""));
         this.underTest = new GraphModelImpl(this.mockGraphData);
     }
 

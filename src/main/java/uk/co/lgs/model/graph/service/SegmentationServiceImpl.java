@@ -19,13 +19,14 @@ public class SegmentationServiceImpl implements SegmentationService {
         List<Record> records = graphData.getRecords();
         List<GraphSegment> segments = new ArrayList<GraphSegment>();
         List<String> labels = graphData.getHeader();
+        List<String> units = graphData.getUnits();
         Record segmentStartRecord = null, segmentEndRecord;
         for (Record record : records) {
             if (null == segmentStartRecord) {
                 segmentStartRecord = record;
             } else {
                 segmentEndRecord = record;
-                segments.add(convertRecordsToSegment(segmentStartRecord, segmentEndRecord, labels));
+                segments.add(convertRecordsToSegment(segmentStartRecord, segmentEndRecord, labels, units));
                 segmentStartRecord = record;
             }
         }
@@ -33,7 +34,7 @@ public class SegmentationServiceImpl implements SegmentationService {
     }
 
     private GraphSegment convertRecordsToSegment(Record segmentStartRecord, Record segmentEndRecord,
-            List<String> labels) throws SegmentCategoryNotFoundException {
+            List<String> labels, List<String> units) throws SegmentCategoryNotFoundException {
         String startTimePoint = segmentStartRecord.getPointInTime();
         Double firstSeriesStartValue = segmentStartRecord.getValues().get(0);
         Double firstSeriesEndValue = segmentEndRecord.getValues().get(0);
@@ -44,9 +45,9 @@ public class SegmentationServiceImpl implements SegmentationService {
         String endTimePoint = segmentEndRecord.getPointInTime();
 
         SeriesSegment firstSeriesSegment = new SeriesSegmentImpl(new PointImpl(startTimePoint, firstSeriesStartValue),
-                new PointImpl(endTimePoint, firstSeriesEndValue), labels.get(1));
+                new PointImpl(endTimePoint, firstSeriesEndValue), labels.get(1), units.get(1));
         SeriesSegment secondSeriesSegment = new SeriesSegmentImpl(new PointImpl(startTimePoint, secondSeriesStartValue),
-                new PointImpl(endTimePoint, secondSeriesEndValue), labels.get(2));
+                new PointImpl(endTimePoint, secondSeriesEndValue), labels.get(2), units.get(2));
 
         return new GraphSegmentImpl(firstSeriesSegment, secondSeriesSegment);
     }

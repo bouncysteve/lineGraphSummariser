@@ -46,7 +46,7 @@ public class Controller {
             scanner.close();
             parentDir = new File(directory);
         }
-
+        System.out.println("Parsing directory: " + directory);
         try (ConfigurableApplicationContext context = new AnnotationConfigApplicationContext(Controller.class)) {
 
             // *************Domain (data) ***************************//

@@ -24,6 +24,8 @@ public class GraphDataImpl implements GraphData {
 
     private List<Record> records;
 
+    private List<String> units;
+
     private Schema schema;
 
     /**
@@ -36,10 +38,29 @@ public class GraphDataImpl implements GraphData {
         this.schema = schema;
         this.header = parseLabels(header, schema);
         this.records = records;
+        this.units = parseUnits(header, schema);
 
         if (null == records || records.size() < 2) {
             throw new DomainException(MISSING_RECORDS_MESSAGE);
         }
+    }
+
+    private List<String> parseUnits(List<String> header, Schema schema) {
+        List<String> units = new ArrayList<>();
+        if (null != header) {
+            for (String seriesId : header) {
+                String unit = "";
+                if (null != schema) {
+                    unit = schema.getUnit(seriesId);
+                }
+                if (StringUtils.isNotEmpty(unit)) {
+                    units.add(unit);
+                } else {
+                    units.add("");
+                }
+            }
+        }
+        return units;
     }
 
     /**
@@ -102,6 +123,7 @@ public class GraphDataImpl implements GraphData {
         builder.append("Title: ").append(this.getTitle()).append("\n");
         builder.append("Series Count: ").append(this.getSeriesCount()).append("\n");
         builder.append("Header: ").append(this.getHeader()).append("\n");
+        builder.append("Units ").append(this.getUnits()).append("\n");
         builder.append("Records: ").append("\n");
         for (Record record : this.records) {
             builder.append("\t").append(record).append("\n");
@@ -117,7 +139,7 @@ public class GraphDataImpl implements GraphData {
             for (String seriesId : header) {
                 String description = "";
                 if (null != schema) {
-                    description = schema.getDescription(seriesId.toLowerCase());
+                    description = schema.getDescription(seriesId);
                 }
                 if (StringUtils.isNotEmpty(description)) {
                     labels.add(description);
@@ -127,5 +149,10 @@ public class GraphDataImpl implements GraphData {
             }
         }
         return labels;
+    }
+
+    @Override
+    public List<String> getUnits() {
+        return this.units;
     }
 }
