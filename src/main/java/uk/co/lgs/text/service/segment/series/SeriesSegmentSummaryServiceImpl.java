@@ -3,6 +3,7 @@ package uk.co.lgs.text.service.segment.series;
 import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 
 import org.apache.commons.configuration2.Configuration;
 import org.springframework.stereotype.Component;
@@ -35,7 +36,15 @@ public class SeriesSegmentSummaryServiceImpl implements SeriesSegmentSummaryServ
      */
     private static final List<String> COMMON_PLURAL_TERMS = Arrays.asList("sales");
     private static final List<String> PREFIX = Arrays.asList("£", "$");
-    private static final List<String> NEEDS_PADDING = Arrays.asList("per", "out of");
+    private static final List<String> FALL_SYNONYMS = Arrays.asList("fall", "decline", "drop", "shrink", "decrease",
+            "lower", "reduce"); // ("weaken","diminish", "slide",)
+    private static final List<String> RISE_SYNONYMS = Arrays.asList("rise", "increase", "grow", "improve", "progress",
+            "extend", "build", "go up"); // ("ascend", "advance",)
+    private static final List<String> CONSTANT_SYNONYMS = Arrays.asList("is constant", "remain", "continue", "freeze",
+            "stop", "persist", "rest");// ("endure",
+    private static final Random random = new Random();
+
+    private boolean randomise = true;
 
     @Override
     public PhraseElement getSummary(SeriesSegment mainSeriesSegment, SeriesSegment minorSeriesSegment,
@@ -76,12 +85,10 @@ public class SeriesSegmentSummaryServiceImpl implements SeriesSegmentSummaryServ
     }
 
     private boolean needsLeadingSpace(String units) {
-        for (String needsPadding : NEEDS_PADDING) {
-            if (units.toLowerCase().startsWith(needsPadding)) {
-                return true;
-            }
+        if ("%".equals(units)) {
+            return false;
         }
-        return false;
+        return true;
     }
 
     private boolean isPrefixable(String units) {
@@ -107,17 +114,29 @@ public class SeriesSegmentSummaryServiceImpl implements SeriesSegmentSummaryServ
         String description = "";
         switch (gradientType) {
         case NEGATIVE:
-            description = "fall";
+            description = getSynonym(FALL_SYNONYMS);
             break;
         case POSITIVE:
-            description = "rise";
+            description = getSynonym(RISE_SYNONYMS);
             break;
         case ZERO:
         default:
-            description = "is constant";
+            description = getSynonym(CONSTANT_SYNONYMS);
             break;
         }
         return NLG_FACTORY.createVerbPhrase(description);
     }
 
+    private String getSynonym(List<String> synonyms) {
+        int randomNumber = 0;
+        if (this.randomise) {
+            randomNumber = random.nextInt(synonyms.size() - 0);
+        }
+        return synonyms.get(randomNumber);
+    }
+
+    @Override
+    public void setRandomise(boolean randomise) {
+        this.randomise = randomise;
+    }
 }

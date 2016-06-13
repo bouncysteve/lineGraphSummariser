@@ -33,6 +33,7 @@ public class SeriesSegmentSummaryServiceImplTest {
     @Before
     public void setup() {
         this.underTest = new SeriesSegmentSummaryServiceImpl();
+        this.underTest.setRandomise(false);
     }
 
     /**
