@@ -94,6 +94,8 @@ public class GraphSegmentImpl implements GraphSegment {
             sb.append("\t");
         }
 
+        sb.append(this.getGraphSegmentGap() + "\t");
+
         sb.append("(" + (df.format(this.seriesSegments.get(0).getGradient())) + ", ");
         sb.append(df.format(this.seriesSegments.get(1).getGradient()) + ")\t");
 
@@ -241,8 +243,8 @@ public class GraphSegmentImpl implements GraphSegment {
      */
     public static String getHeader() {
         StringBuilder sb = new StringBuilder();
-        sb.append("PERIOD\t\t").append("LENGTH\t").append("GRADIENT_TYPES\t\t\t").append("GRADIENTS\t")
-                .append("(VALUE_AT_INTERSECTION)\t").append("NOTES\t");
+        sb.append("PERIOD\t\t").append("LENGTH\t").append("GRADIENT_TYPES\t\t\t").append("GAP\t\t")
+                .append("GRADIENTS\t").append("(VALUE_AT_INTERSECTION)\t").append("NOTES\t");
         return sb.toString();
     }
 

@@ -26,7 +26,8 @@ public class ModelGradientCollatorImpl implements ModelGradientCollator {
         for (GraphSegment segment : model.getGraphSegments()) {
             if (null == segmentBeingBuilt) {
                 segmentBeingBuilt = segment;
-            } else if (segmentBeingBuilt.getGraphSegmentGradientCategory().equals(segment.getGraphSegmentGradientCategory())) {
+            } else if (segmentBeingBuilt.getGraphSegmentGradientCategory()
+                    .equals(segment.getGraphSegmentGradientCategory())) {
                 // TODO: how to handle intersections?
                 try {
                     segmentBeingBuilt = segmentBeingBuilt.append(segment);

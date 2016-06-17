@@ -21,6 +21,7 @@ import uk.co.lgs.domain.loader.exception.LoaderException;
 import uk.co.lgs.model.graph.GraphModel;
 import uk.co.lgs.model.graph.GraphModelImpl;
 import uk.co.lgs.model.graph.collator.exception.CollatorException;
+import uk.co.lgs.model.graph.service.ModelCollator;
 import uk.co.lgs.model.graph.service.ModelGradientCollator;
 import uk.co.lgs.model.segment.exception.SegmentCategoryNotFoundException;
 import uk.co.lgs.text.service.graph.GraphSummaryService;
@@ -37,7 +38,7 @@ import uk.co.lgs.text.service.graph.GraphSummaryService;
 public class Controller {
 
     private static final Logger LOG = LoggerFactory.getLogger(Controller.class);
-    private static final String COLLATED_SUMMARY_FILENAME = "collatedSummary.txt";
+    private static final String GRADIENT_COLLATED_SUMMARY_FILENAME = "collatedSummary.txt";
     private static final String SUMMARY_FILENAME = "summary.txt";
 
     // TODO: error handling
@@ -69,14 +70,15 @@ public class Controller {
             System.out.print(summary + "\n" + "\n");
             writeToFile(parentDir, SUMMARY_FILENAME, summary);
 
-            // *************Collated Model ***************************//
-            ModelGradientCollator collator = context.getBean(ModelGradientCollator.class);
-            GraphModel collatedModel = collator.collate(model);
+            // *************Gradient Collated Model
+            // ***************************//
+            ModelCollator gradientCollator = context.getBean(ModelGradientCollator.class);
+            GraphModel collatedModel = gradientCollator.collate(model);
 
             if (collatedModel.equals(model)) {
-                System.out.println("COLLATION HAS NO EFFECT, NOT WRITING A COLLATED SUMMARY");
+                System.out.println("GRADIENT COLLATION HAS NO EFFECT, NOT WRITING A COLLATED SUMMARY");
                 try {
-                    Files.deleteIfExists(new File(parentDir, COLLATED_SUMMARY_FILENAME).toPath());
+                    Files.deleteIfExists(new File(parentDir, GRADIENT_COLLATED_SUMMARY_FILENAME).toPath());
                 } catch (IOException e) {
                     LOG.error("Unable to delete existing collated summary", e);
                 }
@@ -85,7 +87,7 @@ public class Controller {
                 System.out.print(collatedModel.toString());
                 String collatedSummary = graphSummariser.getSummary(collatedModel);
                 System.out.print(collatedSummary + "\n" + "\n");
-                writeToFile(parentDir, COLLATED_SUMMARY_FILENAME, collatedSummary);
+                writeToFile(parentDir, GRADIENT_COLLATED_SUMMARY_FILENAME, collatedSummary);
             }
         }
     }
