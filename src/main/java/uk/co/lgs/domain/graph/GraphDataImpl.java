@@ -11,7 +11,7 @@ import uk.co.lgs.domain.record.Record;
 
 public class GraphDataImpl implements GraphData {
 
-    private static String MISSING_RECORDS_MESSAGE = "Graph must contain at least two data records";
+    private static final String MISSING_RECORDS_MESSAGE = "Graph must contain at least two data records";
 
     private List<String> header;
 
@@ -39,7 +39,7 @@ public class GraphDataImpl implements GraphData {
     }
 
     private List<String> parseUnits(List<String> header, Schema schema) {
-        List<String> units = new ArrayList<>();
+        List<String> localUnits = new ArrayList<>();
         if (null != header) {
             for (String seriesId : header) {
                 String unit = "";
@@ -47,13 +47,13 @@ public class GraphDataImpl implements GraphData {
                     unit = schema.getUnit(seriesId);
                 }
                 if (StringUtils.isNotEmpty(unit)) {
-                    units.add(unit);
+                    localUnits.add(unit);
                 } else {
-                    units.add("");
+                    localUnits.add("");
                 }
             }
         }
-        return units;
+        return localUnits;
     }
 
     /**

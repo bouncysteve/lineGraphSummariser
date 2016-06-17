@@ -17,10 +17,11 @@ public class SegmentationServiceImpl implements SegmentationService {
     @Override
     public List<GraphSegment> segment(GraphData graphData) throws SegmentCategoryNotFoundException {
         List<Record> records = graphData.getRecords();
-        List<GraphSegment> segments = new ArrayList<GraphSegment>();
+        List<GraphSegment> segments = new ArrayList<>();
         List<String> labels = graphData.getHeader();
         List<String> units = graphData.getUnits();
-        Record segmentStartRecord = null, segmentEndRecord;
+        Record segmentStartRecord = null;
+        Record segmentEndRecord;
         for (Record record : records) {
             if (null == segmentStartRecord) {
                 segmentStartRecord = record;

@@ -59,7 +59,7 @@ public class GraphSegmentSummaryServiceImpl implements GraphSegmentSummaryServic
             switch (graphSegment.getGraphSegmentGradientCategory()) {
             case ZERO_ZERO_INTERSECTING:
                 // Both series have the same value throughout.
-                firstSeriesConfig.setProperty(PropertyNames.BOTH_SAME, true + "");
+                firstSeriesConfig.setProperty(PropertyNames.BOTH_SAME, Boolean.TRUE.toString());
                 break;
             case ZERO_NEGATIVE_INTERSECTING:
                 // Second series falls below the value of the first series,

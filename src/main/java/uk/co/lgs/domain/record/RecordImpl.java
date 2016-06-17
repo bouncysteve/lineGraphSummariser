@@ -6,7 +6,7 @@ import uk.co.lgs.domain.exception.DomainException;
 
 public class RecordImpl implements Record {
 
-    private static String MISSING_VALUES_MESSAGE = "Record cannot be created without values";
+    private static final String MISSING_VALUES_MESSAGE = "Record cannot be created without values";
     private String pointInTime;
     private List<Double> values;
 

@@ -22,7 +22,7 @@ public class SchemaImpl implements Schema {
     private static final String LEVEL = "level";
 
     public SchemaImpl(List<List<String>> schemaRows) throws SchemaException {
-        this.attributes = new ArrayList<IScatterAttribute>();
+        this.attributes = new ArrayList<>();
         this.expectedHeaders = Arrays.asList(ID, NAME, DESCRIPTION, UNIT, TYPE, LEVEL);
         this.mandatoryAttributeValues = Arrays.asList(ID, NAME, TYPE, LEVEL);
         validateHeader(schemaRows.remove(0));
@@ -40,24 +40,27 @@ public class SchemaImpl implements Schema {
 
     private void processAndValidate(List<List<String>> inputRecords) throws SchemaException {
         for (List<String> inputRecord : inputRecords) {
-            if (inputRecord.size() > this.expectedHeaders.size()) {
-                throw new SchemaException("Attribute has too many columns");
-            }
+            checkRecordSize(inputRecord);
             for (String mandatoryAttributeValue : this.mandatoryAttributeValues) {
                 String value = inputRecord.get(this.expectedHeaders.indexOf(mandatoryAttributeValue));
                 if (StringUtils.isEmpty(value)) {
                     throw new SchemaException("Invalid attribute, missing mandatory value: " + mandatoryAttributeValue);
-                } else {
-                    if (TYPE.equals(mandatoryAttributeValue)) {
-                        IScatterType.get(value);
-                    } else {
-                        if (LEVEL.equals(mandatoryAttributeValue)) {
-                            IScatterLevel.get(value);
-                        }
-                    }
+                }
+                if (TYPE.equals(mandatoryAttributeValue)) {
+                    IScatterType.get(value);
+                    continue;
+                }
+                if (LEVEL.equals(mandatoryAttributeValue)) {
+                    IScatterLevel.get(value);
                 }
             }
             this.attributes.add(new IScatterAttributeImpl(inputRecord));
+        }
+    }
+
+    private void checkRecordSize(List<String> inputRecord) throws SchemaException {
+        if (inputRecord.size() > this.expectedHeaders.size()) {
+            throw new SchemaException("Attribute has too many columns");
         }
     }
 

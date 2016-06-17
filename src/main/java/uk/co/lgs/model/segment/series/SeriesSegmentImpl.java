@@ -90,15 +90,15 @@ public class SeriesSegmentImpl implements SeriesSegment {
 
     private GradientType determineGradientType() {
         double numericGradient = (this.getEndValue() - this.getStartValue()) / this.segmentLength;
-        GradientType gradientType;
+        GradientType localGradientType;
         if (0 == numericGradient) {
-            gradientType = GradientType.ZERO;
+            localGradientType = GradientType.ZERO;
         } else if (0 < numericGradient) {
-            gradientType = GradientType.POSITIVE;
+            localGradientType = GradientType.POSITIVE;
         } else {
-            gradientType = GradientType.NEGATIVE;
+            localGradientType = GradientType.NEGATIVE;
         }
-        return gradientType;
+        return localGradientType;
     }
 
     @Override

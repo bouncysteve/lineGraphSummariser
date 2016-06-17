@@ -12,6 +12,7 @@ import uk.co.lgs.model.segment.graph.GraphSegment;
  * @author bouncysteve
  *
  */
+@FunctionalInterface
 public interface SegmentationService {
 
     List<GraphSegment> segment(GraphData graphData) throws SegmentCategoryNotFoundException;

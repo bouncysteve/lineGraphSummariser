@@ -1,5 +1,6 @@
 package uk.co.lgs.model.segment.graph;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,6 +23,8 @@ import uk.co.lgs.model.segment.series.SeriesSegment;
 
 public class GraphSegmentImpl implements GraphSegment {
 
+    private static final DecimalFormat DF = new DecimalFormat("#.00");
+
     private static final String APPEND_INVALID_GRADIENT_MESSAGE = "Cannot append segment, the gradient types do not match";
 
     private static final Logger LOG = LoggerFactory.getLogger(GraphSegmentImpl.class);
@@ -42,7 +45,7 @@ public class GraphSegmentImpl implements GraphSegment {
 
     public GraphSegmentImpl(SeriesSegment firstSeriesSegment, SeriesSegment secondSeriesSegment)
             throws SegmentCategoryNotFoundException {
-        this.seriesSegments = new ArrayList<SeriesSegment>();
+        this.seriesSegments = new ArrayList<>();
         this.seriesSegments.add(firstSeriesSegment);
         this.seriesSegments.add(secondSeriesSegment);
         determineIntersectionDetails();
@@ -96,8 +99,8 @@ public class GraphSegmentImpl implements GraphSegment {
 
         sb.append(this.getGraphSegmentGap() + "\t");
 
-        sb.append("(" + (df.format(this.seriesSegments.get(0).getGradient())) + ", ");
-        sb.append(df.format(this.seriesSegments.get(1).getGradient()) + ")\t");
+        sb.append("(" + (DF.format(this.seriesSegments.get(0).getGradient())) + ", ");
+        sb.append(DF.format(this.seriesSegments.get(1).getGradient()) + ")\t");
 
         if (this.isIntersecting()) {
             sb.append("Intersection: ").append(this.getValueAtIntersection()).append("\t");
@@ -146,11 +149,11 @@ public class GraphSegmentImpl implements GraphSegment {
              */
             if (this.segmentDistanceToIntersection >= 0 && this.segmentDistanceToIntersection <= 1) {
                 this.valueAtIntersection = solution.getEntry(1);
-                this.intersecting = (null != this.valueAtIntersection);
+                this.intersecting = null != this.valueAtIntersection;
             }
         } catch (SingularMatrixException e) {
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Lines are parallel, they either don't intersect or they are the identical");
+                LOG.debug("Lines are parallel, they either don't intersect or they are the identical", e);
             }
             this.parallel = true;
             if (firstSeriesStartValue == secondSeriesStartValue) {
@@ -163,7 +166,7 @@ public class GraphSegmentImpl implements GraphSegment {
         }
     }
 
-    private void determineSegmentCategory() throws SegmentCategoryNotFoundException {
+    private void determineSegmentCategory() {
         GradientType firstSeriesGradient = this.seriesSegments.get(0).getGradientType();
         GradientType secondSeriesGradient = this.seriesSegments.get(1).getGradientType();
         for (GraphSegmentGradient category : GraphSegmentGradient.values()) {
@@ -173,9 +176,6 @@ public class GraphSegmentImpl implements GraphSegment {
                 this.graphSegmentGradient = category;
                 break;
             }
-        }
-        if (null == this.graphSegmentGradient) {
-            throw new SegmentCategoryNotFoundException();
         }
     }
 
@@ -200,14 +200,13 @@ public class GraphSegmentImpl implements GraphSegment {
     }
 
     @Override
-    public GraphSegment append(GraphSegment newSegment)
-            throws SegmentCategoryNotFoundException, SegmentAppendException {
+    public GraphSegment append(GraphSegment newSegment) throws SegmentAppendException {
         // check that the type is the same, if not, throw an exception.
         // TODO: handle near same type (same but with/without intersection)
         for (SeriesSegment seriesSegment : this.seriesSegments) {
             SeriesSegment segmentToAppend = newSegment.getSeriesSegment(this.seriesSegments.indexOf(seriesSegment));
             if (seriesSegment.getGradientType().equals(segmentToAppend.getGradientType())) {
-                seriesSegment = seriesSegment.append(segmentToAppend);
+                seriesSegment.append(segmentToAppend);
             } else
                 throw new SegmentAppendException(APPEND_INVALID_GRADIENT_MESSAGE);
         }

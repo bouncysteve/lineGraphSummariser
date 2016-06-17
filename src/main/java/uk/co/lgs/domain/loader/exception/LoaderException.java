@@ -13,7 +13,7 @@ public class LoaderException extends Exception {
      */
     private static final long serialVersionUID = 1966104956853845825L;
 
-    private String message;
+    private final String message;
 
     public LoaderException(String message) {
         super(message);

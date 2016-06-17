@@ -14,7 +14,7 @@ public class DomainException extends Exception {
      */
     private static final long serialVersionUID = -4483142498130081218L;
 
-    private String message;
+    private final String message;
 
     public DomainException(String message) {
         super();

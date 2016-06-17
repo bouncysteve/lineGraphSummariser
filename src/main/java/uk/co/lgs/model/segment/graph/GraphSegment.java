@@ -1,10 +1,8 @@
 package uk.co.lgs.model.segment.graph;
 
-import java.text.DecimalFormat;
 import java.util.List;
 
 import uk.co.lgs.model.segment.exception.SegmentAppendException;
-import uk.co.lgs.model.segment.exception.SegmentCategoryNotFoundException;
 import uk.co.lgs.model.segment.graph.category.GraphSegmentGap;
 import uk.co.lgs.model.segment.graph.category.GraphSegmentGradient;
 import uk.co.lgs.model.segment.series.SeriesSegment;
@@ -18,8 +16,6 @@ import uk.co.lgs.model.segment.series.SeriesSegment;
  */
 public interface GraphSegment {
 
-    static DecimalFormat df = new DecimalFormat("#.00");
-
     boolean isIntersecting();
 
     Double getValueAtIntersection();
@@ -32,7 +28,7 @@ public interface GraphSegment {
 
     String getEndTime();
 
-    GraphSegment append(GraphSegment newSegment) throws SegmentCategoryNotFoundException, SegmentAppendException;
+    GraphSegment append(GraphSegment newSegment) throws SegmentAppendException;
 
     SeriesSegment getSeriesSegment(int index);
 

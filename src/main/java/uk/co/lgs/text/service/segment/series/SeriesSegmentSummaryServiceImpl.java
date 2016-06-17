@@ -60,7 +60,7 @@ public class SeriesSegmentSummaryServiceImpl implements SeriesSegmentSummaryServ
         }
         PhraseElement gradient = NLG_FACTORY.createClause(subject,
                 gradientTypeDescription(mainSeriesSegment.getGradientType()), null);
-        PhraseElement behaviour = null;
+        PhraseElement behaviour;
         if (mainSeriesSegment.getGradientType().equals(GradientType.ZERO)) {
             behaviour = NLG_FACTORY.createPrepositionPhrase("at",
                     formatValueWithUnits(mainSeriesSegment.getStartValue(), mainSeriesSegment.getUnits()));
@@ -111,7 +111,7 @@ public class SeriesSegmentSummaryServiceImpl implements SeriesSegmentSummaryServ
     }
 
     private PhraseElement gradientTypeDescription(GradientType gradientType) {
-        String description = "";
+        String description;
         switch (gradientType) {
         case NEGATIVE:
             description = getSynonym(FALL_SYNONYMS);

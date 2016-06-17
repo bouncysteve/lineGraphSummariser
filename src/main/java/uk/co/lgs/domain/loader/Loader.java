@@ -11,6 +11,7 @@ import uk.co.lgs.domain.loader.exception.LoaderException;
  * @author bouncysteve
  *
  */
+@FunctionalInterface
 public interface Loader {
 
     GraphData getGraph(File parentDir) throws LoaderException;

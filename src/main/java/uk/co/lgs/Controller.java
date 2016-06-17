@@ -101,6 +101,7 @@ public class Controller {
             output.write(content);
             output.close();
         } catch (Exception e) {
+            LOG.error("", e);
             System.out.println("Could not create file");
         }
     }

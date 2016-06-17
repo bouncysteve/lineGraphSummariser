@@ -79,7 +79,7 @@ public class GraphSummaryServiceImpl implements GraphSummaryService {
     }
 
     protected List<DocumentElement> getSegmentSummaries(GraphModel model) {
-        List<DocumentElement> segmentSummaries = new ArrayList<DocumentElement>();
+        List<DocumentElement> segmentSummaries = new ArrayList<>();
         for (GraphSegment graphSegment : model.getGraphSegments()) {
             segmentSummaries.add(this.graphSegmentSummaryService.getSummary(graphSegment));
         }

@@ -11,6 +11,11 @@ import uk.co.lgs.model.segment.exception.SegmentAppendException;
  */
 public class CollatorException extends Exception {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1294210467737864976L;
+
     public CollatorException(String message) {
         super(message);
     }
@@ -18,10 +23,5 @@ public class CollatorException extends Exception {
     public CollatorException(SegmentAppendException e) {
         super(e);
     }
-
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 1294210467737864976L;
 
 }

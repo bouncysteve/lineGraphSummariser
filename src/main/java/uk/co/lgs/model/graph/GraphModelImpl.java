@@ -30,7 +30,7 @@ public class GraphModelImpl implements GraphModel {
     }
 
     public GraphModelImpl() {
-        this.graphSegments = new ArrayList<GraphSegment>();
+        this.graphSegments = new ArrayList<>();
     }
 
     @Override
