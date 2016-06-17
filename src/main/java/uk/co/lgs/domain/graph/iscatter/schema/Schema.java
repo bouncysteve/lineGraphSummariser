@@ -2,6 +2,13 @@ package uk.co.lgs.domain.graph.iscatter.schema;
 
 import java.util.List;
 
+/**
+ * I represent the contents of an entire iScatter schema.csv file.
+ * 
+ * @see http://michel.wermelinger.ws/chezmichel/iscatter/
+ * @author bouncysteve
+ *
+ */
 public interface Schema {
 
     int getAttributesCount();

@@ -7,7 +7,7 @@ import uk.co.lgs.domain.graph.GraphData;
 import uk.co.lgs.model.graph.service.SegmentationServiceImpl;
 import uk.co.lgs.model.segment.exception.SegmentCategoryNotFoundException;
 import uk.co.lgs.model.segment.graph.GraphSegment;
-import uk.co.lgs.model.segment.graph.category.GraphSegmentCategory;
+import uk.co.lgs.model.segment.graph.category.GraphSegmentGradient;
 
 public class GraphModelImpl implements GraphModel {
 
@@ -67,14 +67,14 @@ public class GraphModelImpl implements GraphModel {
         builder.append("Labels: ").append(this.getLabels()).append("\n");
         builder.append("Units: ").append(this.getUnits()).append("\n");
         builder.append("Segments: ").append("\n");
-        GraphSegmentCategory previousSegmentCategory = null;
+        GraphSegmentGradient previousSegmentCategory = null;
         for (GraphSegment segment : this.getGraphSegments()) {
             if (!this.isCollated() && null != previousSegmentCategory
-                    && !previousSegmentCategory.equals(segment.getSegmentCategory())) {
+                    && !previousSegmentCategory.equals(segment.getGraphSegmentGradientCategory())) {
                 builder.append("\n");
             }
             builder.append("\t").append(segment.toString()).append("\n");
-            previousSegmentCategory = segment.getSegmentCategory();
+            previousSegmentCategory = segment.getGraphSegmentGradientCategory();
         }
         builder.append("SegmentCount: ").append(this.getSegmentCount()).append("\n");
         builder.append("Length: ").append(this.getLength()).append("\n");

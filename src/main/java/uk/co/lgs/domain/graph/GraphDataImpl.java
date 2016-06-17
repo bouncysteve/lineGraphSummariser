@@ -9,13 +9,6 @@ import uk.co.lgs.domain.exception.DomainException;
 import uk.co.lgs.domain.graph.iscatter.schema.Schema;
 import uk.co.lgs.domain.record.Record;
 
-/**
- * Domain class representing a multi-series line graph. A graph consists of a
- * title, and multiple records. From the records the series can be derived.
- * 
- * @author bouncysteve
- *
- */
 public class GraphDataImpl implements GraphData {
 
     private static String MISSING_RECORDS_MESSAGE = "Graph must contain at least two data records";

@@ -2,6 +2,14 @@ package uk.co.lgs.domain.graph.iscatter.schema;
 
 import uk.co.lgs.domain.graph.iscatter.schema.exception.SchemaException;
 
+/**
+ * I encapsulate the valid values for the Level attribute in an iScatter schema
+ * entry.
+ * 
+ * @see http://michel.wermelinger.ws/chezmichel/iscatter/
+ * @author bouncysteve
+ *
+ */
 public enum IScatterLevel {
 
     NOMINAL("nominal"), ORDINAL("ordinal"), INTERVAL("interval"), RATIO("ratio");

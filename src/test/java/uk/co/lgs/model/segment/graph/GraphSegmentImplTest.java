@@ -11,7 +11,7 @@ import org.junit.Test;
 import uk.co.lgs.model.gradient.GradientType;
 import uk.co.lgs.model.segment.exception.SegmentAppendException;
 import uk.co.lgs.model.segment.exception.SegmentCategoryNotFoundException;
-import uk.co.lgs.model.segment.graph.category.GraphSegmentCategory;
+import uk.co.lgs.model.segment.graph.category.GraphSegmentGradient;
 import uk.co.lgs.segment.graph.AbstractGraphSegmentTest;
 
 public class GraphSegmentImplTest extends AbstractGraphSegmentTest {
@@ -26,7 +26,7 @@ public class GraphSegmentImplTest extends AbstractGraphSegmentTest {
         whenTheGraphSegmentIsConstructed();
         thenTheSegmentDoesNotContainIntersection();
         andTheSeriesAreParallel();
-        andTheGraphSegmentCategoryIs(GraphSegmentCategory.ZERO_ZERO);
+        andTheGraphSegmentCategoryIs(GraphSegmentGradient.ZERO_ZERO);
     }
 
     @Test
@@ -37,7 +37,7 @@ public class GraphSegmentImplTest extends AbstractGraphSegmentTest {
         whenTheGraphSegmentIsConstructed();
         thenTheSegmentDoesNotContainIntersection();
         andTheSeriesAreNotParallel();
-        andTheGraphSegmentCategoryIs(GraphSegmentCategory.NEGATIVE_ZERO);
+        andTheGraphSegmentCategoryIs(GraphSegmentGradient.NEGATIVE_ZERO);
     }
 
     @Test
@@ -48,7 +48,7 @@ public class GraphSegmentImplTest extends AbstractGraphSegmentTest {
         whenTheGraphSegmentIsConstructed();
         thenTheSegmentDoesNotContainIntersection();
         andTheSeriesAreNotParallel();
-        andTheGraphSegmentCategoryIs(GraphSegmentCategory.POSITIVE_ZERO);
+        andTheGraphSegmentCategoryIs(GraphSegmentGradient.POSITIVE_ZERO);
     }
 
     @Test
@@ -59,7 +59,7 @@ public class GraphSegmentImplTest extends AbstractGraphSegmentTest {
         whenTheGraphSegmentIsConstructed();
         thenTheSegmentDoesNotContainIntersection();
         andTheSeriesAreNotParallel();
-        andTheGraphSegmentCategoryIs(GraphSegmentCategory.ZERO_POSITIVE);
+        andTheGraphSegmentCategoryIs(GraphSegmentGradient.ZERO_POSITIVE);
     }
 
     @Test
@@ -70,7 +70,7 @@ public class GraphSegmentImplTest extends AbstractGraphSegmentTest {
         whenTheGraphSegmentIsConstructed();
         thenTheSegmentDoesNotContainIntersection();
         andTheSeriesAreNotParallel();
-        andTheGraphSegmentCategoryIs(GraphSegmentCategory.NEGATIVE_POSITIVE);
+        andTheGraphSegmentCategoryIs(GraphSegmentGradient.NEGATIVE_POSITIVE);
     }
 
     @Test
@@ -81,7 +81,7 @@ public class GraphSegmentImplTest extends AbstractGraphSegmentTest {
         whenTheGraphSegmentIsConstructed();
         thenTheSegmentDoesNotContainIntersection();
         andTheSeriesAreNotParallel();
-        andTheGraphSegmentCategoryIs(GraphSegmentCategory.POSITIVE_POSITIVE);
+        andTheGraphSegmentCategoryIs(GraphSegmentGradient.POSITIVE_POSITIVE);
     }
 
     @Test
@@ -92,7 +92,7 @@ public class GraphSegmentImplTest extends AbstractGraphSegmentTest {
         whenTheGraphSegmentIsConstructed();
         thenTheSegmentDoesNotContainIntersection();
         andTheSeriesAreNotParallel();
-        andTheGraphSegmentCategoryIs(GraphSegmentCategory.ZERO_NEGATIVE);
+        andTheGraphSegmentCategoryIs(GraphSegmentGradient.ZERO_NEGATIVE);
     }
 
     @Test
@@ -103,7 +103,7 @@ public class GraphSegmentImplTest extends AbstractGraphSegmentTest {
         whenTheGraphSegmentIsConstructed();
         thenTheSegmentDoesNotContainIntersection();
         andTheSeriesAreNotParallel();
-        andTheGraphSegmentCategoryIs(GraphSegmentCategory.NEGATIVE_NEGATIVE);
+        andTheGraphSegmentCategoryIs(GraphSegmentGradient.NEGATIVE_NEGATIVE);
     }
 
     @Test
@@ -114,7 +114,7 @@ public class GraphSegmentImplTest extends AbstractGraphSegmentTest {
         whenTheGraphSegmentIsConstructed();
         thenTheSegmentDoesNotContainIntersection();
         andTheSeriesAreNotParallel();
-        andTheGraphSegmentCategoryIs(GraphSegmentCategory.POSITIVE_NEGATIVE);
+        andTheGraphSegmentCategoryIs(GraphSegmentGradient.POSITIVE_NEGATIVE);
     }
 
     @Test
@@ -126,7 +126,7 @@ public class GraphSegmentImplTest extends AbstractGraphSegmentTest {
         thenTheSegmentDoesContainIntersection();
         andTheValueAtTheIntersectionIs(FIRST_SERIES_START);
         andTheSeriesAreParallel();
-        andTheGraphSegmentCategoryIs(GraphSegmentCategory.ZERO_ZERO_INTERSECTING);
+        andTheGraphSegmentCategoryIs(GraphSegmentGradient.ZERO_ZERO_INTERSECTING);
     }
 
     @Test
@@ -138,7 +138,7 @@ public class GraphSegmentImplTest extends AbstractGraphSegmentTest {
         thenTheSegmentDoesContainIntersection();
         andTheValueAtTheIntersectionIs(FIRST_SERIES_START);
         andTheSeriesAreNotParallel();
-        andTheGraphSegmentCategoryIs(GraphSegmentCategory.NEGATIVE_ZERO_INTERSECTING);
+        andTheGraphSegmentCategoryIs(GraphSegmentGradient.NEGATIVE_ZERO_INTERSECTING);
     }
 
     @Test
@@ -150,7 +150,7 @@ public class GraphSegmentImplTest extends AbstractGraphSegmentTest {
         thenTheSegmentDoesContainIntersection();
         andTheValueAtTheIntersectionIs(FIRST_SERIES_START);
         andTheSeriesAreNotParallel();
-        andTheGraphSegmentCategoryIs(GraphSegmentCategory.POSITIVE_ZERO_INTERSECTING);
+        andTheGraphSegmentCategoryIs(GraphSegmentGradient.POSITIVE_ZERO_INTERSECTING);
     }
 
     @Test
@@ -162,7 +162,7 @@ public class GraphSegmentImplTest extends AbstractGraphSegmentTest {
         thenTheSegmentDoesContainIntersection();
         andTheValueAtTheIntersectionIs(FIRST_SERIES_START);
         andTheSeriesAreNotParallel();
-        andTheGraphSegmentCategoryIs(GraphSegmentCategory.ZERO_POSITIVE_INTERSECTING);
+        andTheGraphSegmentCategoryIs(GraphSegmentGradient.ZERO_POSITIVE_INTERSECTING);
     }
 
     @Test
@@ -174,7 +174,7 @@ public class GraphSegmentImplTest extends AbstractGraphSegmentTest {
         thenTheSegmentDoesContainIntersection();
         andTheValueAtTheIntersectionIs(FIRST_SERIES_START);
         andTheSeriesAreNotParallel();
-        andTheGraphSegmentCategoryIs(GraphSegmentCategory.NEGATIVE_POSITIVE_INTERSECTING);
+        andTheGraphSegmentCategoryIs(GraphSegmentGradient.NEGATIVE_POSITIVE_INTERSECTING);
     }
 
     @Test
@@ -186,7 +186,7 @@ public class GraphSegmentImplTest extends AbstractGraphSegmentTest {
         thenTheSegmentDoesContainIntersection();
         andTheValueAtTheIntersectionIs(FIRST_SERIES_START);
         andTheSeriesAreNotParallel();
-        andTheGraphSegmentCategoryIs(GraphSegmentCategory.POSITIVE_POSITIVE_INTERSECTING);
+        andTheGraphSegmentCategoryIs(GraphSegmentGradient.POSITIVE_POSITIVE_INTERSECTING);
     }
 
     @Test
@@ -198,7 +198,7 @@ public class GraphSegmentImplTest extends AbstractGraphSegmentTest {
         thenTheSegmentDoesContainIntersection();
         andTheValueAtTheIntersectionIs(FIRST_SERIES_START);
         andTheSeriesAreNotParallel();
-        andTheGraphSegmentCategoryIs(GraphSegmentCategory.ZERO_NEGATIVE_INTERSECTING);
+        andTheGraphSegmentCategoryIs(GraphSegmentGradient.ZERO_NEGATIVE_INTERSECTING);
     }
 
     @Test
@@ -210,7 +210,7 @@ public class GraphSegmentImplTest extends AbstractGraphSegmentTest {
         thenTheSegmentDoesContainIntersection();
         andTheValueAtTheIntersectionIs(FIRST_SERIES_START);
         andTheSeriesAreNotParallel();
-        andTheGraphSegmentCategoryIs(GraphSegmentCategory.NEGATIVE_NEGATIVE_INTERSECTING);
+        andTheGraphSegmentCategoryIs(GraphSegmentGradient.NEGATIVE_NEGATIVE_INTERSECTING);
     }
 
     @Test
@@ -222,7 +222,7 @@ public class GraphSegmentImplTest extends AbstractGraphSegmentTest {
         thenTheSegmentDoesContainIntersection();
         andTheValueAtTheIntersectionIs(FIRST_SERIES_START);
         andTheSeriesAreNotParallel();
-        andTheGraphSegmentCategoryIs(GraphSegmentCategory.POSITIVE_NEGATIVE_INTERSECTING);
+        andTheGraphSegmentCategoryIs(GraphSegmentGradient.POSITIVE_NEGATIVE_INTERSECTING);
     }
 
     @Test
@@ -234,7 +234,7 @@ public class GraphSegmentImplTest extends AbstractGraphSegmentTest {
         thenTheSegmentDoesContainIntersection();
         andTheValueAtTheIntersectionIs(FIRST_SERIES_START - 1);
         andTheSeriesAreNotParallel();
-        andTheGraphSegmentCategoryIs(GraphSegmentCategory.NEGATIVE_ZERO_INTERSECTING);
+        andTheGraphSegmentCategoryIs(GraphSegmentGradient.NEGATIVE_ZERO_INTERSECTING);
     }
 
     @Test
@@ -246,7 +246,7 @@ public class GraphSegmentImplTest extends AbstractGraphSegmentTest {
         thenTheSegmentDoesContainIntersection();
         andTheValueAtTheIntersectionIs(FIRST_SERIES_START + 1);
         andTheSeriesAreNotParallel();
-        andTheGraphSegmentCategoryIs(GraphSegmentCategory.POSITIVE_ZERO_INTERSECTING);
+        andTheGraphSegmentCategoryIs(GraphSegmentGradient.POSITIVE_ZERO_INTERSECTING);
     }
 
     @Test
@@ -258,7 +258,7 @@ public class GraphSegmentImplTest extends AbstractGraphSegmentTest {
         thenTheSegmentDoesContainIntersection();
         andTheValueAtTheIntersectionIs(FIRST_SERIES_START);
         andTheSeriesAreNotParallel();
-        andTheGraphSegmentCategoryIs(GraphSegmentCategory.ZERO_POSITIVE_INTERSECTING);
+        andTheGraphSegmentCategoryIs(GraphSegmentGradient.ZERO_POSITIVE_INTERSECTING);
     }
 
     @Test
@@ -270,7 +270,7 @@ public class GraphSegmentImplTest extends AbstractGraphSegmentTest {
         thenTheSegmentDoesContainIntersection();
         andTheValueAtTheIntersectionIs(FIRST_SERIES_START - 1);
         andTheSeriesAreNotParallel();
-        andTheGraphSegmentCategoryIs(GraphSegmentCategory.NEGATIVE_POSITIVE_INTERSECTING);
+        andTheGraphSegmentCategoryIs(GraphSegmentGradient.NEGATIVE_POSITIVE_INTERSECTING);
     }
 
     @Test
@@ -282,7 +282,7 @@ public class GraphSegmentImplTest extends AbstractGraphSegmentTest {
         thenTheSegmentDoesContainIntersection();
         andTheValueAtTheIntersectionIs(FIRST_SERIES_START + 1);
         andTheSeriesAreNotParallel();
-        andTheGraphSegmentCategoryIs(GraphSegmentCategory.POSITIVE_POSITIVE_INTERSECTING);
+        andTheGraphSegmentCategoryIs(GraphSegmentGradient.POSITIVE_POSITIVE_INTERSECTING);
     }
 
     @Test
@@ -294,7 +294,7 @@ public class GraphSegmentImplTest extends AbstractGraphSegmentTest {
         thenTheSegmentDoesContainIntersection();
         andTheValueAtTheIntersectionIs(FIRST_SERIES_START);
         andTheSeriesAreNotParallel();
-        andTheGraphSegmentCategoryIs(GraphSegmentCategory.ZERO_NEGATIVE_INTERSECTING);
+        andTheGraphSegmentCategoryIs(GraphSegmentGradient.ZERO_NEGATIVE_INTERSECTING);
     }
 
     @Test
@@ -306,7 +306,7 @@ public class GraphSegmentImplTest extends AbstractGraphSegmentTest {
         thenTheSegmentDoesContainIntersection();
         andTheValueAtTheIntersectionIs(FIRST_SERIES_START - 1);
         andTheSeriesAreNotParallel();
-        andTheGraphSegmentCategoryIs(GraphSegmentCategory.NEGATIVE_NEGATIVE_INTERSECTING);
+        andTheGraphSegmentCategoryIs(GraphSegmentGradient.NEGATIVE_NEGATIVE_INTERSECTING);
     }
 
     @Test
@@ -318,7 +318,7 @@ public class GraphSegmentImplTest extends AbstractGraphSegmentTest {
         thenTheSegmentDoesContainIntersection();
         andTheValueAtTheIntersectionIs(FIRST_SERIES_START + 1);
         andTheSeriesAreNotParallel();
-        andTheGraphSegmentCategoryIs(GraphSegmentCategory.POSITIVE_NEGATIVE_INTERSECTING);
+        andTheGraphSegmentCategoryIs(GraphSegmentGradient.POSITIVE_NEGATIVE_INTERSECTING);
     }
 
     @Test
@@ -331,7 +331,7 @@ public class GraphSegmentImplTest extends AbstractGraphSegmentTest {
         andTheValueAtTheIntersectionIs(this.firstSeriesSegment.getStartValue()
                 + (this.firstSeriesSegment.getEndValue() - this.firstSeriesSegment.getStartValue()) / 2);
         andTheSeriesAreNotParallel();
-        andTheGraphSegmentCategoryIs(GraphSegmentCategory.NEGATIVE_ZERO_INTERSECTING);
+        andTheGraphSegmentCategoryIs(GraphSegmentGradient.NEGATIVE_ZERO_INTERSECTING);
     }
 
     @Test
@@ -344,7 +344,7 @@ public class GraphSegmentImplTest extends AbstractGraphSegmentTest {
         andTheValueAtTheIntersectionIs(this.firstSeriesSegment.getStartValue()
                 + (this.firstSeriesSegment.getEndValue() - this.firstSeriesSegment.getStartValue()) / 2);
         andTheSeriesAreNotParallel();
-        andTheGraphSegmentCategoryIs(GraphSegmentCategory.POSITIVE_ZERO_INTERSECTING);
+        andTheGraphSegmentCategoryIs(GraphSegmentGradient.POSITIVE_ZERO_INTERSECTING);
     }
 
     @Test
@@ -356,7 +356,7 @@ public class GraphSegmentImplTest extends AbstractGraphSegmentTest {
         thenTheSegmentDoesContainIntersection();
         andTheValueAtTheIntersectionIs(FIRST_SERIES_START);
         andTheSeriesAreNotParallel();
-        andTheGraphSegmentCategoryIs(GraphSegmentCategory.ZERO_POSITIVE_INTERSECTING);
+        andTheGraphSegmentCategoryIs(GraphSegmentGradient.ZERO_POSITIVE_INTERSECTING);
     }
 
     @Test
@@ -369,7 +369,7 @@ public class GraphSegmentImplTest extends AbstractGraphSegmentTest {
         andTheValueAtTheIntersectionIs(this.firstSeriesSegment.getStartValue()
                 + (this.firstSeriesSegment.getEndValue() - this.firstSeriesSegment.getStartValue()) / 2);
         andTheSeriesAreNotParallel();
-        andTheGraphSegmentCategoryIs(GraphSegmentCategory.NEGATIVE_POSITIVE_INTERSECTING);
+        andTheGraphSegmentCategoryIs(GraphSegmentGradient.NEGATIVE_POSITIVE_INTERSECTING);
     }
 
     @Test
@@ -382,7 +382,7 @@ public class GraphSegmentImplTest extends AbstractGraphSegmentTest {
         andTheValueAtTheIntersectionIs(this.firstSeriesSegment.getStartValue()
                 + (this.firstSeriesSegment.getEndValue() - this.firstSeriesSegment.getStartValue()) / 2);
         andTheSeriesAreNotParallel();
-        andTheGraphSegmentCategoryIs(GraphSegmentCategory.POSITIVE_POSITIVE_INTERSECTING);
+        andTheGraphSegmentCategoryIs(GraphSegmentGradient.POSITIVE_POSITIVE_INTERSECTING);
     }
 
     @Test
@@ -394,7 +394,7 @@ public class GraphSegmentImplTest extends AbstractGraphSegmentTest {
         thenTheSegmentDoesContainIntersection();
         andTheValueAtTheIntersectionIs(FIRST_SERIES_START);
         andTheSeriesAreNotParallel();
-        andTheGraphSegmentCategoryIs(GraphSegmentCategory.ZERO_NEGATIVE_INTERSECTING);
+        andTheGraphSegmentCategoryIs(GraphSegmentGradient.ZERO_NEGATIVE_INTERSECTING);
     }
 
     @Test
@@ -407,7 +407,7 @@ public class GraphSegmentImplTest extends AbstractGraphSegmentTest {
         andTheValueAtTheIntersectionIs(this.firstSeriesSegment.getStartValue()
                 + (this.firstSeriesSegment.getEndValue() - this.firstSeriesSegment.getStartValue()) / 2);
         andTheSeriesAreNotParallel();
-        andTheGraphSegmentCategoryIs(GraphSegmentCategory.NEGATIVE_NEGATIVE_INTERSECTING);
+        andTheGraphSegmentCategoryIs(GraphSegmentGradient.NEGATIVE_NEGATIVE_INTERSECTING);
     }
 
     @Test
@@ -420,7 +420,7 @@ public class GraphSegmentImplTest extends AbstractGraphSegmentTest {
         andTheValueAtTheIntersectionIs(this.firstSeriesSegment.getStartValue()
                 + (this.firstSeriesSegment.getEndValue() - this.firstSeriesSegment.getStartValue()) / 2);
         andTheSeriesAreNotParallel();
-        andTheGraphSegmentCategoryIs(GraphSegmentCategory.POSITIVE_NEGATIVE_INTERSECTING);
+        andTheGraphSegmentCategoryIs(GraphSegmentGradient.POSITIVE_NEGATIVE_INTERSECTING);
     }
 
     @Test
@@ -442,7 +442,7 @@ public class GraphSegmentImplTest extends AbstractGraphSegmentTest {
         whenTheGraphSegmentIsConstructed();
         whenASegmentWithSeriesGradientsIsAppended(GradientType.POSITIVE, GradientType.POSITIVE, Intersection.NEVER);
         thenTheSegmentHasLength(2);
-        andTheGraphSegmentCategoryIs(GraphSegmentCategory.POSITIVE_POSITIVE);
+        andTheGraphSegmentCategoryIs(GraphSegmentGradient.POSITIVE_POSITIVE);
         // TODO: more to test here (gradient, end values, intersection, etc)
     }
 
@@ -514,8 +514,8 @@ public class GraphSegmentImplTest extends AbstractGraphSegmentTest {
         assertTrue("Series are not parallel", this.underTest.isParallel());
     }
 
-    private void andTheGraphSegmentCategoryIs(GraphSegmentCategory category) {
-        assertEquals("incorrect segment category returned", category, this.underTest.getSegmentCategory());
+    private void andTheGraphSegmentCategoryIs(GraphSegmentGradient category) {
+        assertEquals("incorrect segment category returned", category, this.underTest.getGraphSegmentGradientCategory());
     }
 
     private void andTheSeriesAreNotParallel() {

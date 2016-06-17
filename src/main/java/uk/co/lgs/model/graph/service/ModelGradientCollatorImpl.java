@@ -10,7 +10,7 @@ import uk.co.lgs.model.segment.exception.SegmentCategoryNotFoundException;
 import uk.co.lgs.model.segment.graph.GraphSegment;
 
 @Component
-public class ModelCollatorImpl implements ModelCollator {
+public class ModelGradientCollatorImpl implements ModelGradientCollator {
 
     private static final String LENGTH_MISMATCH_MESSAGE = "The length of the collated model, %1$d does not match that of the original, %2$d";
 
@@ -26,7 +26,7 @@ public class ModelCollatorImpl implements ModelCollator {
         for (GraphSegment segment : model.getGraphSegments()) {
             if (null == segmentBeingBuilt) {
                 segmentBeingBuilt = segment;
-            } else if (segmentBeingBuilt.getSegmentCategory().equals(segment.getSegmentCategory())) {
+            } else if (segmentBeingBuilt.getGraphSegmentGradientCategory().equals(segment.getGraphSegmentGradientCategory())) {
                 // TODO: how to handle intersections?
                 try {
                     segmentBeingBuilt = segmentBeingBuilt.append(segment);

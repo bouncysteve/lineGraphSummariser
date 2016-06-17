@@ -1,7 +1,8 @@
 package uk.co.lgs.domain.exception;
 
 /**
- * Exception thrown when domain objects cannot be created or manipulated.
+ * I am the exception thrown when domain objects cannot be created or
+ * manipulated.
  * 
  * @author bouncysteve
  *
@@ -22,7 +23,7 @@ public class DomainException extends Exception {
 
     @Override
     public String getMessage() {
-        return message;
+        return this.message;
     }
 
 }

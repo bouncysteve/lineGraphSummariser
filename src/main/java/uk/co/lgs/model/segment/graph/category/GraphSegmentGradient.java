@@ -2,7 +2,14 @@ package uk.co.lgs.model.segment.graph.category;
 
 import uk.co.lgs.model.gradient.GradientType;
 
-public enum GraphSegmentCategory {
+/**
+ * I encapsulate the gradient types of the two series within a segment, and
+ * whether the series intersect at some point in the segment.
+ * 
+ * @author bouncysteve
+ *
+ */
+public enum GraphSegmentGradient {
     ZERO_ZERO(GradientType.ZERO, GradientType.ZERO, false), NEGATIVE_ZERO(GradientType.NEGATIVE, GradientType.ZERO,
             false), POSITIVE_ZERO(GradientType.POSITIVE, GradientType.ZERO, false), ZERO_POSITIVE(GradientType.ZERO,
                     GradientType.POSITIVE,
@@ -38,7 +45,7 @@ public enum GraphSegmentCategory {
     GradientType firstSeriesGradient;
     GradientType secondSeriesGradient;
 
-    private GraphSegmentCategory(GradientType firstSeriesGradient, GradientType secondSeriesGradient,
+    private GraphSegmentGradient(GradientType firstSeriesGradient, GradientType secondSeriesGradient,
             boolean intersecting) {
         this.intersecting = intersecting;
         this.firstSeriesGradient = firstSeriesGradient;

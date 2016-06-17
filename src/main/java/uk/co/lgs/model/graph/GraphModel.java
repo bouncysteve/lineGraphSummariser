@@ -4,6 +4,14 @@ import java.util.List;
 
 import uk.co.lgs.model.segment.graph.GraphSegment;
 
+/**
+ * I am a model object representing the entire graph in terms of a series of
+ * segments. I expose all meta-data about the graph, such as title, series
+ * labels, etc.
+ * 
+ * @author bouncysteve
+ *
+ */
 public interface GraphModel {
 
     List<GraphSegment> getGraphSegments();

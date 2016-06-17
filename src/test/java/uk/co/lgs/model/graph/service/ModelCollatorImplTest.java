@@ -18,7 +18,7 @@ import uk.co.lgs.model.segment.exception.SegmentAppendException;
 import uk.co.lgs.model.segment.exception.SegmentCategoryNotFoundException;
 import uk.co.lgs.model.segment.graph.GraphSegment;
 import uk.co.lgs.model.segment.graph.GraphSegmentImpl;
-import uk.co.lgs.model.segment.graph.category.GraphSegmentCategory;
+import uk.co.lgs.model.segment.graph.category.GraphSegmentGradient;
 import uk.co.lgs.model.segment.series.SeriesSegment;
 import uk.co.lgs.test.AbstractTest;
 
@@ -31,7 +31,7 @@ public class ModelCollatorImplTest extends AbstractTest {
     @Mock
     private GraphModel inputGraphModel;
 
-    private ModelCollator underTest = new ModelCollatorImpl();
+    private ModelGradientCollator underTest = new ModelGradientCollatorImpl();
 
     private GraphModel outputGraphModel;
 
@@ -44,23 +44,23 @@ public class ModelCollatorImplTest extends AbstractTest {
     @Test
     public void testCollate() throws SegmentCategoryNotFoundException, CollatorException, SegmentAppendException {
         givenAModelContainingSegmentCategories(
-                Arrays.asList(GraphSegmentCategory.NEGATIVE_NEGATIVE, GraphSegmentCategory.NEGATIVE_NEGATIVE));
+                Arrays.asList(GraphSegmentGradient.NEGATIVE_NEGATIVE, GraphSegmentGradient.NEGATIVE_NEGATIVE));
         whenTheModelIsCollated();
-        thenTheModelHasSegments(Arrays.asList(GraphSegmentCategory.NEGATIVE_NEGATIVE));
+        thenTheModelHasSegments(Arrays.asList(GraphSegmentGradient.NEGATIVE_NEGATIVE));
         andTheLengthsOfTheSegmentsAre(Arrays.asList(2));
         andTheModelSaysItIsCollated(true);
         // TODO: handle intersections
     }
 
-    private void givenAModelContainingSegmentCategories(List<GraphSegmentCategory> categories)
+    private void givenAModelContainingSegmentCategories(List<GraphSegmentGradient> categories)
             throws SegmentCategoryNotFoundException, SegmentAppendException {
         List<GraphSegment> segments = new ArrayList<GraphSegment>();
 
         // TODO: this is a bit hacky and only caters for collating two 1-long
         // segments
-        for (GraphSegmentCategory category : categories) {
+        for (GraphSegmentGradient category : categories) {
             GraphSegment segment = mock(GraphSegmentImpl.class);
-            when(segment.getSegmentCategory()).thenReturn(category);
+            when(segment.getGraphSegmentGradientCategory()).thenReturn(category);
             // hack!
             when(segment.getLength()).thenReturn(2);
             when(segment.getEndTime()).thenReturn(DUMMY_END_TIME);
@@ -78,9 +78,9 @@ public class ModelCollatorImplTest extends AbstractTest {
         this.outputGraphModel = this.underTest.collate(this.inputGraphModel);
     }
 
-    private void thenTheModelHasSegments(List<GraphSegmentCategory> categoryList) {
+    private void thenTheModelHasSegments(List<GraphSegmentGradient> categoryList) {
         for (GraphSegment segment : this.outputGraphModel.getGraphSegments()) {
-            assertEquals(categoryList.iterator().next(), segment.getSegmentCategory());
+            assertEquals(categoryList.iterator().next(), segment.getGraphSegmentGradientCategory());
         }
     }
 

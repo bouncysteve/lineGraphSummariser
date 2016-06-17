@@ -21,10 +21,17 @@ import uk.co.lgs.domain.loader.exception.LoaderException;
 import uk.co.lgs.model.graph.GraphModel;
 import uk.co.lgs.model.graph.GraphModelImpl;
 import uk.co.lgs.model.graph.collator.exception.CollatorException;
-import uk.co.lgs.model.graph.service.ModelCollator;
+import uk.co.lgs.model.graph.service.ModelGradientCollator;
 import uk.co.lgs.model.segment.exception.SegmentCategoryNotFoundException;
 import uk.co.lgs.text.service.graph.GraphSummaryService;
 
+/**
+ * I am the main class in the application. I output the state of the main domain
+ * and model classes to string and write the text summary(/ies) to files.
+ * 
+ * @author bouncysteve
+ *
+ */
 @Configuration
 @ComponentScan
 public class Controller {
@@ -63,7 +70,7 @@ public class Controller {
             writeToFile(parentDir, SUMMARY_FILENAME, summary);
 
             // *************Collated Model ***************************//
-            ModelCollator collator = context.getBean(ModelCollator.class);
+            ModelGradientCollator collator = context.getBean(ModelGradientCollator.class);
             GraphModel collatedModel = collator.collate(model);
 
             if (collatedModel.equals(model)) {

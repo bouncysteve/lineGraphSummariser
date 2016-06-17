@@ -1,5 +1,14 @@
 package uk.co.lgs.domain.graph.iscatter.schema.exception;
 
+/**
+ * I am thrown if there is a problem constructing a schema object from the
+ * schema.csv file.
+ * 
+ * @see http://michel.wermelinger.ws/chezmichel/iscatter/
+ * 
+ * @author bouncysteve
+ *
+ */
 public class SchemaException extends Exception {
 
     public SchemaException(String string) {

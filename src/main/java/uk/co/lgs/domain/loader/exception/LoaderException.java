@@ -1,5 +1,11 @@
 package uk.co.lgs.domain.loader.exception;
 
+/**
+ * I am thrown when a graph cannot be constructed from the underlying data.
+ * 
+ * @author bouncysteve
+ *
+ */
 public class LoaderException extends Exception {
 
     /**

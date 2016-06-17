@@ -9,7 +9,7 @@ import org.mockito.Mock;
 import uk.co.lgs.model.gradient.GradientType;
 import uk.co.lgs.model.segment.graph.GraphSegment;
 import uk.co.lgs.model.segment.graph.Intersection;
-import uk.co.lgs.model.segment.graph.category.GraphSegmentCategory;
+import uk.co.lgs.model.segment.graph.category.GraphSegmentGradient;
 import uk.co.lgs.model.segment.series.SeriesSegment;
 import uk.co.lgs.test.AbstractTest;
 
@@ -80,7 +80,7 @@ public abstract class AbstractGraphSegmentTest extends AbstractTest {
 
     protected void givenSecondSeriesWithGradientThatIntersectsAt(SeriesSegment firstSeries, SeriesSegment secondSeries,
             GradientType gradientType, Intersection intersection) {
-        GraphSegmentCategory graphSegmentCategory = null;
+        GraphSegmentGradient graphSegmentGradient = null;
         when(secondSeries.getGradientType()).thenReturn(gradientType);
         this.secondSeriesStartValue = calculateStartOfSecondSeriesGivenIntersect(firstSeries, gradientType,
                 intersection);
@@ -91,13 +91,13 @@ public abstract class AbstractGraphSegmentTest extends AbstractTest {
             this.secondSeriesEndValue = this.secondSeriesStartValue - SECOND_SERIES_GRADIENT_FACTOR;
             switch (firstSeries.getGradientType()) {
             case NEGATIVE:
-                graphSegmentCategory = GraphSegmentCategory.NEGATIVE_NEGATIVE_INTERSECTING;
+                graphSegmentGradient = GraphSegmentGradient.NEGATIVE_NEGATIVE_INTERSECTING;
                 break;
             case ZERO:
-                graphSegmentCategory = GraphSegmentCategory.NEGATIVE_ZERO_INTERSECTING;
+                graphSegmentGradient = GraphSegmentGradient.NEGATIVE_ZERO_INTERSECTING;
                 break;
             case POSITIVE:
-                graphSegmentCategory = GraphSegmentCategory.NEGATIVE_POSITIVE_INTERSECTING;
+                graphSegmentGradient = GraphSegmentGradient.NEGATIVE_POSITIVE_INTERSECTING;
                 break;
             }
             break;
@@ -105,13 +105,13 @@ public abstract class AbstractGraphSegmentTest extends AbstractTest {
             this.secondSeriesEndValue = this.secondSeriesStartValue;
             switch (firstSeries.getGradientType()) {
             case NEGATIVE:
-                graphSegmentCategory = GraphSegmentCategory.ZERO_NEGATIVE_INTERSECTING;
+                graphSegmentGradient = GraphSegmentGradient.ZERO_NEGATIVE_INTERSECTING;
                 break;
             case ZERO:
-                graphSegmentCategory = GraphSegmentCategory.ZERO_ZERO_INTERSECTING;
+                graphSegmentGradient = GraphSegmentGradient.ZERO_ZERO_INTERSECTING;
                 break;
             case POSITIVE:
-                graphSegmentCategory = GraphSegmentCategory.ZERO_POSITIVE_INTERSECTING;
+                graphSegmentGradient = GraphSegmentGradient.ZERO_POSITIVE_INTERSECTING;
                 break;
             }
             break;
@@ -119,13 +119,13 @@ public abstract class AbstractGraphSegmentTest extends AbstractTest {
             this.secondSeriesEndValue = this.secondSeriesStartValue + SECOND_SERIES_GRADIENT_FACTOR;
             switch (firstSeries.getGradientType()) {
             case NEGATIVE:
-                graphSegmentCategory = GraphSegmentCategory.POSITIVE_NEGATIVE_INTERSECTING;
+                graphSegmentGradient = GraphSegmentGradient.POSITIVE_NEGATIVE_INTERSECTING;
                 break;
             case ZERO:
-                graphSegmentCategory = GraphSegmentCategory.POSITIVE_ZERO_INTERSECTING;
+                graphSegmentGradient = GraphSegmentGradient.POSITIVE_ZERO_INTERSECTING;
                 break;
             case POSITIVE:
-                graphSegmentCategory = GraphSegmentCategory.POSITIVE_POSITIVE_INTERSECTING;
+                graphSegmentGradient = GraphSegmentGradient.POSITIVE_POSITIVE_INTERSECTING;
                 break;
             }
             break;
@@ -133,7 +133,7 @@ public abstract class AbstractGraphSegmentTest extends AbstractTest {
             fail("gradient type not specified");
         }
         when(secondSeries.getEndValue()).thenReturn(this.secondSeriesEndValue);
-        when(this.graphSegment.getSegmentCategory()).thenReturn(graphSegmentCategory);
+        when(this.graphSegment.getGraphSegmentGradientCategory()).thenReturn(graphSegmentGradient);
     }
 
     private double calculateStartOfSecondSeriesGivenIntersect(SeriesSegment firstSeries, GradientType gradientType,

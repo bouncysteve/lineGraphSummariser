@@ -56,7 +56,7 @@ public class GraphSegmentSummaryServiceImpl implements GraphSegmentSummaryServic
         Configuration firstSeriesConfig = new MapConfiguration(new HashMap<String, Object>());
         Configuration secondSeriesConfig = new MapConfiguration(new HashMap<String, Object>());
         if (graphSegment.isIntersecting()) {
-            switch (graphSegment.getSegmentCategory()) {
+            switch (graphSegment.getGraphSegmentGradientCategory()) {
             case ZERO_ZERO_INTERSECTING:
                 // Both series have the same value throughout.
                 firstSeriesConfig.setProperty(PropertyNames.BOTH_SAME, true + "");

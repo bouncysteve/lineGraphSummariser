@@ -4,7 +4,14 @@ import uk.co.lgs.model.graph.GraphModel;
 import uk.co.lgs.model.graph.collator.exception.CollatorException;
 import uk.co.lgs.model.segment.exception.SegmentCategoryNotFoundException;
 
-public interface ModelCollator {
+/**
+ * I am a super-interface representing all types of collation service.
+ * 
+ * @author bouncysteve
+ *
+ */
+public abstract interface ModelCollator {
 
-    public GraphModel collate(GraphModel model) throws SegmentCategoryNotFoundException, CollatorException;
+    GraphModel collate(GraphModel model) throws SegmentCategoryNotFoundException, CollatorException;
+
 }

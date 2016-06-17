@@ -4,12 +4,6 @@ import java.util.List;
 
 import uk.co.lgs.domain.exception.DomainException;
 
-/**
- * Domain class representing a data series.
- * 
- * @author bouncysteve
- *
- */
 public class RecordImpl implements Record {
 
     private static String MISSING_VALUES_MESSAGE = "Record cannot be created without values";
@@ -29,31 +23,16 @@ public class RecordImpl implements Record {
         this.values = values;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see uk.co.lgs.domain.Record#getValues()
-     */
     @Override
     public List<Double> getValues() {
         return this.values;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see uk.co.lgs.domain.Record#getCount()
-     */
     @Override
     public int getCount() {
         return this.values.size();
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see uk.co.lgs.domain.Record#getLabel()
-     */
     @Override
     public String getPointInTime() {
         return this.pointInTime;
