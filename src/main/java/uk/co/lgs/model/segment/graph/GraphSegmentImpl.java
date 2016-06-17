@@ -83,22 +83,24 @@ public class GraphSegmentImpl implements GraphSegment {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("Start: ").append(this.getStartTime()).append("\t");
-        sb.append("End: ").append(this.getEndTime()).append("\t");
-        sb.append("Length: ").append(this.getLength()).append("\t");
-        sb.append("Cat: ").append(this.getGraphSegmentGradientCategory()).append("\t");
+        sb.append(this.getStartTime()).append(" - ");
+        sb.append(this.getEndTime()).append("\t");
+        sb.append("(").append(this.getLength()).append(")\t");
+        sb.append(this.getGraphSegmentGradientCategory()).append("\t");
         if (!this.getGraphSegmentGradientCategory().isIntersecting()) {
-            sb.append("\t").append("\t");
+            sb.append("\t");
         }
         if (GraphSegmentGradient.ZERO_ZERO_INTERSECTING.equals(this.getGraphSegmentGradientCategory())) {
             sb.append("\t");
         }
-        for (SeriesSegment seriesSegment : this.seriesSegments) {
-            sb.append("S" + this.seriesSegments.indexOf(seriesSegment) + " gradient: ")
-                    .append(df.format(seriesSegment.getGradient())).append("\t");
-        }
+
+        sb.append("(" + (df.format(this.seriesSegments.get(0).getGradient())) + ", ");
+        sb.append(df.format(this.seriesSegments.get(1).getGradient()) + ")\t");
+
         if (this.isIntersecting()) {
             sb.append("Intersection: ").append(this.getValueAtIntersection()).append("\t");
+        } else {
+            sb.append("\t\t\t");
         }
         if (this.isParallel()) {
             sb.append("Segments are parallel").append("\t");
@@ -230,6 +232,18 @@ public class GraphSegmentImpl implements GraphSegment {
     @Override
     public GraphSegmentGap getGraphSegmentGap() {
         return this.graphSegmentGap;
+    }
+
+    /**
+     * Provides a header to explain the output of toString().
+     * 
+     * @return
+     */
+    public static String getHeader() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("PERIOD\t\t").append("LENGTH\t").append("GRADIENT_TYPES\t\t\t").append("GRADIENTS\t")
+                .append("(VALUE_AT_INTERSECTION)\t").append("NOTES\t");
+        return sb.toString();
     }
 
 }
