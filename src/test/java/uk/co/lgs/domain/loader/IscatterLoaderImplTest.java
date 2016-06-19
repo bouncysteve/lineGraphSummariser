@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import uk.co.lgs.domain.graph.GraphData;
 import uk.co.lgs.domain.loader.exception.LoaderException;
-import uk.co.lgs.domain.loader.iscatter.IscatterLoaderImpl;
+import uk.co.lgs.domain.loader.iscatter.IScatterLoaderImpl;
 import uk.co.lgs.domain.record.Record;
 import uk.co.lgs.test.AbstractTest;
 
@@ -107,7 +107,7 @@ public class IscatterLoaderImplTest extends AbstractTest {
     }
 
     private void whenICallIscatterLoader() throws LoaderException {
-        this.underTest = new IscatterLoaderImpl();
+        this.underTest = new IScatterLoaderImpl();
         this.graphData = this.underTest.getGraph(this.parentDir);
     }
 

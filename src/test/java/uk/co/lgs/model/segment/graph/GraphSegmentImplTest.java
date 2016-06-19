@@ -12,11 +12,19 @@ import uk.co.lgs.model.gradient.GradientType;
 import uk.co.lgs.model.segment.exception.SegmentAppendException;
 import uk.co.lgs.model.segment.exception.SegmentCategoryNotFoundException;
 import uk.co.lgs.model.segment.graph.category.GraphSegmentGradient;
+import uk.co.lgs.model.segment.series.SeriesSegment;
 import uk.co.lgs.segment.graph.AbstractGraphSegmentTest;
 
 public class GraphSegmentImplTest extends AbstractGraphSegmentTest {
 
+    private static String expectedHeader = "PERIOD\t\tLENGTH\tGRADIENT_TYPES\t\t\tGAP\t\tGRADIENTS\t(VALUE_AT_INTERSECTION)\tNOTES\t";
+
     private GraphSegmentImpl underTest;
+
+    @Test
+    public void testHeader() throws SegmentCategoryNotFoundException {
+        assertEquals(expectedHeader, GraphSegmentImpl.getHeader());
+    }
 
     @Test
     public void testZERO_ZERO() throws SegmentCategoryNotFoundException {
@@ -27,6 +35,12 @@ public class GraphSegmentImplTest extends AbstractGraphSegmentTest {
         thenTheSegmentDoesNotContainIntersection();
         andTheSeriesAreParallel();
         andTheGraphSegmentCategoryIs(GraphSegmentGradient.ZERO_ZERO);
+        andTheHigherSeriesAtTheStartIs(this.secondSeriesSegment);
+        andTheHigherSeriesAtTheEndIs(this.secondSeriesSegment);
+        andTheFirstSeriesTrendIs(GradientType.ZERO);
+        andTheSecondSeriesTrendIs(GradientType.ZERO);
+        andTheStartTimeIs(0);
+        andTheEndTimeIs(1);
     }
 
     @Test
@@ -38,6 +52,12 @@ public class GraphSegmentImplTest extends AbstractGraphSegmentTest {
         thenTheSegmentDoesNotContainIntersection();
         andTheSeriesAreNotParallel();
         andTheGraphSegmentCategoryIs(GraphSegmentGradient.NEGATIVE_ZERO);
+        andTheHigherSeriesAtTheStartIs(this.secondSeriesSegment);
+        andTheHigherSeriesAtTheEndIs(this.secondSeriesSegment);
+        andTheFirstSeriesTrendIs(GradientType.NEGATIVE);
+        andTheSecondSeriesTrendIs(GradientType.ZERO);
+        andTheStartTimeIs(0);
+        andTheEndTimeIs(1);
     }
 
     @Test
@@ -49,6 +69,12 @@ public class GraphSegmentImplTest extends AbstractGraphSegmentTest {
         thenTheSegmentDoesNotContainIntersection();
         andTheSeriesAreNotParallel();
         andTheGraphSegmentCategoryIs(GraphSegmentGradient.POSITIVE_ZERO);
+        andTheHigherSeriesAtTheStartIs(this.secondSeriesSegment);
+        andTheHigherSeriesAtTheEndIs(this.secondSeriesSegment);
+        andTheFirstSeriesTrendIs(GradientType.POSITIVE);
+        andTheSecondSeriesTrendIs(GradientType.ZERO);
+        andTheStartTimeIs(0);
+        andTheEndTimeIs(1);
     }
 
     @Test
@@ -60,6 +86,12 @@ public class GraphSegmentImplTest extends AbstractGraphSegmentTest {
         thenTheSegmentDoesNotContainIntersection();
         andTheSeriesAreNotParallel();
         andTheGraphSegmentCategoryIs(GraphSegmentGradient.ZERO_POSITIVE);
+        andTheHigherSeriesAtTheStartIs(this.secondSeriesSegment);
+        andTheHigherSeriesAtTheEndIs(this.secondSeriesSegment);
+        andTheFirstSeriesTrendIs(GradientType.ZERO);
+        andTheSecondSeriesTrendIs(GradientType.POSITIVE);
+        andTheStartTimeIs(0);
+        andTheEndTimeIs(1);
     }
 
     @Test
@@ -71,6 +103,12 @@ public class GraphSegmentImplTest extends AbstractGraphSegmentTest {
         thenTheSegmentDoesNotContainIntersection();
         andTheSeriesAreNotParallel();
         andTheGraphSegmentCategoryIs(GraphSegmentGradient.NEGATIVE_POSITIVE);
+        andTheHigherSeriesAtTheStartIs(this.secondSeriesSegment);
+        andTheHigherSeriesAtTheEndIs(this.secondSeriesSegment);
+        andTheFirstSeriesTrendIs(GradientType.NEGATIVE);
+        andTheSecondSeriesTrendIs(GradientType.POSITIVE);
+        andTheStartTimeIs(0);
+        andTheEndTimeIs(1);
     }
 
     @Test
@@ -82,6 +120,12 @@ public class GraphSegmentImplTest extends AbstractGraphSegmentTest {
         thenTheSegmentDoesNotContainIntersection();
         andTheSeriesAreNotParallel();
         andTheGraphSegmentCategoryIs(GraphSegmentGradient.POSITIVE_POSITIVE);
+        andTheHigherSeriesAtTheStartIs(this.secondSeriesSegment);
+        andTheHigherSeriesAtTheEndIs(this.secondSeriesSegment);
+        andTheFirstSeriesTrendIs(GradientType.POSITIVE);
+        andTheSecondSeriesTrendIs(GradientType.POSITIVE);
+        andTheStartTimeIs(0);
+        andTheEndTimeIs(1);
     }
 
     @Test
@@ -93,6 +137,12 @@ public class GraphSegmentImplTest extends AbstractGraphSegmentTest {
         thenTheSegmentDoesNotContainIntersection();
         andTheSeriesAreNotParallel();
         andTheGraphSegmentCategoryIs(GraphSegmentGradient.ZERO_NEGATIVE);
+        andTheHigherSeriesAtTheStartIs(this.secondSeriesSegment);
+        andTheHigherSeriesAtTheEndIs(this.secondSeriesSegment);
+        andTheFirstSeriesTrendIs(GradientType.ZERO);
+        andTheSecondSeriesTrendIs(GradientType.NEGATIVE);
+        andTheStartTimeIs(0);
+        andTheEndTimeIs(1);
     }
 
     @Test
@@ -104,6 +154,12 @@ public class GraphSegmentImplTest extends AbstractGraphSegmentTest {
         thenTheSegmentDoesNotContainIntersection();
         andTheSeriesAreNotParallel();
         andTheGraphSegmentCategoryIs(GraphSegmentGradient.NEGATIVE_NEGATIVE);
+        andTheHigherSeriesAtTheStartIs(this.secondSeriesSegment);
+        andTheHigherSeriesAtTheEndIs(this.secondSeriesSegment);
+        andTheFirstSeriesTrendIs(GradientType.NEGATIVE);
+        andTheSecondSeriesTrendIs(GradientType.NEGATIVE);
+        andTheStartTimeIs(0);
+        andTheEndTimeIs(1);
     }
 
     @Test
@@ -115,6 +171,12 @@ public class GraphSegmentImplTest extends AbstractGraphSegmentTest {
         thenTheSegmentDoesNotContainIntersection();
         andTheSeriesAreNotParallel();
         andTheGraphSegmentCategoryIs(GraphSegmentGradient.POSITIVE_NEGATIVE);
+        andTheHigherSeriesAtTheStartIs(this.secondSeriesSegment);
+        andTheHigherSeriesAtTheEndIs(this.secondSeriesSegment);
+        andTheFirstSeriesTrendIs(GradientType.POSITIVE);
+        andTheSecondSeriesTrendIs(GradientType.NEGATIVE);
+        andTheStartTimeIs(0);
+        andTheEndTimeIs(1);
     }
 
     @Test
@@ -127,6 +189,12 @@ public class GraphSegmentImplTest extends AbstractGraphSegmentTest {
         andTheValueAtTheIntersectionIs(FIRST_SERIES_START);
         andTheSeriesAreParallel();
         andTheGraphSegmentCategoryIs(GraphSegmentGradient.ZERO_ZERO_INTERSECTING);
+        andTheHigherSeriesAtTheStartIs(null);
+        andTheHigherSeriesAtTheEndIs(null);
+        andTheFirstSeriesTrendIs(GradientType.ZERO);
+        andTheSecondSeriesTrendIs(GradientType.ZERO);
+        andTheStartTimeIs(0);
+        andTheEndTimeIs(1);
     }
 
     @Test
@@ -139,6 +207,12 @@ public class GraphSegmentImplTest extends AbstractGraphSegmentTest {
         andTheValueAtTheIntersectionIs(FIRST_SERIES_START);
         andTheSeriesAreNotParallel();
         andTheGraphSegmentCategoryIs(GraphSegmentGradient.NEGATIVE_ZERO_INTERSECTING);
+        andTheHigherSeriesAtTheStartIs(null);
+        andTheHigherSeriesAtTheEndIs(this.secondSeriesSegment);
+        andTheFirstSeriesTrendIs(GradientType.NEGATIVE);
+        andTheSecondSeriesTrendIs(GradientType.ZERO);
+        andTheStartTimeIs(0);
+        andTheEndTimeIs(1);
     }
 
     @Test
@@ -151,6 +225,12 @@ public class GraphSegmentImplTest extends AbstractGraphSegmentTest {
         andTheValueAtTheIntersectionIs(FIRST_SERIES_START);
         andTheSeriesAreNotParallel();
         andTheGraphSegmentCategoryIs(GraphSegmentGradient.POSITIVE_ZERO_INTERSECTING);
+        andTheHigherSeriesAtTheStartIs(null);
+        andTheHigherSeriesAtTheEndIs(this.firstSeriesSegment);
+        andTheFirstSeriesTrendIs(GradientType.POSITIVE);
+        andTheSecondSeriesTrendIs(GradientType.ZERO);
+        andTheStartTimeIs(0);
+        andTheEndTimeIs(1);
     }
 
     @Test
@@ -163,6 +243,12 @@ public class GraphSegmentImplTest extends AbstractGraphSegmentTest {
         andTheValueAtTheIntersectionIs(FIRST_SERIES_START);
         andTheSeriesAreNotParallel();
         andTheGraphSegmentCategoryIs(GraphSegmentGradient.ZERO_POSITIVE_INTERSECTING);
+        andTheHigherSeriesAtTheStartIs(null);
+        andTheHigherSeriesAtTheEndIs(this.secondSeriesSegment);
+        andTheFirstSeriesTrendIs(GradientType.ZERO);
+        andTheSecondSeriesTrendIs(GradientType.POSITIVE);
+        andTheStartTimeIs(0);
+        andTheEndTimeIs(1);
     }
 
     @Test
@@ -175,6 +261,12 @@ public class GraphSegmentImplTest extends AbstractGraphSegmentTest {
         andTheValueAtTheIntersectionIs(FIRST_SERIES_START);
         andTheSeriesAreNotParallel();
         andTheGraphSegmentCategoryIs(GraphSegmentGradient.NEGATIVE_POSITIVE_INTERSECTING);
+        andTheHigherSeriesAtTheStartIs(null);
+        andTheHigherSeriesAtTheEndIs(this.secondSeriesSegment);
+        andTheFirstSeriesTrendIs(GradientType.NEGATIVE);
+        andTheSecondSeriesTrendIs(GradientType.POSITIVE);
+        andTheStartTimeIs(0);
+        andTheEndTimeIs(1);
     }
 
     @Test
@@ -187,6 +279,12 @@ public class GraphSegmentImplTest extends AbstractGraphSegmentTest {
         andTheValueAtTheIntersectionIs(FIRST_SERIES_START);
         andTheSeriesAreNotParallel();
         andTheGraphSegmentCategoryIs(GraphSegmentGradient.POSITIVE_POSITIVE_INTERSECTING);
+        andTheHigherSeriesAtTheStartIs(null);
+        andTheHigherSeriesAtTheEndIs(this.secondSeriesSegment);
+        andTheFirstSeriesTrendIs(GradientType.POSITIVE);
+        andTheSecondSeriesTrendIs(GradientType.POSITIVE);
+        andTheStartTimeIs(0);
+        andTheEndTimeIs(1);
     }
 
     @Test
@@ -199,6 +297,12 @@ public class GraphSegmentImplTest extends AbstractGraphSegmentTest {
         andTheValueAtTheIntersectionIs(FIRST_SERIES_START);
         andTheSeriesAreNotParallel();
         andTheGraphSegmentCategoryIs(GraphSegmentGradient.ZERO_NEGATIVE_INTERSECTING);
+        andTheHigherSeriesAtTheStartIs(null);
+        andTheHigherSeriesAtTheEndIs(this.firstSeriesSegment);
+        andTheFirstSeriesTrendIs(GradientType.ZERO);
+        andTheSecondSeriesTrendIs(GradientType.NEGATIVE);
+        andTheStartTimeIs(0);
+        andTheEndTimeIs(1);
     }
 
     @Test
@@ -211,6 +315,12 @@ public class GraphSegmentImplTest extends AbstractGraphSegmentTest {
         andTheValueAtTheIntersectionIs(FIRST_SERIES_START);
         andTheSeriesAreNotParallel();
         andTheGraphSegmentCategoryIs(GraphSegmentGradient.NEGATIVE_NEGATIVE_INTERSECTING);
+        andTheHigherSeriesAtTheStartIs(null);
+        andTheHigherSeriesAtTheEndIs(this.firstSeriesSegment);
+        andTheFirstSeriesTrendIs(GradientType.NEGATIVE);
+        andTheSecondSeriesTrendIs(GradientType.NEGATIVE);
+        andTheStartTimeIs(0);
+        andTheEndTimeIs(1);
     }
 
     @Test
@@ -223,6 +333,12 @@ public class GraphSegmentImplTest extends AbstractGraphSegmentTest {
         andTheValueAtTheIntersectionIs(FIRST_SERIES_START);
         andTheSeriesAreNotParallel();
         andTheGraphSegmentCategoryIs(GraphSegmentGradient.POSITIVE_NEGATIVE_INTERSECTING);
+        andTheHigherSeriesAtTheStartIs(null);
+        andTheHigherSeriesAtTheEndIs(this.firstSeriesSegment);
+        andTheFirstSeriesTrendIs(GradientType.POSITIVE);
+        andTheSecondSeriesTrendIs(GradientType.NEGATIVE);
+        andTheStartTimeIs(0);
+        andTheEndTimeIs(1);
     }
 
     @Test
@@ -235,6 +351,12 @@ public class GraphSegmentImplTest extends AbstractGraphSegmentTest {
         andTheValueAtTheIntersectionIs(FIRST_SERIES_START - 1);
         andTheSeriesAreNotParallel();
         andTheGraphSegmentCategoryIs(GraphSegmentGradient.NEGATIVE_ZERO_INTERSECTING);
+        andTheHigherSeriesAtTheStartIs(this.firstSeriesSegment);
+        andTheHigherSeriesAtTheEndIs(null);
+        andTheFirstSeriesTrendIs(GradientType.NEGATIVE);
+        andTheSecondSeriesTrendIs(GradientType.ZERO);
+        andTheStartTimeIs(0);
+        andTheEndTimeIs(1);
     }
 
     @Test
@@ -247,6 +369,12 @@ public class GraphSegmentImplTest extends AbstractGraphSegmentTest {
         andTheValueAtTheIntersectionIs(FIRST_SERIES_START + 1);
         andTheSeriesAreNotParallel();
         andTheGraphSegmentCategoryIs(GraphSegmentGradient.POSITIVE_ZERO_INTERSECTING);
+        andTheHigherSeriesAtTheStartIs(this.secondSeriesSegment);
+        andTheHigherSeriesAtTheEndIs(null);
+        andTheFirstSeriesTrendIs(GradientType.POSITIVE);
+        andTheSecondSeriesTrendIs(GradientType.ZERO);
+        andTheStartTimeIs(0);
+        andTheEndTimeIs(1);
     }
 
     @Test
@@ -259,6 +387,12 @@ public class GraphSegmentImplTest extends AbstractGraphSegmentTest {
         andTheValueAtTheIntersectionIs(FIRST_SERIES_START);
         andTheSeriesAreNotParallel();
         andTheGraphSegmentCategoryIs(GraphSegmentGradient.ZERO_POSITIVE_INTERSECTING);
+        andTheHigherSeriesAtTheStartIs(this.firstSeriesSegment);
+        andTheHigherSeriesAtTheEndIs(null);
+        andTheFirstSeriesTrendIs(GradientType.ZERO);
+        andTheSecondSeriesTrendIs(GradientType.POSITIVE);
+        andTheStartTimeIs(0);
+        andTheEndTimeIs(1);
     }
 
     @Test
@@ -271,6 +405,12 @@ public class GraphSegmentImplTest extends AbstractGraphSegmentTest {
         andTheValueAtTheIntersectionIs(FIRST_SERIES_START - 1);
         andTheSeriesAreNotParallel();
         andTheGraphSegmentCategoryIs(GraphSegmentGradient.NEGATIVE_POSITIVE_INTERSECTING);
+        andTheHigherSeriesAtTheStartIs(this.firstSeriesSegment);
+        andTheHigherSeriesAtTheEndIs(null);
+        andTheFirstSeriesTrendIs(GradientType.NEGATIVE);
+        andTheSecondSeriesTrendIs(GradientType.POSITIVE);
+        andTheStartTimeIs(0);
+        andTheEndTimeIs(1);
     }
 
     @Test
@@ -283,6 +423,12 @@ public class GraphSegmentImplTest extends AbstractGraphSegmentTest {
         andTheValueAtTheIntersectionIs(FIRST_SERIES_START + 1);
         andTheSeriesAreNotParallel();
         andTheGraphSegmentCategoryIs(GraphSegmentGradient.POSITIVE_POSITIVE_INTERSECTING);
+        andTheHigherSeriesAtTheStartIs(this.firstSeriesSegment);
+        andTheHigherSeriesAtTheEndIs(null);
+        andTheFirstSeriesTrendIs(GradientType.POSITIVE);
+        andTheSecondSeriesTrendIs(GradientType.POSITIVE);
+        andTheStartTimeIs(0);
+        andTheEndTimeIs(1);
     }
 
     @Test
@@ -295,6 +441,12 @@ public class GraphSegmentImplTest extends AbstractGraphSegmentTest {
         andTheValueAtTheIntersectionIs(FIRST_SERIES_START);
         andTheSeriesAreNotParallel();
         andTheGraphSegmentCategoryIs(GraphSegmentGradient.ZERO_NEGATIVE_INTERSECTING);
+        andTheHigherSeriesAtTheStartIs(this.secondSeriesSegment);
+        andTheHigherSeriesAtTheEndIs(null);
+        andTheFirstSeriesTrendIs(GradientType.ZERO);
+        andTheSecondSeriesTrendIs(GradientType.NEGATIVE);
+        andTheStartTimeIs(0);
+        andTheEndTimeIs(1);
     }
 
     @Test
@@ -307,6 +459,12 @@ public class GraphSegmentImplTest extends AbstractGraphSegmentTest {
         andTheValueAtTheIntersectionIs(FIRST_SERIES_START - 1);
         andTheSeriesAreNotParallel();
         andTheGraphSegmentCategoryIs(GraphSegmentGradient.NEGATIVE_NEGATIVE_INTERSECTING);
+        andTheHigherSeriesAtTheStartIs(this.secondSeriesSegment);
+        andTheHigherSeriesAtTheEndIs(null);
+        andTheFirstSeriesTrendIs(GradientType.NEGATIVE);
+        andTheSecondSeriesTrendIs(GradientType.NEGATIVE);
+        andTheStartTimeIs(0);
+        andTheEndTimeIs(1);
     }
 
     @Test
@@ -319,6 +477,12 @@ public class GraphSegmentImplTest extends AbstractGraphSegmentTest {
         andTheValueAtTheIntersectionIs(FIRST_SERIES_START + 1);
         andTheSeriesAreNotParallel();
         andTheGraphSegmentCategoryIs(GraphSegmentGradient.POSITIVE_NEGATIVE_INTERSECTING);
+        andTheHigherSeriesAtTheStartIs(this.secondSeriesSegment);
+        andTheHigherSeriesAtTheEndIs(null);
+        andTheFirstSeriesTrendIs(GradientType.POSITIVE);
+        andTheSecondSeriesTrendIs(GradientType.NEGATIVE);
+        andTheStartTimeIs(0);
+        andTheEndTimeIs(1);
     }
 
     @Test
@@ -332,6 +496,12 @@ public class GraphSegmentImplTest extends AbstractGraphSegmentTest {
                 + (this.firstSeriesSegment.getEndValue() - this.firstSeriesSegment.getStartValue()) / 2);
         andTheSeriesAreNotParallel();
         andTheGraphSegmentCategoryIs(GraphSegmentGradient.NEGATIVE_ZERO_INTERSECTING);
+        andTheHigherSeriesAtTheStartIs(this.firstSeriesSegment);
+        andTheHigherSeriesAtTheEndIs(this.secondSeriesSegment);
+        andTheFirstSeriesTrendIs(GradientType.NEGATIVE);
+        andTheSecondSeriesTrendIs(GradientType.ZERO);
+        andTheStartTimeIs(0);
+        andTheEndTimeIs(1);
     }
 
     @Test
@@ -345,6 +515,12 @@ public class GraphSegmentImplTest extends AbstractGraphSegmentTest {
                 + (this.firstSeriesSegment.getEndValue() - this.firstSeriesSegment.getStartValue()) / 2);
         andTheSeriesAreNotParallel();
         andTheGraphSegmentCategoryIs(GraphSegmentGradient.POSITIVE_ZERO_INTERSECTING);
+        andTheHigherSeriesAtTheStartIs(this.secondSeriesSegment);
+        andTheHigherSeriesAtTheEndIs(this.firstSeriesSegment);
+        andTheFirstSeriesTrendIs(GradientType.POSITIVE);
+        andTheSecondSeriesTrendIs(GradientType.ZERO);
+        andTheStartTimeIs(0);
+        andTheEndTimeIs(1);
     }
 
     @Test
@@ -357,6 +533,12 @@ public class GraphSegmentImplTest extends AbstractGraphSegmentTest {
         andTheValueAtTheIntersectionIs(FIRST_SERIES_START);
         andTheSeriesAreNotParallel();
         andTheGraphSegmentCategoryIs(GraphSegmentGradient.ZERO_POSITIVE_INTERSECTING);
+        andTheHigherSeriesAtTheStartIs(this.firstSeriesSegment);
+        andTheHigherSeriesAtTheEndIs(this.secondSeriesSegment);
+        andTheFirstSeriesTrendIs(GradientType.ZERO);
+        andTheSecondSeriesTrendIs(GradientType.POSITIVE);
+        andTheStartTimeIs(0);
+        andTheEndTimeIs(1);
     }
 
     @Test
@@ -370,6 +552,12 @@ public class GraphSegmentImplTest extends AbstractGraphSegmentTest {
                 + (this.firstSeriesSegment.getEndValue() - this.firstSeriesSegment.getStartValue()) / 2);
         andTheSeriesAreNotParallel();
         andTheGraphSegmentCategoryIs(GraphSegmentGradient.NEGATIVE_POSITIVE_INTERSECTING);
+        andTheHigherSeriesAtTheStartIs(this.firstSeriesSegment);
+        andTheHigherSeriesAtTheEndIs(this.secondSeriesSegment);
+        andTheFirstSeriesTrendIs(GradientType.NEGATIVE);
+        andTheSecondSeriesTrendIs(GradientType.POSITIVE);
+        andTheStartTimeIs(0);
+        andTheEndTimeIs(1);
     }
 
     @Test
@@ -383,6 +571,12 @@ public class GraphSegmentImplTest extends AbstractGraphSegmentTest {
                 + (this.firstSeriesSegment.getEndValue() - this.firstSeriesSegment.getStartValue()) / 2);
         andTheSeriesAreNotParallel();
         andTheGraphSegmentCategoryIs(GraphSegmentGradient.POSITIVE_POSITIVE_INTERSECTING);
+        andTheHigherSeriesAtTheStartIs(this.firstSeriesSegment);
+        andTheHigherSeriesAtTheEndIs(this.secondSeriesSegment);
+        andTheFirstSeriesTrendIs(GradientType.POSITIVE);
+        andTheSecondSeriesTrendIs(GradientType.POSITIVE);
+        andTheStartTimeIs(0);
+        andTheEndTimeIs(1);
     }
 
     @Test
@@ -395,6 +589,12 @@ public class GraphSegmentImplTest extends AbstractGraphSegmentTest {
         andTheValueAtTheIntersectionIs(FIRST_SERIES_START);
         andTheSeriesAreNotParallel();
         andTheGraphSegmentCategoryIs(GraphSegmentGradient.ZERO_NEGATIVE_INTERSECTING);
+        andTheHigherSeriesAtTheStartIs(this.secondSeriesSegment);
+        andTheHigherSeriesAtTheEndIs(this.firstSeriesSegment);
+        andTheFirstSeriesTrendIs(GradientType.ZERO);
+        andTheSecondSeriesTrendIs(GradientType.NEGATIVE);
+        andTheStartTimeIs(0);
+        andTheEndTimeIs(1);
     }
 
     @Test
@@ -408,6 +608,12 @@ public class GraphSegmentImplTest extends AbstractGraphSegmentTest {
                 + (this.firstSeriesSegment.getEndValue() - this.firstSeriesSegment.getStartValue()) / 2);
         andTheSeriesAreNotParallel();
         andTheGraphSegmentCategoryIs(GraphSegmentGradient.NEGATIVE_NEGATIVE_INTERSECTING);
+        andTheHigherSeriesAtTheStartIs(this.secondSeriesSegment);
+        andTheHigherSeriesAtTheEndIs(this.firstSeriesSegment);
+        andTheFirstSeriesTrendIs(GradientType.NEGATIVE);
+        andTheSecondSeriesTrendIs(GradientType.NEGATIVE);
+        andTheStartTimeIs(0);
+        andTheEndTimeIs(1);
     }
 
     @Test
@@ -421,6 +627,12 @@ public class GraphSegmentImplTest extends AbstractGraphSegmentTest {
                 + (this.firstSeriesSegment.getEndValue() - this.firstSeriesSegment.getStartValue()) / 2);
         andTheSeriesAreNotParallel();
         andTheGraphSegmentCategoryIs(GraphSegmentGradient.POSITIVE_NEGATIVE_INTERSECTING);
+        andTheHigherSeriesAtTheStartIs(this.secondSeriesSegment);
+        andTheHigherSeriesAtTheEndIs(this.firstSeriesSegment);
+        andTheFirstSeriesTrendIs(GradientType.POSITIVE);
+        andTheSecondSeriesTrendIs(GradientType.NEGATIVE);
+        andTheStartTimeIs(0);
+        andTheEndTimeIs(1);
     }
 
     @Test
@@ -442,8 +654,23 @@ public class GraphSegmentImplTest extends AbstractGraphSegmentTest {
         whenTheGraphSegmentIsConstructed();
         whenASegmentWithSeriesGradientsIsAppended(GradientType.POSITIVE, GradientType.POSITIVE, Intersection.NEVER);
         thenTheSegmentHasLength(2);
+        thenTheSegmentDoesNotContainIntersection();
+        andTheSeriesAreNotParallel();
         andTheGraphSegmentCategoryIs(GraphSegmentGradient.POSITIVE_POSITIVE);
-        // TODO: more to test here (gradient, end values, intersection, etc)
+        andTheHigherSeriesAtTheStartIs(this.secondSeriesSegment);
+        andTheHigherSeriesAtTheEndIs(this.secondSeriesSegment);
+        andTheFirstSeriesTrendIs(GradientType.POSITIVE);
+        andTheSecondSeriesTrendIs(GradientType.POSITIVE);
+        andTheStartTimeIs(0);
+        andTheEndTimeIs(2);
+    }
+
+    private void andTheEndTimeIs(int i) {
+        assertEquals(i + "", this.underTest.getEndTime());
+    }
+
+    private void andTheStartTimeIs(int i) {
+        assertEquals(i + "", this.underTest.getStartTime());
     }
 
     private void thenTheSegmentHasLength(int length) {
@@ -490,6 +717,7 @@ public class GraphSegmentImplTest extends AbstractGraphSegmentTest {
         when(this.secondSeriesSegment.append(this.appendSecondSeriesSegment))
                 .thenReturn(this.collatedSecondSeriesSegment);
         when(this.firstSeriesSegment.getSegmentLength()).thenReturn(2);
+        when(this.firstSeriesSegment.getEndTime()).thenReturn("2");
         this.underTest.append(new GraphSegmentImpl(this.appendFirstSeriesSegment, this.appendSecondSeriesSegment));
     }
 
@@ -520,6 +748,22 @@ public class GraphSegmentImplTest extends AbstractGraphSegmentTest {
 
     private void andTheSeriesAreNotParallel() {
         assertFalse("Series are parallel", this.underTest.isParallel());
+    }
+
+    private void andTheHigherSeriesAtTheEndIs(SeriesSegment seriesSegment) {
+        assertEquals(seriesSegment, this.underTest.getHigherSeriesAtEnd());
+    }
+
+    private void andTheHigherSeriesAtTheStartIs(SeriesSegment seriesSegment) {
+        assertEquals(seriesSegment, this.underTest.getHigherSeriesAtStart());
+    }
+
+    private void andTheSecondSeriesTrendIs(GradientType trend) {
+        assertEquals(trend, this.underTest.getSecondSeriesTrend());
+    }
+
+    private void andTheFirstSeriesTrendIs(GradientType trend) {
+        assertEquals(trend, this.underTest.getFirstSeriesTrend());
     }
 
 }

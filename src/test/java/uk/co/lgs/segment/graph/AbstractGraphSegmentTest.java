@@ -60,6 +60,8 @@ public abstract class AbstractGraphSegmentTest extends AbstractTest {
         double startValue = firstSeries.getStartValue();
         this.firstSeriesEndValue = 0d;
 
+        when(firstSeries.getStartTime()).thenReturn("0");
+        when(firstSeries.getEndTime()).thenReturn("1");
         when(firstSeries.getGradientType()).thenReturn(gradientType);
         switch (gradientType) {
         case NEGATIVE:

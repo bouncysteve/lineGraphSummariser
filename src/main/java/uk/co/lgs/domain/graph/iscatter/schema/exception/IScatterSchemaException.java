@@ -9,13 +9,13 @@ package uk.co.lgs.domain.graph.iscatter.schema.exception;
  * @author bouncysteve
  *
  */
-public class SchemaException extends Exception {
+public class IScatterSchemaException extends Exception {
 
-    public SchemaException(String string) {
+    public IScatterSchemaException(String string) {
         super(string);
     }
 
-    public SchemaException(String string, AssertionError e) {
+    public IScatterSchemaException(String string, AssertionError e) {
         super(string, e);
     }
 

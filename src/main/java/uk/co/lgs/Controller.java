@@ -22,7 +22,7 @@ import uk.co.lgs.model.graph.GraphModel;
 import uk.co.lgs.model.graph.GraphModelImpl;
 import uk.co.lgs.model.graph.collator.exception.CollatorException;
 import uk.co.lgs.model.graph.service.ModelCollator;
-import uk.co.lgs.model.graph.service.ModelGradientCollator;
+import uk.co.lgs.model.graph.service.GradientCollator;
 import uk.co.lgs.model.segment.exception.SegmentCategoryNotFoundException;
 import uk.co.lgs.text.service.graph.GraphSummaryService;
 
@@ -72,7 +72,7 @@ public class Controller {
 
             // *************Gradient Collated Model
             // ***************************//
-            ModelCollator gradientCollator = context.getBean(ModelGradientCollator.class);
+            ModelCollator gradientCollator = context.getBean(GradientCollator.class);
             GraphModel collatedModel = gradientCollator.collate(model);
 
             if (collatedModel.equals(model)) {

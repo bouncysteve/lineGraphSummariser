@@ -2,7 +2,7 @@ package uk.co.lgs.domain.graph.iscatter.schema;
 
 import java.util.List;
 
-import uk.co.lgs.domain.graph.iscatter.schema.exception.SchemaException;
+import uk.co.lgs.domain.graph.iscatter.schema.exception.IScatterSchemaException;
 
 public class IScatterAttributeImpl implements IScatterAttribute {
 
@@ -13,7 +13,7 @@ public class IScatterAttributeImpl implements IScatterAttribute {
     private String name;
     private String id;
 
-    public IScatterAttributeImpl(List<String> inputRecord) throws SchemaException {
+    public IScatterAttributeImpl(List<String> inputRecord) throws IScatterSchemaException {
         int i = 0;
         this.id = inputRecord.get(i++);
         this.name = inputRecord.get(i++);

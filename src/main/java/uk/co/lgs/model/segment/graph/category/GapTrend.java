@@ -7,7 +7,7 @@ package uk.co.lgs.model.segment.graph.category;
  * @author bouncysteve
  *
  */
-public enum GraphSegmentGap {
+public enum GapTrend {
     CONVERGING, DIVERGING, PARALLEL
 
 }

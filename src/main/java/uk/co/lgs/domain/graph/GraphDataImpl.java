@@ -6,7 +6,7 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
 import uk.co.lgs.domain.exception.DomainException;
-import uk.co.lgs.domain.graph.iscatter.schema.Schema;
+import uk.co.lgs.domain.graph.iscatter.schema.IScatterSchema;
 import uk.co.lgs.domain.record.Record;
 
 public class GraphDataImpl implements GraphData {
@@ -19,7 +19,7 @@ public class GraphDataImpl implements GraphData {
 
     private List<String> units;
 
-    private Schema schema;
+    private IScatterSchema iScatterSchema;
 
     /**
      * The title of the graph, as present in any original publication.
@@ -27,24 +27,24 @@ public class GraphDataImpl implements GraphData {
      */
     private String title;
 
-    public GraphDataImpl(Schema schema, List<String> header, List<Record> records) throws DomainException {
-        this.schema = schema;
-        this.header = parseLabels(header, schema);
+    public GraphDataImpl(IScatterSchema iScatterSchema, List<String> header, List<Record> records) throws DomainException {
+        this.iScatterSchema = iScatterSchema;
+        this.header = parseLabels(header, iScatterSchema);
         this.records = records;
-        this.units = parseUnits(header, schema);
+        this.units = parseUnits(header, iScatterSchema);
 
         if (null == records || records.size() < 2) {
             throw new DomainException(MISSING_RECORDS_MESSAGE);
         }
     }
 
-    private List<String> parseUnits(List<String> header, Schema schema) {
+    private List<String> parseUnits(List<String> header, IScatterSchema iScatterSchema) {
         List<String> localUnits = new ArrayList<>();
         if (null != header) {
             for (String seriesId : header) {
                 String unit = "";
-                if (null != schema) {
-                    unit = schema.getUnit(seriesId);
+                if (null != iScatterSchema) {
+                    unit = iScatterSchema.getUnit(seriesId);
                 }
                 if (StringUtils.isNotEmpty(unit)) {
                     localUnits.add(unit);
@@ -67,9 +67,9 @@ public class GraphDataImpl implements GraphData {
      *             if the title is missing or empty, or if at least two data
      *             series are not present.
      */
-    public GraphDataImpl(String title, Schema schema, List<String> header, List<Record> records)
+    public GraphDataImpl(String title, IScatterSchema iScatterSchema, List<String> header, List<Record> records)
             throws DomainException {
-        this(schema, header, records);
+        this(iScatterSchema, header, records);
         this.title = title;
     }
 
@@ -89,13 +89,13 @@ public class GraphDataImpl implements GraphData {
     }
 
     @Override
-    public Schema getSchema() {
-        return this.schema;
+    public IScatterSchema getSchema() {
+        return this.iScatterSchema;
     }
 
     @Override
     public int getSchemaAttributeCount() {
-        return this.schema.getAttributesCount();
+        return this.iScatterSchema.getAttributesCount();
     }
 
     @Override
@@ -126,13 +126,13 @@ public class GraphDataImpl implements GraphData {
         return builder.toString();
     }
 
-    private List<String> parseLabels(List<String> header, Schema schema) {
+    private List<String> parseLabels(List<String> header, IScatterSchema iScatterSchema) {
         List<String> labels = new ArrayList<>();
         if (null != header) {
             for (String seriesId : header) {
                 String description = "";
-                if (null != schema) {
-                    description = schema.getDescription(seriesId);
+                if (null != iScatterSchema) {
+                    description = iScatterSchema.getDescription(seriesId);
                 }
                 if (StringUtils.isNotEmpty(description)) {
                     labels.add(description);

@@ -25,18 +25,22 @@ public abstract class AbstractModelCollatorImpl implements ModelCollator {
         collatedModel.setLabels(model.getLabels());
         collatedModel.setUnits(model.getUnits());
         collatedModel.setTitle(model.getTitle());
-        collatedModel.setCollated(true);
+        collatedModel.setCollated(false);
         for (GraphSegment segment : model.getGraphSegments()) {
             if (null == segmentBeingBuilt) {
+                // Initialise the first segment
                 segmentBeingBuilt = segment;
-            } else if (shouldCollate(segmentBeingBuilt, segment)) {
-                // TODO: how to handle intersections?
+            } else if (!intersecting(segmentBeingBuilt, segment) && shouldCollate(segmentBeingBuilt, segment)) {
+                // Combine the current and incoming segments into one.
+                collatedModel.setCollated(true);
                 try {
                     segmentBeingBuilt = segmentBeingBuilt.append(segment);
                 } catch (SegmentAppendException e) {
                     throw new CollatorException(e);
                 }
             } else {
+                // not collating, so add the current segment to the model and
+                // set the incoming segment as the new current one.
                 collatedModel.append(segmentBeingBuilt);
                 segmentBeingBuilt = segment;
             }
@@ -49,6 +53,10 @@ public abstract class AbstractModelCollatorImpl implements ModelCollator {
             throw new CollatorException(String.format(LENGTH_MISMATCH_MESSAGE, collatedModel.getLength(), modelLength));
         }
         return collatedModel;
+    }
+
+    private boolean intersecting(GraphSegment segmentBeingBuilt, GraphSegment segment) {
+        return segmentBeingBuilt.isIntersecting() || segment.isIntersecting();
     }
 
     protected abstract boolean shouldCollate(GraphSegment segmentBeingBuilt, GraphSegment segment);

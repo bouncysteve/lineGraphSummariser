@@ -17,8 +17,8 @@ import org.slf4j.LoggerFactory;
 import uk.co.lgs.model.gradient.GradientType;
 import uk.co.lgs.model.segment.exception.SegmentAppendException;
 import uk.co.lgs.model.segment.exception.SegmentCategoryNotFoundException;
-import uk.co.lgs.model.segment.graph.category.GraphSegmentGap;
 import uk.co.lgs.model.segment.graph.category.GraphSegmentGradient;
+import uk.co.lgs.model.segment.graph.category.GapTrend;
 import uk.co.lgs.model.segment.series.SeriesSegment;
 
 public class GraphSegmentImpl implements GraphSegment {
@@ -41,10 +41,16 @@ public class GraphSegmentImpl implements GraphSegment {
 
     private boolean parallel;
 
-    private GraphSegmentGap graphSegmentGap;
+    private GapTrend gapTrend;
+
+    private SeriesSegment firstSeriesSegment;
+
+    private SeriesSegment secondSeriesSegment;
 
     public GraphSegmentImpl(SeriesSegment firstSeriesSegment, SeriesSegment secondSeriesSegment)
             throws SegmentCategoryNotFoundException {
+        this.firstSeriesSegment = firstSeriesSegment;
+        this.secondSeriesSegment = secondSeriesSegment;
         this.seriesSegments = new ArrayList<>();
         this.seriesSegments.add(firstSeriesSegment);
         this.seriesSegments.add(secondSeriesSegment);
@@ -97,7 +103,7 @@ public class GraphSegmentImpl implements GraphSegment {
             sb.append("\t");
         }
 
-        sb.append(this.getGraphSegmentGap() + "\t");
+        sb.append(this.getGraphSegmentTrend() + "\t");
 
         sb.append("(" + (DF.format(this.seriesSegments.get(0).getGradient())) + ", ");
         sb.append(DF.format(this.seriesSegments.get(1).getGradient()) + ")\t");
@@ -191,11 +197,11 @@ public class GraphSegmentImpl implements GraphSegment {
         double differenceAtEnd = firstSeriesEndValue - secondSeriesEndValue;
 
         if (differenceAtStart > differenceAtEnd) {
-            this.graphSegmentGap = GraphSegmentGap.CONVERGING;
+            this.gapTrend = GapTrend.CONVERGING;
         } else if (differenceAtStart < differenceAtEnd) {
-            this.graphSegmentGap = GraphSegmentGap.DIVERGING;
+            this.gapTrend = GapTrend.DIVERGING;
         } else {
-            this.graphSegmentGap = GraphSegmentGap.PARALLEL;
+            this.gapTrend = GapTrend.PARALLEL;
         }
     }
 
@@ -231,8 +237,8 @@ public class GraphSegmentImpl implements GraphSegment {
     }
 
     @Override
-    public GraphSegmentGap getGraphSegmentGap() {
-        return this.graphSegmentGap;
+    public GapTrend getGraphSegmentTrend() {
+        return this.gapTrend;
     }
 
     /**
@@ -245,6 +251,37 @@ public class GraphSegmentImpl implements GraphSegment {
         sb.append("PERIOD\t\t").append("LENGTH\t").append("GRADIENT_TYPES\t\t\t").append("GAP\t\t")
                 .append("GRADIENTS\t").append("(VALUE_AT_INTERSECTION)\t").append("NOTES\t");
         return sb.toString();
+    }
+
+    @Override
+    public SeriesSegment getHigherSeriesAtStart() {
+        return getHigherSeriesFromValues(this.firstSeriesSegment.getStartValue(),
+                this.secondSeriesSegment.getStartValue());
+    }
+
+    @Override
+    public SeriesSegment getHigherSeriesAtEnd() {
+        return getHigherSeriesFromValues(this.firstSeriesSegment.getEndValue(), this.secondSeriesSegment.getEndValue());
+    }
+
+    private SeriesSegment getHigherSeriesFromValues(double firstSeriesValue, double secondSeriesValue) {
+        SeriesSegment higherSeriesSegment = null;
+        if (firstSeriesValue > secondSeriesValue) {
+            higherSeriesSegment = this.firstSeriesSegment;
+        } else if (firstSeriesValue < secondSeriesValue) {
+            higherSeriesSegment = this.secondSeriesSegment;
+        }
+        return higherSeriesSegment;
+    }
+
+    @Override
+    public GradientType getFirstSeriesTrend() {
+        return this.firstSeriesSegment.getGradientType();
+    }
+
+    @Override
+    public GradientType getSecondSeriesTrend() {
+        return this.secondSeriesSegment.getGradientType();
     }
 
 }

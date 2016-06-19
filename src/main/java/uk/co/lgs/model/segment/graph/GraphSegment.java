@@ -2,9 +2,10 @@ package uk.co.lgs.model.segment.graph;
 
 import java.util.List;
 
+import uk.co.lgs.model.gradient.GradientType;
 import uk.co.lgs.model.segment.exception.SegmentAppendException;
-import uk.co.lgs.model.segment.graph.category.GraphSegmentGap;
 import uk.co.lgs.model.segment.graph.category.GraphSegmentGradient;
+import uk.co.lgs.model.segment.graph.category.GapTrend;
 import uk.co.lgs.model.segment.series.SeriesSegment;
 
 /**
@@ -36,6 +37,33 @@ public interface GraphSegment {
 
     List<SeriesSegment> getSeriesSegments();
 
-    GraphSegmentGap getGraphSegmentGap();
+    /**
+     * @return whether the two series are converging, diverging or neither.
+     */
+    GapTrend getGraphSegmentTrend();
+
+    /**
+     * 
+     * 
+     * @return the series segment which has the higher value at the start of the
+     *         graph segment, or null if their values are the same.
+     */
+    SeriesSegment getHigherSeriesAtStart();
+
+    /**
+     * @return the series segment which has the higher value at the end of the
+     *         graph segment, or null if their values are the same.
+     */
+    SeriesSegment getHigherSeriesAtEnd();
+
+    /**
+     * @return the gradient type of the first series.
+     */
+    GradientType getFirstSeriesTrend();
+
+    /**
+     * @return the gradient type of the second series.
+     */
+    GradientType getSecondSeriesTrend();
 
 }

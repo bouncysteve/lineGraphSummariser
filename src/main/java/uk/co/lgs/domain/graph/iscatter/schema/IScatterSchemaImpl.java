@@ -6,9 +6,9 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
-import uk.co.lgs.domain.graph.iscatter.schema.exception.SchemaException;
+import uk.co.lgs.domain.graph.iscatter.schema.exception.IScatterSchemaException;
 
-public class SchemaImpl implements Schema {
+public class IScatterSchemaImpl implements IScatterSchema {
 
     private List<IScatterAttribute> attributes;
     private List<String> expectedHeaders;
@@ -21,7 +21,7 @@ public class SchemaImpl implements Schema {
     private static final String TYPE = "type";
     private static final String LEVEL = "level";
 
-    public SchemaImpl(List<List<String>> schemaRows) throws SchemaException {
+    public IScatterSchemaImpl(List<List<String>> schemaRows) throws IScatterSchemaException {
         this.attributes = new ArrayList<>();
         this.expectedHeaders = Arrays.asList(ID, NAME, DESCRIPTION, UNIT, TYPE, LEVEL);
         this.mandatoryAttributeValues = Arrays.asList(ID, NAME, TYPE, LEVEL);
@@ -29,22 +29,22 @@ public class SchemaImpl implements Schema {
         processAndValidate(schemaRows);
     }
 
-    private void validateHeader(List<String> inputRow) throws SchemaException {
+    private void validateHeader(List<String> inputRow) throws IScatterSchemaException {
         for (int i = 0; i < this.expectedHeaders.size(); i++) {
             if (!this.expectedHeaders.get(i).equalsIgnoreCase(inputRow.get(i))) {
-                throw new SchemaException(
+                throw new IScatterSchemaException(
                         "Invalid header, expected: " + this.expectedHeaders.get(i) + " but was : " + inputRow.get(i));
             }
         }
     }
 
-    private void processAndValidate(List<List<String>> inputRecords) throws SchemaException {
+    private void processAndValidate(List<List<String>> inputRecords) throws IScatterSchemaException {
         for (List<String> inputRecord : inputRecords) {
             checkRecordSize(inputRecord);
             for (String mandatoryAttributeValue : this.mandatoryAttributeValues) {
                 String value = inputRecord.get(this.expectedHeaders.indexOf(mandatoryAttributeValue));
                 if (StringUtils.isEmpty(value)) {
-                    throw new SchemaException("Invalid attribute, missing mandatory value: " + mandatoryAttributeValue);
+                    throw new IScatterSchemaException("Invalid attribute, missing mandatory value: " + mandatoryAttributeValue);
                 }
                 if (TYPE.equals(mandatoryAttributeValue)) {
                     IScatterType.get(value);
@@ -58,9 +58,9 @@ public class SchemaImpl implements Schema {
         }
     }
 
-    private void checkRecordSize(List<String> inputRecord) throws SchemaException {
+    private void checkRecordSize(List<String> inputRecord) throws IScatterSchemaException {
         if (inputRecord.size() > this.expectedHeaders.size()) {
-            throw new SchemaException("Attribute has too many columns");
+            throw new IScatterSchemaException("Attribute has too many columns");
         }
     }
 

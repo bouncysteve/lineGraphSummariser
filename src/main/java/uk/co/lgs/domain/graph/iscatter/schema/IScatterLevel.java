@@ -1,6 +1,6 @@
 package uk.co.lgs.domain.graph.iscatter.schema;
 
-import uk.co.lgs.domain.graph.iscatter.schema.exception.SchemaException;
+import uk.co.lgs.domain.graph.iscatter.schema.exception.IScatterSchemaException;
 
 /**
  * I encapsulate the valid values for the Level attribute in an iScatter schema
@@ -20,12 +20,12 @@ public enum IScatterLevel {
         this.name = name;
     }
 
-    public static IScatterLevel get(String name) throws SchemaException {
+    public static IScatterLevel get(String name) throws IScatterSchemaException {
         for (IScatterLevel type : IScatterLevel.values()) {
             if (name.equalsIgnoreCase(type.name)) {
                 return type;
             }
         }
-        throw new SchemaException("Couldn't match level: " + name);
+        throw new IScatterSchemaException("Couldn't match level: " + name);
     }
 }

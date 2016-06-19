@@ -10,37 +10,37 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import uk.co.lgs.domain.graph.iscatter.schema.exception.SchemaException;
+import uk.co.lgs.domain.graph.iscatter.schema.exception.IScatterSchemaException;
 import uk.co.lgs.test.AbstractTest;
 
 public class SchemaImplTest extends AbstractTest {
 
     private List<List<String>> inputRecords;
 
-    private Schema underTest;
+    private IScatterSchema underTest;
 
     private void expectAComplaintThatTheAttributeIsInvalid() {
-        this.expectedEx.expect(SchemaException.class);
+        this.expectedEx.expect(IScatterSchemaException.class);
         this.expectedEx.expectMessage("Invalid attribute");
     }
 
     private void expectAComplaintThatTheAttributeRowIsTooLong() {
-        this.expectedEx.expect(SchemaException.class);
+        this.expectedEx.expect(IScatterSchemaException.class);
         this.expectedEx.expectMessage("Attribute has too many columns");
     }
 
     private void expectAComplaintThatTheHeaderIsInvalid() {
-        this.expectedEx.expect(SchemaException.class);
+        this.expectedEx.expect(IScatterSchemaException.class);
         this.expectedEx.expectMessage("Invalid header");
     }
 
     private void expectAComplaintThatTheLevelIsInvalid() {
-        this.expectedEx.expect(SchemaException.class);
+        this.expectedEx.expect(IScatterSchemaException.class);
         this.expectedEx.expectMessage("Couldn't match level:");
     }
 
     private void expectAComplaintThatTheTypeIsInvalid() {
-        this.expectedEx.expect(SchemaException.class);
+        this.expectedEx.expect(IScatterSchemaException.class);
         this.expectedEx.expectMessage("Couldn't match type:");
     }
 
@@ -62,7 +62,7 @@ public class SchemaImplTest extends AbstractTest {
     }
 
     @Test
-    public void testAttributeWithInvalidLevel() throws SchemaException {
+    public void testAttributeWithInvalidLevel() throws IScatterSchemaException {
         givenAStandardSchemaHeader();
         givenARecordWithValues(Arrays.asList("myId", "myName", "myDescription", "myUnit", "number", "invalidLevel"));
         expectAComplaintThatTheLevelIsInvalid();
@@ -70,7 +70,7 @@ public class SchemaImplTest extends AbstractTest {
     }
 
     @Test
-    public void testAttributeWithInvalidType() throws SchemaException {
+    public void testAttributeWithInvalidType() throws IScatterSchemaException {
         givenAStandardSchemaHeader();
         givenARecordWithValues(Arrays.asList("myId", "myName", "myDescription", "myUnit", "invalidType", "interval"));
         expectAComplaintThatTheTypeIsInvalid();
@@ -78,7 +78,7 @@ public class SchemaImplTest extends AbstractTest {
     }
 
     @Test
-    public void testAttributeWithMissingId() throws SchemaException {
+    public void testAttributeWithMissingId() throws IScatterSchemaException {
         givenAStandardSchemaHeader();
         givenARecordWithValues(Arrays.asList("", "myName", "", "", "string", "interval"));
         expectAComplaintThatTheAttributeIsInvalid();
@@ -86,7 +86,7 @@ public class SchemaImplTest extends AbstractTest {
     }
 
     @Test
-    public void testAttributeWithMissingLevel() throws SchemaException {
+    public void testAttributeWithMissingLevel() throws IScatterSchemaException {
         givenAStandardSchemaHeader();
         givenARecordWithValues(Arrays.asList("myId", "myName", "", "", "string", ""));
         expectAComplaintThatTheAttributeIsInvalid();
@@ -94,7 +94,7 @@ public class SchemaImplTest extends AbstractTest {
     }
 
     @Test
-    public void testAttributeWithMissingName() throws SchemaException {
+    public void testAttributeWithMissingName() throws IScatterSchemaException {
         givenAStandardSchemaHeader();
         givenARecordWithValues(Arrays.asList("myId", "", "", "", "string", "interval"));
         expectAComplaintThatTheAttributeIsInvalid();
@@ -102,7 +102,7 @@ public class SchemaImplTest extends AbstractTest {
     }
 
     @Test
-    public void testAttributeWithMissingType() throws SchemaException {
+    public void testAttributeWithMissingType() throws IScatterSchemaException {
         givenAStandardSchemaHeader();
         givenARecordWithValues(Arrays.asList("myId", "myName", "", "", "", "interval"));
         expectAComplaintThatTheAttributeIsInvalid();
@@ -110,7 +110,7 @@ public class SchemaImplTest extends AbstractTest {
     }
 
     @Test
-    public void testAttributeWithOptionalColumnsMissing() throws SchemaException {
+    public void testAttributeWithOptionalColumnsMissing() throws IScatterSchemaException {
         givenAStandardSchemaHeader();
         givenARecordWithValues(Arrays.asList("myId", "myName", "", "", "string", "interval"));
         whenICreateASchema();
@@ -120,7 +120,7 @@ public class SchemaImplTest extends AbstractTest {
     }
 
     @Test
-    public void testAttributeWithTooManyColumns() throws SchemaException {
+    public void testAttributeWithTooManyColumns() throws IScatterSchemaException {
         givenAStandardSchemaHeader();
         givenARecordWithValues(Arrays.asList("myId", "myName", "", "", "string", "interval", "unexpectedExtraValue"));
         expectAComplaintThatTheAttributeRowIsTooLong();
@@ -128,7 +128,7 @@ public class SchemaImplTest extends AbstractTest {
     }
 
     @Test
-    public void testConstructor() throws SchemaException {
+    public void testConstructor() throws IScatterSchemaException {
         givenAStandardSchemaHeader();
         givenARecordWithValues(Arrays.asList("myId", "myName", "myDescription", "myUnit", "string", "interval"));
         givenARecordWithValues(Arrays.asList("myId2", "myName2", "myDescription2", "myUnit2", "number", "ratio"));
@@ -147,7 +147,7 @@ public class SchemaImplTest extends AbstractTest {
     }
 
     @Test
-    public void testInvalidHeader() throws SchemaException {
+    public void testInvalidHeader() throws IScatterSchemaException {
         givenAHeaderWithValues(Arrays.asList("id", "name", "randomHeaderName", "unit", "type", "level"));
         givenARecordWithValues(Arrays.asList("myId", "myName", "myDescription", "myUnit", "string", "interval"));
         givenARecordWithValues(Arrays.asList("myId2", "myName2", "myDescription2", "myUnit2", "number", "ratio"));
@@ -173,8 +173,8 @@ public class SchemaImplTest extends AbstractTest {
         assertEquals(i, this.underTest.getAttributesCount());
     }
 
-    private void whenICreateASchema() throws SchemaException {
-        this.underTest = new SchemaImpl(this.inputRecords);
+    private void whenICreateASchema() throws IScatterSchemaException {
+        this.underTest = new IScatterSchemaImpl(this.inputRecords);
     }
 
 }

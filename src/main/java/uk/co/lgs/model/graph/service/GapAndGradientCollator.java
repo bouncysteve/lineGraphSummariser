@@ -6,6 +6,6 @@ package uk.co.lgs.model.graph.service;
  * @author bouncysteve
  *
  */
-public interface ModelGapCollator extends ModelCollator {
+public interface GapAndGradientCollator extends ModelCollator {
 
 }

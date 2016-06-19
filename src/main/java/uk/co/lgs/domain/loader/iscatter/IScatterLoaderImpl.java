@@ -14,16 +14,16 @@ import org.springframework.stereotype.Component;
 import uk.co.lgs.domain.exception.DomainException;
 import uk.co.lgs.domain.graph.GraphData;
 import uk.co.lgs.domain.graph.GraphDataImpl;
-import uk.co.lgs.domain.graph.iscatter.schema.Schema;
-import uk.co.lgs.domain.graph.iscatter.schema.SchemaImpl;
-import uk.co.lgs.domain.graph.iscatter.schema.exception.SchemaException;
+import uk.co.lgs.domain.graph.iscatter.schema.IScatterSchema;
+import uk.co.lgs.domain.graph.iscatter.schema.IScatterSchemaImpl;
+import uk.co.lgs.domain.graph.iscatter.schema.exception.IScatterSchemaException;
 import uk.co.lgs.domain.loader.Loader;
 import uk.co.lgs.domain.loader.exception.LoaderException;
 import uk.co.lgs.domain.record.Record;
 import uk.co.lgs.domain.record.RecordImpl;
 
 @Component
-public class IscatterLoaderImpl implements Loader {
+public class IScatterLoaderImpl implements Loader {
 
     private static final String BAD_OR_EMPTY_FILE_MESSAGE = "File exists but is empty or malformed";
 
@@ -41,7 +41,7 @@ public class IscatterLoaderImpl implements Loader {
 
     private GraphData graphData;
 
-    private Schema schema;
+    private IScatterSchema iScatterSchema;
 
     private List<String> header;
 
@@ -49,7 +49,7 @@ public class IscatterLoaderImpl implements Loader {
 
     private File dataFile;
 
-    public IscatterLoaderImpl() {
+    public IScatterLoaderImpl() {
         super();
     }
 
@@ -61,7 +61,7 @@ public class IscatterLoaderImpl implements Loader {
         findDataFile(parentFolder);
         try {
             createSchema();
-        } catch (SchemaException e) {
+        } catch (IScatterSchemaException e) {
             throw new LoaderException("problem creating schema: ", e);
         }
         createRecords();
@@ -87,15 +87,15 @@ public class IscatterLoaderImpl implements Loader {
     }
 
     private void createGraph() throws DomainException {
-        this.graphData = new GraphDataImpl(this.schema, this.header, this.dataRecords);
+        this.graphData = new GraphDataImpl(this.iScatterSchema, this.header, this.dataRecords);
     }
 
     private void createRecords() throws LoaderException {
         this.dataRecords = parseFileIntoRecordCollection(this.dataFile);
     }
 
-    private void createSchema() throws LoaderException, SchemaException {
-        this.schema = new SchemaImpl(parseFileIntoSchema(this.schemaFile));
+    private void createSchema() throws LoaderException, IScatterSchemaException {
+        this.iScatterSchema = new IScatterSchemaImpl(parseFileIntoSchema(this.schemaFile));
     }
 
     @Override

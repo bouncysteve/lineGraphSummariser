@@ -9,7 +9,7 @@ import java.util.List;
  * @author bouncysteve
  *
  */
-public interface Schema {
+public interface IScatterSchema {
 
     int getAttributesCount();
 

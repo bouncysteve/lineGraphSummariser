@@ -83,7 +83,7 @@ public class SeriesSegmentImpl implements SeriesSegment {
     public SeriesSegment append(SeriesSegment newSegment) {
         this.endTime = newSegment.getEndTime();
         this.endValue = newSegment.getEndValue();
-        this.segmentLength++;
+        this.segmentLength = this.segmentLength + newSegment.getSegmentLength();
         this.gradientType = determineGradientType();
         return this;
     }
