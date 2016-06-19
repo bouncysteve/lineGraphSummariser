@@ -17,8 +17,8 @@ import org.slf4j.LoggerFactory;
 import uk.co.lgs.model.gradient.GradientType;
 import uk.co.lgs.model.segment.exception.SegmentAppendException;
 import uk.co.lgs.model.segment.exception.SegmentCategoryNotFoundException;
-import uk.co.lgs.model.segment.graph.category.GraphSegmentGradient;
 import uk.co.lgs.model.segment.graph.category.GapTrend;
+import uk.co.lgs.model.segment.graph.category.GraphSegmentGradient;
 import uk.co.lgs.model.segment.series.SeriesSegment;
 
 public class GraphSegmentImpl implements GraphSegment {
@@ -99,11 +99,16 @@ public class GraphSegmentImpl implements GraphSegment {
         if (!this.getGraphSegmentGradientCategory().isIntersecting()) {
             sb.append("\t");
         }
-        if (GraphSegmentGradient.ZERO_ZERO_INTERSECTING.equals(this.getGraphSegmentGradientCategory())) {
-            sb.append("\t");
-        }
 
         sb.append(this.getGraphSegmentTrend() + "\t");
+
+        String higherSeries = "==";
+        if (this.firstSeriesSegment.equals(this.getHigherSeriesAtStart())) {
+            higherSeries = "S1";
+        } else if (this.secondSeriesSegment.equals(this.getHigherSeriesAtStart())) {
+            higherSeries = "S2";
+        }
+        sb.append(higherSeries + "\t\t");
 
         sb.append("(" + (DF.format(this.seriesSegments.get(0).getGradient())) + ", ");
         sb.append(DF.format(this.seriesSegments.get(1).getGradient()) + ")\t");
@@ -248,7 +253,7 @@ public class GraphSegmentImpl implements GraphSegment {
      */
     public static String getHeader() {
         StringBuilder sb = new StringBuilder();
-        sb.append("PERIOD\t\t").append("LENGTH\t").append("GRADIENT_TYPES\t\t\t").append("GAP\t\t")
+        sb.append("PERIOD\t\t").append("LENGTH\t").append("GRADIENT_TYPES\t").append("GAP\t").append("1st_HIGH\t")
                 .append("GRADIENTS\t").append("(VALUE_AT_INTERSECTION)\t").append("NOTES\t");
         return sb.toString();
     }

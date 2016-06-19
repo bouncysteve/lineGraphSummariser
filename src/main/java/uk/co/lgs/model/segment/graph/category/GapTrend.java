@@ -8,6 +8,16 @@ package uk.co.lgs.model.segment.graph.category;
  *
  */
 public enum GapTrend {
-    CONVERGING, DIVERGING, PARALLEL
+    CONVERGING("conv"), DIVERGING("divg"), PARALLEL("para");
 
+    private String name;
+
+    private GapTrend(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public String toString() {
+        return this.name;
+    }
 }

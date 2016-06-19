@@ -64,4 +64,38 @@ public enum GraphSegmentGradient {
         return this.secondSeriesGradient;
     }
 
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        switch (this.firstSeriesGradient) {
+        case NEGATIVE:
+            sb.append("-ve ");
+            break;
+        case POSITIVE:
+            sb.append("+ve ");
+            break;
+        case ZERO:
+            sb.append(" 0  ");
+            break;
+
+        }
+        switch (this.secondSeriesGradient) {
+        case NEGATIVE:
+            sb.append("-ve");
+            break;
+        case POSITIVE:
+            sb.append("+ve");
+            break;
+        case ZERO:
+            sb.append(" 0 ");
+            break;
+        }
+
+        if (this.isIntersecting()) {
+            sb.append(" int");
+        }
+        return sb.toString();
+
+    }
+
 }
