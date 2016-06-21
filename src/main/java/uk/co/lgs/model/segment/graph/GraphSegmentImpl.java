@@ -102,21 +102,29 @@ public class GraphSegmentImpl implements GraphSegment {
 
         sb.append(this.getGraphSegmentTrend() + "\t");
 
-        String higherSeries = "==";
+        String initialHigherSeries = "==";
         if (this.firstSeriesSegment.equals(this.getHigherSeriesAtStart())) {
-            higherSeries = "S1";
+            initialHigherSeries = "S1";
         } else if (this.secondSeriesSegment.equals(this.getHigherSeriesAtStart())) {
-            higherSeries = "S2";
+            initialHigherSeries = "S2";
         }
-        sb.append(higherSeries + "\t\t");
+        sb.append(initialHigherSeries + "\t\t");
+
+        String endHigherSeries = "==";
+        if (this.firstSeriesSegment.equals(this.getHigherSeriesAtEnd())) {
+            endHigherSeries = "S1";
+        } else if (this.secondSeriesSegment.equals(this.getHigherSeriesAtEnd())) {
+            endHigherSeries = "S2";
+        }
+        sb.append(endHigherSeries + "\t\t");
 
         sb.append("(" + (DF.format(this.seriesSegments.get(0).getGradient())) + ", ");
         sb.append(DF.format(this.seriesSegments.get(1).getGradient()) + ")\t");
 
         if (this.isIntersecting()) {
-            sb.append("Intersection: ").append(this.getValueAtIntersection()).append("\t");
+            sb.append(this.getValueAtIntersection()).append("\t");
         } else {
-            sb.append("\t\t\t");
+            sb.append("\t\t");
         }
         if (this.isParallel()) {
             sb.append("Segments are parallel").append("\t");
@@ -254,7 +262,7 @@ public class GraphSegmentImpl implements GraphSegment {
     public static String getHeader() {
         StringBuilder sb = new StringBuilder();
         sb.append("PERIOD\t\t").append("LENGTH\t").append("GRADIENT_TYPES\t").append("GAP\t").append("1st_HIGH\t")
-                .append("GRADIENTS\t").append("(VALUE_AT_INTERSECTION)\t").append("NOTES\t");
+                .append("2nd_HIGH\t").append("GRADIENTS\t").append("(VALUE_AT_INTERSECTION)\t").append("NOTES\t");
         return sb.toString();
     }
 

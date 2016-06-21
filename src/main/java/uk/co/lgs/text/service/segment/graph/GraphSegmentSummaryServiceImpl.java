@@ -14,9 +14,6 @@ import simplenlg.framework.DocumentElement;
 import simplenlg.framework.NLGElement;
 import simplenlg.framework.NLGFactory;
 import simplenlg.lexicon.Lexicon;
-import simplenlg.phrasespec.NPPhraseSpec;
-import simplenlg.phrasespec.PPPhraseSpec;
-import simplenlg.phrasespec.SPhraseSpec;
 import uk.co.lgs.model.segment.graph.GraphSegment;
 import uk.co.lgs.text.service.graph.PropertyNames;
 import uk.co.lgs.text.service.segment.series.SeriesSegmentSummaryService;
@@ -30,10 +27,13 @@ public class GraphSegmentSummaryServiceImpl implements GraphSegmentSummaryServic
     @Autowired
     private SeriesSegmentSummaryService seriesSegmentSummaryService;
 
+    @Autowired
+    private SegmentDurationDescriberService segmentDurationDescriberService;
+
     @Override
     public DocumentElement getSummary(GraphSegment graphSegment) {
         DocumentElement compareSeries = NLG_FACTORY.createSentence();
-        compareSeries.addComponent(buildDurationDescription(graphSegment));
+        compareSeries.addComponent(this.segmentDurationDescriberService.buildDurationDescription(graphSegment));
 
         compareSeries.addComponent(describeBehaviour(graphSegment));
 
@@ -102,16 +102,4 @@ public class GraphSegmentSummaryServiceImpl implements GraphSegmentSummaryServic
         return Arrays.asList(firstSeriesConfig, secondSeriesConfig);
     }
 
-    private SPhraseSpec buildDurationDescription(GraphSegment graphSegment) {
-        PPPhraseSpec durationPreposition = NLG_FACTORY.createPrepositionPhrase();
-
-        NPPhraseSpec startTime = NLG_FACTORY.createNounPhrase(graphSegment.getStartTime());
-        NPPhraseSpec endTime = NLG_FACTORY.createNounPhrase(graphSegment.getEndTime());
-        durationPreposition.addComplement(startTime);
-        durationPreposition.setPreposition("between");
-        durationPreposition.addComplement(endTime);
-        SPhraseSpec durationClause = NLG_FACTORY.createClause();
-        durationClause.setObject(durationPreposition);
-        return durationClause;
-    }
 }

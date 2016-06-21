@@ -48,18 +48,6 @@ public class GraphSummaryServiceImpl implements GraphSummaryService {
         return REALISER.realise(wholeSummary).getRealisation().trim();
     }
 
-    /**
-     * Eventually this will generate a final paragraph describing the overall
-     * message of the graph.
-     * 
-     * @param model
-     * @return
-     */
-    private NLGElement getAnalysis(GraphModel model) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
     private DocumentElement getIntro(GraphModel model) {
         DocumentElement intro = NLG_FACTORY.createParagraph();
         intro.addComponent(getTitle(model));
@@ -76,6 +64,18 @@ public class GraphSummaryServiceImpl implements GraphSummaryService {
             body.addComponent(sentence);
         }
         return body;
+    }
+
+    /**
+     * Eventually this will generate a final paragraph describing the overall
+     * message of the graph.
+     * 
+     * @param model
+     * @return
+     */
+    private NLGElement getAnalysis(GraphModel model) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
     protected List<DocumentElement> getSegmentSummaries(GraphModel model) {

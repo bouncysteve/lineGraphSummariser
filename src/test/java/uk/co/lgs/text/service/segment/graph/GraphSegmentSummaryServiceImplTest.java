@@ -16,6 +16,8 @@ import org.slf4j.LoggerFactory;
 import simplenlg.framework.DocumentElement;
 import simplenlg.framework.NLGFactory;
 import simplenlg.lexicon.Lexicon;
+import simplenlg.phrasespec.PPPhraseSpec;
+import simplenlg.phrasespec.SPhraseSpec;
 import simplenlg.realiser.english.Realiser;
 import uk.co.lgs.model.gradient.GradientType;
 import uk.co.lgs.model.segment.exception.SegmentCategoryNotFoundException;
@@ -33,12 +35,16 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
     private static final String START_TIME = "2012";
     private static final String END_TIME = "2013";
     private static final Logger LOG = LoggerFactory.getLogger(GraphSegmentSummaryServiceImplTest.class);
+
     private static Lexicon lexicon = Lexicon.getDefaultLexicon();
-    private static NLGFactory nlgFactory = new NLGFactory(lexicon);
+    private static NLGFactory NLG_FACTORY = new NLGFactory(lexicon);
     private static Realiser realiser = new Realiser(lexicon);
 
     @Mock
     private SeriesSegmentSummaryService seriesSegmentSummaryService;
+
+    @Mock
+    private SegmentDurationDescriberService segmentDurationDescriberService;
 
     @InjectMocks
     private GraphSegmentSummaryService underTest = new GraphSegmentSummaryServiceImpl();
@@ -60,6 +66,9 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
         when(this.graphSegment.getSeriesSegment(1)).thenReturn(this.secondSeriesSegment);
         when(this.graphSegment.getStartTime()).thenReturn(START_TIME);
         when(this.graphSegment.getEndTime()).thenReturn(END_TIME);
+
+        when(this.segmentDurationDescriberService.buildDurationDescription(this.graphSegment))
+                .thenReturn(initialiseDurationPhrase());
     }
 
     /**
@@ -632,13 +641,13 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
     private void givenSecondSeriesWithConstantValue(double value) {
         when(this.seriesSegmentSummaryService.getSummary(eq(this.firstSeriesSegment), eq(this.secondSeriesSegment),
                 any(Configuration.class)))
-                        .thenReturn(nlgFactory.createClause(SECOND_SERIES_LABEL, "is", "constant at " + value));
+                        .thenReturn(NLG_FACTORY.createClause(SECOND_SERIES_LABEL, "is", "constant at " + value));
     }
 
     private void givenFirstSeriesWithConstantValue(double value) {
         when(this.seriesSegmentSummaryService.getSummary(eq(this.secondSeriesSegment), eq(this.firstSeriesSegment),
                 any(Configuration.class)))
-                        .thenReturn(nlgFactory.createClause(FIRST_SERIES_LABEL, "is", "constant at " + value));
+                        .thenReturn(NLG_FACTORY.createClause(FIRST_SERIES_LABEL, "is", "constant at " + value));
     }
 
     private void whenTheGraphSegmentIsSummarised() throws SegmentCategoryNotFoundException {
@@ -670,5 +679,20 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
     private void thenTheSummaryMentionsThatTheSeriesIsSteeper(SeriesSegment seriesSegment) {
         // TODO Auto-generated method stub
 
+    }
+
+    /**
+     * Just set the duration description to SOMETHING.
+     * 
+     * @return
+     */
+    private SPhraseSpec initialiseDurationPhrase() {
+        PPPhraseSpec durationPreposition = NLG_FACTORY.createPrepositionPhrase();
+        durationPreposition.addComplement(START_TIME);
+        durationPreposition.setPreposition("between");
+        durationPreposition.addComplement(END_TIME);
+        SPhraseSpec durationClause = NLG_FACTORY.createClause();
+        durationClause.setObject(durationPreposition);
+        return durationClause;
     }
 }
