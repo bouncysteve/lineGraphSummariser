@@ -9,7 +9,7 @@ import uk.co.lgs.model.graph.GraphModel;
  * @author bouncysteve
  *
  */
-@FunctionalInterface
+
 public interface GraphSummaryService {
 
     String getSummary(GraphModel model);

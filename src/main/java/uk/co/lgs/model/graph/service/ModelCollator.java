@@ -9,7 +9,7 @@ import uk.co.lgs.model.graph.collator.exception.CollatorException;
  * @author bouncysteve
  *
  */
-@FunctionalInterface
+
 public interface ModelCollator {
 
     GraphModel collate(GraphModel model) throws CollatorException;

@@ -10,7 +10,7 @@ import uk.co.lgs.model.segment.graph.GraphSegment;
  * @author bouncysteve
  *
  */
-@FunctionalInterface
+
 public interface GraphSegmentSummaryService {
 
     DocumentElement getSummary(GraphSegment graphSegment);
