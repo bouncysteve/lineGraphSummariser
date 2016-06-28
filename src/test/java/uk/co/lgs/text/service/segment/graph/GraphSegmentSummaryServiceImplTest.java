@@ -1,11 +1,10 @@
 package uk.co.lgs.text.service.segment.graph;
 
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.when;
 
-import org.apache.commons.configuration2.Configuration;
+import java.util.Arrays;
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -15,39 +14,37 @@ import org.slf4j.LoggerFactory;
 
 import simplenlg.framework.DocumentElement;
 import simplenlg.framework.NLGFactory;
+import simplenlg.framework.PhraseElement;
 import simplenlg.lexicon.Lexicon;
-import simplenlg.phrasespec.PPPhraseSpec;
-import simplenlg.phrasespec.SPhraseSpec;
 import simplenlg.realiser.english.Realiser;
 import uk.co.lgs.model.gradient.GradientType;
 import uk.co.lgs.model.segment.exception.SegmentCategoryNotFoundException;
-import uk.co.lgs.model.segment.graph.Intersection;
 import uk.co.lgs.model.segment.series.SeriesSegment;
 import uk.co.lgs.segment.graph.AbstractGraphSegmentTest;
+import uk.co.lgs.text.service.label.LabelService;
 import uk.co.lgs.text.service.segment.series.SeriesSegmentSummaryService;
 
 public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest {
 
     private static final String FIRST_SERIES_LABEL = "Sales of soap";
     private static final String SECOND_SERIES_LABEL = "Price of pyjamas";
-    private static double LOW_VALUE = 2.5;
-    private static double HIGH_VALUE = 7.0;
+
     private static final String START_TIME = "2012";
     private static final String END_TIME = "2013";
     private static final Logger LOG = LoggerFactory.getLogger(GraphSegmentSummaryServiceImplTest.class);
 
-    private static Lexicon lexicon = Lexicon.getDefaultLexicon();
-    private static NLGFactory NLG_FACTORY = new NLGFactory(lexicon);
-    private static Realiser realiser = new Realiser(lexicon);
+    private static final Lexicon LEXICON = Lexicon.getDefaultLexicon();
+    private static final Realiser REALISER = new Realiser(LEXICON);
 
+    private List<PhraseElement> labels;
+    private final NLGFactory nlgFactory = new NLGFactory(LEXICON);
     @Mock
     private SeriesSegmentSummaryService seriesSegmentSummaryService;
-
     @Mock
-    private SegmentDurationDescriberService segmentDurationDescriberService;
+    private LabelService labelService;
 
     @InjectMocks
-    private GraphSegmentSummaryService underTest = new GraphSegmentSummaryServiceImpl();
+    private final GraphSegmentSummaryService underTest = new GraphSegmentSummaryServiceImpl();
 
     private DocumentElement summary;
     private String summaryText;
@@ -60,639 +57,86 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
 
     @Before
     public void beforeEachTest() {
+        this.labels = Arrays.asList(this.nlgFactory.createNounPhrase(FIRST_SERIES_LABEL),
+                this.nlgFactory.createNounPhrase(SECOND_SERIES_LABEL));
+        when(this.labelService.getLabelsForCommonUse(this.graphSegment)).thenReturn(this.labels);
         when(this.firstSeriesSegment.getLabel()).thenReturn(FIRST_SERIES_LABEL);
         when(this.secondSeriesSegment.getLabel()).thenReturn(SECOND_SERIES_LABEL);
         when(this.graphSegment.getSeriesSegment(0)).thenReturn(this.firstSeriesSegment);
+        when(this.graphSegment.indexOf(this.firstSeriesSegment)).thenReturn(0);
         when(this.graphSegment.getSeriesSegment(1)).thenReturn(this.secondSeriesSegment);
+        when(this.graphSegment.indexOf(this.secondSeriesSegment)).thenReturn(1);
         when(this.graphSegment.getStartTime()).thenReturn(START_TIME);
         when(this.graphSegment.getEndTime()).thenReturn(END_TIME);
 
-        when(this.segmentDurationDescriberService.buildDurationDescription(this.graphSegment))
-                .thenReturn(initialiseDurationPhrase());
     }
 
     /**
      * "Between start time and end time...
      * "series 1 remains constant at a value and series 2 remains constant at a (different) value"
      * .
-     * 
+     *
      * @throws SegmentCategoryNotFoundException
      */
     @Test
-    public void testZERO_ZERO() throws SegmentCategoryNotFoundException {
-        givenFirstSeriesWithConstantValue(LOW_VALUE);
-        givenSecondSeriesWithConstantValue(HIGH_VALUE);
+    public void testS1FlatLowerS2Rising() throws SegmentCategoryNotFoundException {
+        givenSeriesValues(10, 10, 20, 30);
         whenTheGraphSegmentIsSummarised();
-        thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-        thenTheSummaryDescribesTheSeriesRemainingConstantAtValue(this.firstSeriesSegment, LOW_VALUE);
-        thenTheSummaryDescribesTheSeriesRemainingConstantAtValue(this.secondSeriesSegment, HIGH_VALUE);
+        thenTheSummarySaysThatThisSeriesIsHigher(this.firstSeriesSegment);
+        thenTheSummarySaysThatTheSeriesAreDiverging();
     }
 
-    @Test
-    public void testNEGATIVE_ZERO() throws SegmentCategoryNotFoundException {
-        givenFirstSeriesWithGradient(this.firstSeriesSegment, GradientType.NEGATIVE);
-        givenSecondSeriesWithGradientThatIntersectsAt(this.firstSeriesSegment, this.secondSeriesSegment,
-                GradientType.ZERO, Intersection.NEVER);
-        whenTheGraphSegmentIsSummarised();
-        thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-        thenTheSummaryContains(FIRST_SERIES_LABEL + "fall from " + LOW_VALUE + " to " + HIGH_VALUE);
-        thenTheSummaryContains(SECOND_SERIES_LABEL + "constant at" + LOW_VALUE);
-    }
-
-    private void thenTheSummaryContains(String string) {
-        // assertTrue(realiser.realise(this.summary).toString().contains(string));
+    private void thenTheSummarySaysThatTheSeriesAreDiverging() {
+        // TODO Auto-generated method stub
 
     }
 
-    @Test
-    public void testPOSITIVE_ZERO() throws SegmentCategoryNotFoundException {
-        givenFirstSeriesWithGradient(this.firstSeriesSegment, GradientType.POSITIVE);
-        givenSecondSeriesWithGradientThatIntersectsAt(this.firstSeriesSegment, this.secondSeriesSegment,
-                GradientType.ZERO, Intersection.NEVER);
-        whenTheGraphSegmentIsSummarised();
-        thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
+    private void thenTheSummarySaysThatThisSeriesIsHigher(final SeriesSegment seriesSegment) {
+        when(this.graphSegment.getHigherSeriesAtStart()).thenReturn(seriesSegment);
     }
 
-    @Test
-    public void testZERO_POSITIVE() throws SegmentCategoryNotFoundException {
-        givenFirstSeriesWithGradient(this.firstSeriesSegment, GradientType.ZERO);
-        givenSecondSeriesWithGradientThatIntersectsAt(this.firstSeriesSegment, this.secondSeriesSegment,
-                GradientType.POSITIVE, Intersection.NEVER);
-        whenTheGraphSegmentIsSummarised();
-        thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-    }
-
-    @Test
-    public void testNEGATIVE_POSITIVE() throws SegmentCategoryNotFoundException {
-        givenFirstSeriesWithGradient(this.firstSeriesSegment, GradientType.NEGATIVE);
-        givenSecondSeriesWithGradientThatIntersectsAt(this.firstSeriesSegment, this.secondSeriesSegment,
-                GradientType.POSITIVE, Intersection.NEVER);
-        whenTheGraphSegmentIsSummarised();
-        thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-    }
-
-    @Test
-    public void testPOSITIVE_STEEP_POSITIVE() throws SegmentCategoryNotFoundException {
-        givenFirstSeriesWithGradient(this.firstSeriesSegment, GradientType.POSITIVE);
-        givenSecondSeriesWithGradientThatIntersectsAt(this.firstSeriesSegment, this.secondSeriesSegment,
-                GradientType.POSITIVE, Intersection.NEVER);
-        whenTheGraphSegmentIsSummarised();
-        thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-
-        thenTheSummaryMentionsThatTheSeriesIsSteeper(this.firstSeriesSegment);
+    private void givenSeriesValues(final double firstSeriesStartValue, final double firstSeriesEndValue,
+            final double secondSeriesStartValue, final double secondSeriesEndValue) {
+        when(this.firstSeriesSegment.getStartValue()).thenReturn(firstSeriesStartValue);
+        when(this.firstSeriesSegment.getEndValue()).thenReturn(firstSeriesEndValue);
+        when(this.secondSeriesSegment.getStartValue()).thenReturn(secondSeriesStartValue);
+        when(this.secondSeriesSegment.getEndValue()).thenReturn(secondSeriesEndValue);
+        when(this.graphSegment.getHigherSeriesAtStart())
+                .thenReturn(higherSeriesOf(firstSeriesStartValue, secondSeriesStartValue));
+        when(this.graphSegment.getHigherSeriesAtEnd())
+                .thenReturn(higherSeriesOf(firstSeriesEndValue, secondSeriesEndValue));
+        when(this.graphSegment.getFirstSeriesTrend())
+                .thenReturn(trendFromValues(firstSeriesStartValue, firstSeriesEndValue));
+        when(this.graphSegment.getSecondSeriesTrend())
+                .thenReturn(trendFromValues(secondSeriesStartValue, secondSeriesEndValue));
 
     }
 
-    @Test
-    public void testPOSITIVE_POSITIVE_STEEP() throws SegmentCategoryNotFoundException {
-        givenFirstSeriesWithGradient(this.firstSeriesSegment, GradientType.POSITIVE);
-        givenSecondSeriesWithGradientThatIntersectsAt(this.firstSeriesSegment, this.secondSeriesSegment,
-                GradientType.POSITIVE, Intersection.NEVER);
-        whenTheGraphSegmentIsSummarised();
-        thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-
-        thenTheSummaryMentionsThatTheSeriesIsSteeper(this.secondSeriesSegment);
-
+    private GradientType trendFromValues(final double startValue, final double endValue) {
+        GradientType type = GradientType.ZERO;
+        final double valueDiff = endValue - startValue;
+        if (valueDiff > 0) {
+            type = GradientType.POSITIVE;
+        } else if (valueDiff < 0) {
+            type = GradientType.NEGATIVE;
+        }
+        return type;
     }
 
-    @Test
-    public void testPOSITIVE_POSITIVE_PARALLEL() throws SegmentCategoryNotFoundException {
-        givenFirstSeriesWithGradient(this.firstSeriesSegment, GradientType.POSITIVE);
-        givenSecondSeriesWithGradientThatIntersectsAt(this.firstSeriesSegment, this.secondSeriesSegment,
-                GradientType.POSITIVE, Intersection.NEVER);
-        whenTheGraphSegmentIsSummarised();
-        thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-
-    }
-
-    @Test
-    public void testZERO_NEGATIVE() throws SegmentCategoryNotFoundException {
-        givenFirstSeriesWithGradient(this.firstSeriesSegment, GradientType.ZERO);
-        givenSecondSeriesWithGradientThatIntersectsAt(this.firstSeriesSegment, this.secondSeriesSegment,
-                GradientType.NEGATIVE, Intersection.NEVER);
-        whenTheGraphSegmentIsSummarised();
-        thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-
-    }
-
-    @Test
-    public void testNEGATIVE_STEEP_NEGATIVE() throws SegmentCategoryNotFoundException {
-        givenFirstSeriesWithGradient(this.firstSeriesSegment, GradientType.NEGATIVE);
-        givenSecondSeriesWithGradientThatIntersectsAt(this.firstSeriesSegment, this.secondSeriesSegment,
-                GradientType.NEGATIVE, Intersection.NEVER);
-        whenTheGraphSegmentIsSummarised();
-        thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-
-        thenTheSummaryMentionsThatTheSeriesIsSteeper(this.firstSeriesSegment);
-
-    }
-
-    @Test
-    public void testNEGATIVE_NEGATIVE_STEEP() throws SegmentCategoryNotFoundException {
-        givenFirstSeriesWithGradient(this.firstSeriesSegment, GradientType.NEGATIVE);
-        givenSecondSeriesWithGradientThatIntersectsAt(this.firstSeriesSegment, this.secondSeriesSegment,
-                GradientType.NEGATIVE, Intersection.NEVER);
-        whenTheGraphSegmentIsSummarised();
-        thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-
-        thenTheSummaryMentionsThatTheSeriesIsSteeper(this.secondSeriesSegment);
-
-    }
-
-    @Test
-    public void testNEGATIVE_NEGATIVE_PARALLEL() throws SegmentCategoryNotFoundException {
-        givenFirstSeriesWithGradient(this.firstSeriesSegment, GradientType.NEGATIVE);
-        givenSecondSeriesWithGradientThatIntersectsAt(this.firstSeriesSegment, this.secondSeriesSegment,
-                GradientType.NEGATIVE, Intersection.NEVER);
-        whenTheGraphSegmentIsSummarised();
-        thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-
-    }
-
-    @Test
-    public void testPOSITIVE_NEGATIVE() throws SegmentCategoryNotFoundException {
-        givenFirstSeriesWithGradient(this.firstSeriesSegment, GradientType.POSITIVE);
-        givenSecondSeriesWithGradientThatIntersectsAt(this.firstSeriesSegment, this.secondSeriesSegment,
-                GradientType.NEGATIVE, Intersection.NEVER);
-        whenTheGraphSegmentIsSummarised();
-        thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-
-    }
-
-    @Test
-    public void testZERO_ZERO_INTERSECTING() throws SegmentCategoryNotFoundException {
-        givenFirstSeriesWithGradient(this.firstSeriesSegment, GradientType.ZERO);
-        givenSecondSeriesWithGradientThatIntersectsAt(this.firstSeriesSegment, this.secondSeriesSegment,
-                GradientType.ZERO, Intersection.START);
-        whenTheGraphSegmentIsSummarised();
-        thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-
-        thenTheSummaryMentionsTheSeriesIntersectAtTheStart();
-    }
-
-    @Test
-    public void testNEGATIVE_ZERO_INTERSECTING_START() throws SegmentCategoryNotFoundException {
-        givenFirstSeriesWithGradient(this.firstSeriesSegment, GradientType.NEGATIVE);
-        givenSecondSeriesWithGradientThatIntersectsAt(this.firstSeriesSegment, this.secondSeriesSegment,
-                GradientType.ZERO, Intersection.START);
-        whenTheGraphSegmentIsSummarised();
-        thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-
-        thenTheSummaryMentionsTheSeriesIntersectAtTheStart();
-    }
-
-    @Test
-    public void testPOSITIVE_ZERO_INTERSECTING_START() throws SegmentCategoryNotFoundException {
-        givenFirstSeriesWithGradient(this.firstSeriesSegment, GradientType.POSITIVE);
-        givenSecondSeriesWithGradientThatIntersectsAt(this.firstSeriesSegment, this.secondSeriesSegment,
-                GradientType.ZERO, Intersection.START);
-        whenTheGraphSegmentIsSummarised();
-        thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-
-        thenTheSummaryMentionsTheSeriesIntersectAtTheStart();
-    }
-
-    @Test
-    public void testZERO_POSITIVE_INTERSECTING_START() throws SegmentCategoryNotFoundException {
-        givenFirstSeriesWithGradient(this.firstSeriesSegment, GradientType.ZERO);
-        givenSecondSeriesWithGradientThatIntersectsAt(this.firstSeriesSegment, this.secondSeriesSegment,
-                GradientType.POSITIVE, Intersection.START);
-        whenTheGraphSegmentIsSummarised();
-        thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-
-        thenTheSummaryMentionsTheSeriesIntersectAtTheStart();
-    }
-
-    @Test
-    public void testNEGATIVE_POSITIVE_INTERSECTING_START() throws SegmentCategoryNotFoundException {
-        givenFirstSeriesWithGradient(this.firstSeriesSegment, GradientType.NEGATIVE);
-        givenSecondSeriesWithGradientThatIntersectsAt(this.firstSeriesSegment, this.secondSeriesSegment,
-                GradientType.POSITIVE, Intersection.START);
-        whenTheGraphSegmentIsSummarised();
-        thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-
-        thenTheSummaryMentionsTheSeriesIntersectAtTheStart();
-    }
-
-    @Test
-    public void testPOSITIVE_STEEP_POSITIVE_INTERSECTING_START() throws SegmentCategoryNotFoundException {
-        givenFirstSeriesWithGradient(this.firstSeriesSegment, GradientType.POSITIVE);
-        givenSecondSeriesWithGradientThatIntersectsAt(this.firstSeriesSegment, this.secondSeriesSegment,
-                GradientType.POSITIVE, Intersection.START);
-        whenTheGraphSegmentIsSummarised();
-        thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-
-        thenTheSummaryMentionsTheSeriesIntersectAtTheStart();
-        thenTheSummaryMentionsThatTheSeriesIsSteeper(this.firstSeriesSegment);
-    }
-
-    @Test
-    public void testPOSITIVE_POSITIVE_STEEP_INTERSECTING_START() throws SegmentCategoryNotFoundException {
-        givenFirstSeriesWithGradient(this.firstSeriesSegment, GradientType.POSITIVE);
-        givenSecondSeriesWithGradientThatIntersectsAt(this.firstSeriesSegment, this.secondSeriesSegment,
-                GradientType.POSITIVE, Intersection.START);
-        whenTheGraphSegmentIsSummarised();
-        thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-
-        thenTheSummaryMentionsThatTheSeriesIsSteeper(this.secondSeriesSegment);
-        thenTheSummaryMentionsTheSeriesIntersectAtTheStart();
-    }
-
-    @Test
-    public void testPOSITIVE_POSITIVE_PARALLEL_INTERSECTING_START() throws SegmentCategoryNotFoundException {
-        givenFirstSeriesWithGradient(this.firstSeriesSegment, GradientType.POSITIVE);
-        givenSecondSeriesWithGradientThatIntersectsAt(this.firstSeriesSegment, this.secondSeriesSegment,
-                GradientType.POSITIVE, Intersection.START);
-        whenTheGraphSegmentIsSummarised();
-        thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-
-        thenTheSummaryMentionsTheSeriesIntersectAtTheStart();
-    }
-
-    @Test
-    public void testZERO_NEGATIVE_INTERSECTING_START() throws SegmentCategoryNotFoundException {
-        givenFirstSeriesWithGradient(this.firstSeriesSegment, GradientType.ZERO);
-        givenSecondSeriesWithGradientThatIntersectsAt(this.firstSeriesSegment, this.secondSeriesSegment,
-                GradientType.NEGATIVE, Intersection.START);
-        whenTheGraphSegmentIsSummarised();
-        thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-
-        thenTheSummaryMentionsTheSeriesIntersectAtTheStart();
-    }
-
-    @Test
-    public void testNEGATIVE_STEEP_NEGATIVE_INTERSECTING_START() throws SegmentCategoryNotFoundException {
-        givenFirstSeriesWithGradient(this.firstSeriesSegment, GradientType.NEGATIVE);
-        givenSecondSeriesWithGradientThatIntersectsAt(this.firstSeriesSegment, this.secondSeriesSegment,
-                GradientType.NEGATIVE, Intersection.START);
-        whenTheGraphSegmentIsSummarised();
-        thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-
-        thenTheSummaryMentionsTheSeriesIntersectAtTheStart();
-        thenTheSummaryMentionsThatTheSeriesIsSteeper(this.firstSeriesSegment);
-
-    }
-
-    @Test
-    public void testNEGATIVE_NEGATIVE_STEEP_INTERSECTING_START() throws SegmentCategoryNotFoundException {
-        givenFirstSeriesWithGradient(this.firstSeriesSegment, GradientType.NEGATIVE);
-        givenSecondSeriesWithGradientThatIntersectsAt(this.firstSeriesSegment, this.secondSeriesSegment,
-                GradientType.NEGATIVE, Intersection.START);
-        whenTheGraphSegmentIsSummarised();
-        thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-
-        thenTheSummaryMentionsTheSeriesIntersectAtTheStart();
-        thenTheSummaryMentionsThatTheSeriesIsSteeper(this.secondSeriesSegment);
-
-    }
-
-    @Test
-    public void testNEGATIVE_NEGATIVE_PARALLEL_INTERSECTING_START() throws SegmentCategoryNotFoundException {
-        givenFirstSeriesWithGradient(this.firstSeriesSegment, GradientType.NEGATIVE);
-        givenSecondSeriesWithGradientThatIntersectsAt(this.firstSeriesSegment, this.secondSeriesSegment,
-                GradientType.NEGATIVE, Intersection.START);
-        whenTheGraphSegmentIsSummarised();
-        thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-
-        thenTheSummaryMentionsTheSeriesIntersectAtTheStart();
-    }
-
-    @Test
-    public void testPOSITIVE_NEGATIVE_INTERSECTING_START() throws SegmentCategoryNotFoundException {
-        givenFirstSeriesWithGradient(this.firstSeriesSegment, GradientType.POSITIVE);
-        givenSecondSeriesWithGradientThatIntersectsAt(this.firstSeriesSegment, this.secondSeriesSegment,
-                GradientType.NEGATIVE, Intersection.START);
-        whenTheGraphSegmentIsSummarised();
-        thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-
-        thenTheSummaryMentionsTheSeriesIntersectAtTheStart();
-
-    }
-
-    @Test
-    public void testNEGATIVE_ZERO_INTERSECTING_END() throws SegmentCategoryNotFoundException {
-        givenFirstSeriesWithGradient(this.firstSeriesSegment, GradientType.NEGATIVE);
-        givenSecondSeriesWithGradientThatIntersectsAt(this.firstSeriesSegment, this.secondSeriesSegment,
-                GradientType.ZERO, Intersection.END);
-        whenTheGraphSegmentIsSummarised();
-        thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-
-        thenTheSummaryMentionsTheSeriesIntersectAtTheEnd();
-
-    }
-
-    @Test
-    public void testPOSITIVE_ZERO_INTERSECTING_END() throws SegmentCategoryNotFoundException {
-        givenFirstSeriesWithGradient(this.firstSeriesSegment, GradientType.POSITIVE);
-        givenSecondSeriesWithGradientThatIntersectsAt(this.firstSeriesSegment, this.secondSeriesSegment,
-                GradientType.ZERO, Intersection.END);
-        whenTheGraphSegmentIsSummarised();
-        thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-
-        thenTheSummaryMentionsTheSeriesIntersectAtTheEnd();
-
-    }
-
-    @Test
-    public void testZERO_POSITIVE_INTERSECTING_END() throws SegmentCategoryNotFoundException {
-        givenFirstSeriesWithGradient(this.firstSeriesSegment, GradientType.ZERO);
-        givenSecondSeriesWithGradientThatIntersectsAt(this.firstSeriesSegment, this.secondSeriesSegment,
-                GradientType.POSITIVE, Intersection.END);
-        whenTheGraphSegmentIsSummarised();
-        thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-
-        thenTheSummaryMentionsTheSeriesIntersectAtTheEnd();
-    }
-
-    @Test
-    public void testNEGATIVE_POSITIVE_INTERSECTING_END() throws SegmentCategoryNotFoundException {
-        givenFirstSeriesWithGradient(this.firstSeriesSegment, GradientType.NEGATIVE);
-        givenSecondSeriesWithGradientThatIntersectsAt(this.firstSeriesSegment, this.secondSeriesSegment,
-                GradientType.POSITIVE, Intersection.END);
-        whenTheGraphSegmentIsSummarised();
-        thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-
-        thenTheSummaryMentionsTheSeriesIntersectAtTheEnd();
-    }
-
-    @Test
-    public void testPOSITIVE_STEEP_POSITIVE_INTERSECTING_END() throws SegmentCategoryNotFoundException {
-        givenFirstSeriesWithGradient(this.firstSeriesSegment, GradientType.POSITIVE);
-        givenSecondSeriesWithGradientThatIntersectsAt(this.firstSeriesSegment, this.secondSeriesSegment,
-                GradientType.POSITIVE, Intersection.END);
-        whenTheGraphSegmentIsSummarised();
-        thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-
-        thenTheSummaryMentionsTheSeriesIntersectAtTheEnd();
-        thenTheSummaryMentionsThatTheSeriesIsSteeper(this.firstSeriesSegment);
-
-    }
-
-    @Test
-    public void testPOSITIVE_POSITIVE__STEEP_INTERSECTING_END() throws SegmentCategoryNotFoundException {
-        givenFirstSeriesWithGradient(this.firstSeriesSegment, GradientType.POSITIVE);
-        givenSecondSeriesWithGradientThatIntersectsAt(this.firstSeriesSegment, this.secondSeriesSegment,
-                GradientType.POSITIVE, Intersection.END);
-        whenTheGraphSegmentIsSummarised();
-        thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-
-        thenTheSummaryMentionsTheSeriesIntersectAtTheEnd();
-        thenTheSummaryMentionsThatTheSeriesIsSteeper(this.secondSeriesSegment);
-
-    }
-
-    @Test
-    public void testPOSITIVE_POSITIVE_PARALLEL_INTERSECTING_END() throws SegmentCategoryNotFoundException {
-        givenFirstSeriesWithGradient(this.firstSeriesSegment, GradientType.POSITIVE);
-        givenSecondSeriesWithGradientThatIntersectsAt(this.firstSeriesSegment, this.secondSeriesSegment,
-                GradientType.POSITIVE, Intersection.END);
-        whenTheGraphSegmentIsSummarised();
-        thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-
-        thenTheSummaryMentionsTheSeriesIntersectAtTheEnd();
-
-    }
-
-    @Test
-    public void testZERO_NEGATIVE_INTERSECTING_END() throws SegmentCategoryNotFoundException {
-        givenFirstSeriesWithGradient(this.firstSeriesSegment, GradientType.ZERO);
-        givenSecondSeriesWithGradientThatIntersectsAt(this.firstSeriesSegment, this.secondSeriesSegment,
-                GradientType.NEGATIVE, Intersection.END);
-        whenTheGraphSegmentIsSummarised();
-        thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-
-        thenTheSummaryMentionsTheSeriesIntersectAtTheEnd();
-    }
-
-    @Test
-    public void testNEGATIVE_STEEP_NEGATIVE_INTERSECTING_END() throws SegmentCategoryNotFoundException {
-        givenFirstSeriesWithGradient(this.firstSeriesSegment, GradientType.NEGATIVE);
-        givenSecondSeriesWithGradientThatIntersectsAt(this.firstSeriesSegment, this.secondSeriesSegment,
-                GradientType.NEGATIVE, Intersection.END);
-        whenTheGraphSegmentIsSummarised();
-        thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-
-        thenTheSummaryMentionsTheSeriesIntersectAtTheEnd();
-        thenTheSummaryMentionsThatTheSeriesIsSteeper(this.firstSeriesSegment);
-
-    }
-
-    @Test
-    public void testNEGATIVE_NEGATIVE_STEEP_INTERSECTING_END() throws SegmentCategoryNotFoundException {
-        givenFirstSeriesWithGradient(this.firstSeriesSegment, GradientType.NEGATIVE);
-        givenSecondSeriesWithGradientThatIntersectsAt(this.firstSeriesSegment, this.secondSeriesSegment,
-                GradientType.NEGATIVE, Intersection.END);
-
-        whenTheGraphSegmentIsSummarised();
-        thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-
-        thenTheSummaryMentionsTheSeriesIntersectAtTheEnd();
-        thenTheSummaryMentionsThatTheSeriesIsSteeper(this.secondSeriesSegment);
-
-    }
-
-    @Test
-    public void testNEGATIVE_NEGATIVE_PARALLEL_INTERSECTING_END() throws SegmentCategoryNotFoundException {
-        givenFirstSeriesWithGradient(this.firstSeriesSegment, GradientType.NEGATIVE);
-        givenSecondSeriesWithGradientThatIntersectsAt(this.firstSeriesSegment, this.secondSeriesSegment,
-                GradientType.NEGATIVE, Intersection.END);
-        whenTheGraphSegmentIsSummarised();
-        thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-
-        thenTheSummaryMentionsTheSeriesIntersectAtTheEnd();
-    }
-
-    @Test
-    public void testPOSITIVE_NEGATIVE_INTERSECTING_END() throws SegmentCategoryNotFoundException {
-        givenFirstSeriesWithGradient(this.firstSeriesSegment, GradientType.POSITIVE);
-        givenSecondSeriesWithGradientThatIntersectsAt(this.firstSeriesSegment, this.secondSeriesSegment,
-                GradientType.NEGATIVE, Intersection.END);
-        whenTheGraphSegmentIsSummarised();
-        thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-
-        thenTheSummaryMentionsTheSeriesIntersectAtTheEnd();
-
-    }
-
-    @Test
-    public void testNEGATIVE_ZERO_INTERSECTING_WITHIN() throws SegmentCategoryNotFoundException {
-        givenFirstSeriesWithGradient(this.firstSeriesSegment, GradientType.NEGATIVE);
-        givenSecondSeriesWithGradientThatIntersectsAt(this.firstSeriesSegment, this.secondSeriesSegment,
-                GradientType.ZERO, Intersection.WITHIN);
-        whenTheGraphSegmentIsSummarised();
-        thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-        thenTheSummaryMentionsTheSeriesIntersectWithin();
-    }
-
-    @Test
-    public void testPOSITIVE_ZERO_INTERSECTING_WITHIN() throws SegmentCategoryNotFoundException {
-        givenFirstSeriesWithGradient(this.firstSeriesSegment, GradientType.POSITIVE);
-        givenSecondSeriesWithGradientThatIntersectsAt(this.firstSeriesSegment, this.secondSeriesSegment,
-                GradientType.ZERO, Intersection.WITHIN);
-        whenTheGraphSegmentIsSummarised();
-        thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-        thenTheSummaryMentionsTheSeriesIntersectWithin();
-    }
-
-    @Test
-    public void testZERO_POSITIVE_INTERSECTING_WITHIN() throws SegmentCategoryNotFoundException {
-        givenFirstSeriesWithGradient(this.firstSeriesSegment, GradientType.ZERO);
-        givenSecondSeriesWithGradientThatIntersectsAt(this.firstSeriesSegment, this.secondSeriesSegment,
-                GradientType.POSITIVE, Intersection.WITHIN);
-        whenTheGraphSegmentIsSummarised();
-        thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-        thenTheSummaryMentionsTheSeriesIntersectWithin();
-    }
-
-    @Test
-    public void testNEGATIVE_POSITIVE_INTERSECTING_WITHIN() throws SegmentCategoryNotFoundException {
-        givenFirstSeriesWithGradient(this.firstSeriesSegment, GradientType.NEGATIVE);
-        givenSecondSeriesWithGradientThatIntersectsAt(this.firstSeriesSegment, this.secondSeriesSegment,
-                GradientType.POSITIVE, Intersection.WITHIN);
-        whenTheGraphSegmentIsSummarised();
-        thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-        thenTheSummaryMentionsTheSeriesIntersectWithin();
-    }
-
-    @Test
-    public void testPOSITIVE_STEEP_POSITIVE_INTERSECTING_WITHIN() throws SegmentCategoryNotFoundException {
-        givenFirstSeriesWithGradient(this.firstSeriesSegment, GradientType.POSITIVE);
-        givenSecondSeriesWithGradientThatIntersectsAt(this.firstSeriesSegment, this.secondSeriesSegment,
-                GradientType.POSITIVE, Intersection.WITHIN);
-        whenTheGraphSegmentIsSummarised();
-        thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-        thenTheSummaryMentionsThatTheSeriesIsSteeper(this.firstSeriesSegment);
-        thenTheSummaryMentionsTheSeriesIntersectWithin();
-    }
-
-    @Test
-    public void testPOSITIVE_POSITIVE_STEEP_INTERSECTING_WITHIN() throws SegmentCategoryNotFoundException {
-        givenFirstSeriesWithGradient(this.firstSeriesSegment, GradientType.POSITIVE);
-        givenSecondSeriesWithGradientThatIntersectsAt(this.firstSeriesSegment, this.secondSeriesSegment,
-                GradientType.POSITIVE, Intersection.WITHIN);
-        whenTheGraphSegmentIsSummarised();
-        thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-        thenTheSummaryMentionsThatTheSeriesIsSteeper(this.secondSeriesSegment);
-        thenTheSummaryMentionsTheSeriesIntersectWithin();
-
-    }
-
-    @Test
-    public void testPOSITIVE_POSITIVE_PARALLEL_INTERSECTING_WITHIN() throws SegmentCategoryNotFoundException {
-        givenFirstSeriesWithGradient(this.firstSeriesSegment, GradientType.POSITIVE);
-        givenSecondSeriesWithGradientThatIntersectsAt(this.firstSeriesSegment, this.secondSeriesSegment,
-                GradientType.POSITIVE, Intersection.WITHIN);
-        whenTheGraphSegmentIsSummarised();
-        thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-        thenTheSummaryMentionsTheSeriesIntersectWithin();
-    }
-
-    @Test
-    public void testZERO_NEGATIVE_INTERSECTING_WITHIN() throws SegmentCategoryNotFoundException {
-        givenFirstSeriesWithGradient(this.firstSeriesSegment, GradientType.ZERO);
-        givenSecondSeriesWithGradientThatIntersectsAt(this.firstSeriesSegment, this.secondSeriesSegment,
-                GradientType.NEGATIVE, Intersection.WITHIN);
-        whenTheGraphSegmentIsSummarised();
-        thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-        thenTheSummaryMentionsTheSeriesIntersectWithin();
-    }
-
-    @Test
-    public void testNEGATIVE_STEEP_NEGATIVE_INTERSECTING_WITHIN() throws SegmentCategoryNotFoundException {
-        givenFirstSeriesWithGradient(this.firstSeriesSegment, GradientType.NEGATIVE);
-        givenSecondSeriesWithGradientThatIntersectsAt(this.firstSeriesSegment, this.secondSeriesSegment,
-                GradientType.NEGATIVE, Intersection.WITHIN);
-        whenTheGraphSegmentIsSummarised();
-        thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-        thenTheSummaryMentionsThatTheSeriesIsSteeper(this.firstSeriesSegment);
-        thenTheSummaryMentionsTheSeriesIntersectWithin();
-    }
-
-    @Test
-    public void testNEGATIVE_NEGATIVE_STEEP_INTERSECTING_WITHIN() throws SegmentCategoryNotFoundException {
-        givenFirstSeriesWithGradient(this.firstSeriesSegment, GradientType.NEGATIVE);
-        givenSecondSeriesWithGradientThatIntersectsAt(this.firstSeriesSegment, this.secondSeriesSegment,
-                GradientType.NEGATIVE, Intersection.WITHIN);
-        whenTheGraphSegmentIsSummarised();
-        thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-        thenTheSummaryMentionsThatTheSeriesIsSteeper(this.secondSeriesSegment);
-        thenTheSummaryMentionsTheSeriesIntersectWithin();
-    }
-
-    @Test
-    public void testNEGATIVE_NEGATIVE_PARALLEL_INTERSECTING_WITHIN() throws SegmentCategoryNotFoundException {
-        givenFirstSeriesWithGradient(this.firstSeriesSegment, GradientType.NEGATIVE);
-        givenSecondSeriesWithGradientThatIntersectsAt(this.firstSeriesSegment, this.secondSeriesSegment,
-                GradientType.NEGATIVE, Intersection.WITHIN);
-        whenTheGraphSegmentIsSummarised();
-        thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-    }
-
-    @Test
-    public void testPOSITIVE_NEGATIVE_INTERSECTING_WITHIN() throws SegmentCategoryNotFoundException {
-        givenFirstSeriesWithGradient(this.firstSeriesSegment, GradientType.POSITIVE);
-        givenSecondSeriesWithGradientThatIntersectsAt(this.firstSeriesSegment, this.secondSeriesSegment,
-                GradientType.NEGATIVE, Intersection.WITHIN);
-        whenTheGraphSegmentIsSummarised();
-        thenTheSummaryStartsByDescribingTheTimescale(START_TIME, END_TIME);
-        thenTheSummaryMentionsTheSeriesIntersectWithin();
-    }
-
-    private void givenSecondSeriesWithConstantValue(double value) {
-        when(this.seriesSegmentSummaryService.getSummary(eq(this.firstSeriesSegment), eq(this.secondSeriesSegment),
-                any(Configuration.class)))
-                        .thenReturn(NLG_FACTORY.createClause(SECOND_SERIES_LABEL, "is", "constant at " + value));
-    }
-
-    private void givenFirstSeriesWithConstantValue(double value) {
-        when(this.seriesSegmentSummaryService.getSummary(eq(this.secondSeriesSegment), eq(this.firstSeriesSegment),
-                any(Configuration.class)))
-                        .thenReturn(NLG_FACTORY.createClause(FIRST_SERIES_LABEL, "is", "constant at " + value));
+    private SeriesSegment higherSeriesOf(final double firstSeriesValue, final double secondSeriesValue) {
+        SeriesSegment seriesSegment = null;
+        if (firstSeriesValue > secondSeriesValue) {
+            seriesSegment = this.firstSeriesSegment;
+        } else if (secondSeriesValue > firstSeriesValue) {
+            seriesSegment = this.secondSeriesSegment;
+        }
+        return seriesSegment;
     }
 
     private void whenTheGraphSegmentIsSummarised() throws SegmentCategoryNotFoundException {
         this.summary = this.underTest.getSummary(this.graphSegment);
-        this.summaryText = realiser.realise(this.summary).toString();
+        this.summaryText = REALISER.realise(this.summary).toString();
         LOG.debug(this.summaryText);
     }
 
-    private void thenTheSummaryStartsByDescribingTheTimescale(String startTime, String endTime) {
-        assertTrue(this.summaryText.startsWith("Between " + startTime + " and " + endTime));
-    }
-
-    private void thenTheSummaryDescribesTheSeriesRemainingConstantAtValue(SeriesSegment seriesSegment, double value) {
-        assertTrue(this.summaryText.contains(seriesSegment.getLabel() + " is constant at " + value));
-    }
-
-    private void thenTheSummaryMentionsTheSeriesIntersectAtTheStart() {
-        // TODO Auto-generated method stub
-    }
-
-    private void thenTheSummaryMentionsTheSeriesIntersectAtTheEnd() {
-        // TODO Auto-generated method stub
-    }
-
-    private void thenTheSummaryMentionsTheSeriesIntersectWithin() {
-        // assertTrue(this.summaryText.contains("intersect"));
-    }
-
-    private void thenTheSummaryMentionsThatTheSeriesIsSteeper(SeriesSegment seriesSegment) {
-        // TODO Auto-generated method stub
-
-    }
-
-    /**
-     * Just set the duration description to SOMETHING.
-     * 
-     * @return
-     */
-    private SPhraseSpec initialiseDurationPhrase() {
-        PPPhraseSpec durationPreposition = NLG_FACTORY.createPrepositionPhrase();
-        durationPreposition.addComplement(START_TIME);
-        durationPreposition.setPreposition("between");
-        durationPreposition.addComplement(END_TIME);
-        SPhraseSpec durationClause = NLG_FACTORY.createClause();
-        durationClause.setObject(durationPreposition);
-        return durationClause;
-    }
 }

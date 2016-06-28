@@ -1,6 +1,7 @@
 package uk.co.lgs.text.service.graph;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.anyListOf;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -11,14 +12,18 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
+import simplenlg.framework.NLGFactory;
+import simplenlg.framework.PhraseElement;
+import simplenlg.lexicon.Lexicon;
 import uk.co.lgs.model.graph.GraphModel;
 import uk.co.lgs.model.segment.graph.GraphSegment;
 import uk.co.lgs.test.AbstractTest;
-import uk.co.lgs.text.service.graph.GraphSummaryService;
-import uk.co.lgs.text.service.graph.GraphSummaryServiceImpl;
+import uk.co.lgs.text.service.label.LabelService;
 import uk.co.lgs.text.service.segment.graph.GraphSegmentSummaryService;
 
 public class GraphSummaryServiceImplTest extends AbstractTest {
+
+    private static final Lexicon LEXICON = Lexicon.getDefaultLexicon();
 
     private static final String GRAPH_TITLE = "I am an important graph";
     private static final String THIS_GRAPH_IS_CALLED = "This graph is called ";
@@ -30,10 +35,16 @@ public class GraphSummaryServiceImplTest extends AbstractTest {
     private static final String SERIES1_LABEL = "Sales of frogs";
     private static final String SERIES2_LABEL = "Average global temperature";
 
+    private static final String IT_SHOWS = "It shows ";
+
     private List<GraphSegment> graphSegments;
+    private final NLGFactory nlgFactory = new NLGFactory(LEXICON);
 
     @Mock
     private GraphSegmentSummaryService graphSegmentSummaryService;
+
+    @Mock
+    private LabelService labelService;
 
     @Mock
     private GraphModel mockGraphModel;
@@ -41,15 +52,22 @@ public class GraphSummaryServiceImplTest extends AbstractTest {
     @Mock
     private GraphSegment mockGraphSegment;
 
+    private List<PhraseElement> modelLabelList;
+
+    @Mock
+    private PhraseElement phraseElement;
+
     private String graphSummary;
 
     @InjectMocks
-    private GraphSummaryService underTest = new GraphSummaryServiceImpl();
+    private final GraphSummaryService underTest = new GraphSummaryServiceImpl();
 
     @Before
     public void setup() {
         this.graphSegments = new ArrayList<GraphSegment>();
         when(this.mockGraphModel.getGraphSegments()).thenReturn(this.graphSegments);
+        this.modelLabelList = new ArrayList<>();
+
     }
 
     @Test
@@ -65,24 +83,28 @@ public class GraphSummaryServiceImplTest extends AbstractTest {
         givenAGraphWithSeries(SERIES1_LABEL, SERIES2_LABEL);
         givenAGraphStartingAndEndingAt(GRAPH_START, GRAPH_END);
         whenTheGraphIsSummarised();
-        thenTheSummaryEquals(THIS_GRAPH_IS_CALLED + GRAPH_TITLE + ". " + THIS_GRAPH_SHOWS + SERIES1_LABEL + AND
-                + SERIES2_LABEL + BETWEEN + GRAPH_START + AND + GRAPH_END + ".");
+        // FIXME: this should have a comma after GRAPH_TITLE, but this doesn't
+        // seem to work (@see
+        // https://groups.google.com/forum/#!topic/simplenlg/S5lhANTBo70)
+        thenTheSummaryEquals(THIS_GRAPH_IS_CALLED + GRAPH_TITLE + ". " + IT_SHOWS + SERIES1_LABEL + AND + SERIES2_LABEL
+                + BETWEEN + GRAPH_START + AND + GRAPH_END + ".");
     }
 
-    private void givenAGraphWithSeries(String series1Label, String series2Label) {
-
-        when(this.mockGraphModel.getLabels())
-                .thenReturn(java.util.Arrays.asList("timeSeries", series1Label, series2Label));
-
+    private void givenAGraphWithSeries(final String series1Label, final String series2Label) {
+        when(this.mockGraphModel.getLabels()).thenReturn(new ArrayList<String>());
+        this.modelLabelList = new ArrayList<>();
+        this.modelLabelList.add(this.nlgFactory.createNounPhrase(series1Label));
+        this.modelLabelList.add(this.nlgFactory.createNounPhrase(series2Label));
+        when(this.labelService.getLabelsForInitialUse(anyListOf(String.class))).thenReturn(this.modelLabelList);
     }
 
-    private void givenAGraphStartingAndEndingAt(String start, String end) {
+    private void givenAGraphStartingAndEndingAt(final String start, final String end) {
         when(this.mockGraphSegment.getStartTime()).thenReturn(start);
         when(this.mockGraphSegment.getEndTime()).thenReturn(end);
         this.graphSegments.add(this.mockGraphSegment);
     }
 
-    private void thenTheSummaryEquals(String summary) {
+    private void thenTheSummaryEquals(final String summary) {
         assertEquals(summary, this.graphSummary);
     }
 
@@ -91,7 +113,7 @@ public class GraphSummaryServiceImplTest extends AbstractTest {
 
     }
 
-    private void givenAGraphWithTitle(String graphTitle) {
+    private void givenAGraphWithTitle(final String graphTitle) {
         when(this.mockGraphModel.getTitle()).thenReturn(graphTitle);
     }
 

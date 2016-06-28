@@ -1,105 +1,128 @@
 package uk.co.lgs.text.service.segment.graph;
 
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 
-import org.apache.commons.configuration2.Configuration;
-import org.apache.commons.configuration2.MapConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import simplenlg.framework.CoordinatedPhraseElement;
 import simplenlg.framework.DocumentElement;
-import simplenlg.framework.NLGElement;
 import simplenlg.framework.NLGFactory;
+import simplenlg.framework.PhraseElement;
 import simplenlg.lexicon.Lexicon;
+import simplenlg.phrasespec.SPhraseSpec;
+import uk.co.lgs.model.gradient.GradientType;
 import uk.co.lgs.model.segment.graph.GraphSegment;
-import uk.co.lgs.text.service.graph.PropertyNames;
-import uk.co.lgs.text.service.segment.series.SeriesSegmentSummaryService;
+import uk.co.lgs.model.segment.series.SeriesSegment;
+import uk.co.lgs.text.service.label.LabelService;
+import uk.co.lgs.text.service.synonym.Constants;
+import uk.co.lgs.text.service.synonym.SynonymService;
 
+/**
+ * I am responsible for constucting text summaries of segments.
+ *
+ * @author bouncysteve
+ *
+ */
 @Component
 public class GraphSegmentSummaryServiceImpl implements GraphSegmentSummaryService {
 
     private static final Lexicon LEXICON = Lexicon.getDefaultLexicon();
-    private static final NLGFactory NLG_FACTORY = new NLGFactory(LEXICON);
+
+    private final NLGFactory nlgFactory = new NLGFactory(LEXICON);
 
     @Autowired
-    private SeriesSegmentSummaryService seriesSegmentSummaryService;
+    private LabelService labelService;
 
     @Autowired
-    private SegmentDurationDescriberService segmentDurationDescriberService;
+    private SynonymService synonymService;
 
     @Override
-    public DocumentElement getSummary(GraphSegment graphSegment) {
-        DocumentElement compareSeries = NLG_FACTORY.createSentence();
-        compareSeries.addComponent(this.segmentDurationDescriberService.buildDurationDescription(graphSegment));
+    public DocumentElement getSummary(final GraphSegment graphSegment) {
+        final DocumentElement compareSeries = this.nlgFactory.createSentence();
 
-        compareSeries.addComponent(describeBehaviour(graphSegment));
-
-        return NLG_FACTORY.createSentence(compareSeries);
-    }
-
-    private NLGElement describeBehaviour(GraphSegment graphSegment) {
-        CoordinatedPhraseElement behaviour = NLG_FACTORY.createCoordinatedPhrase();
-        List<Configuration> propertyList = constructConfig(graphSegment);
-        Configuration firstSeriesConfig = propertyList.get(0);
-        Configuration secondSeriesConfig = propertyList.get(1);
-        behaviour.addCoordinate(this.seriesSegmentSummaryService.getSummary(graphSegment.getSeriesSegment(0),
-                graphSegment.getSeriesSegment(1), firstSeriesConfig));
-        behaviour.addCoordinate(this.seriesSegmentSummaryService.getSummary(graphSegment.getSeriesSegment(1),
-                graphSegment.getSeriesSegment(0), secondSeriesConfig));
-        return behaviour;
-    }
-
-    private List<Configuration> constructConfig(GraphSegment graphSegment) {
-        Configuration firstSeriesConfig = new MapConfiguration(new HashMap<String, Object>());
-        Configuration secondSeriesConfig = new MapConfiguration(new HashMap<String, Object>());
-        if (graphSegment.isIntersecting()) {
-            switch (graphSegment.getGraphSegmentGradientCategory()) {
-            case ZERO_ZERO_INTERSECTING:
-                // Both series have the same value throughout.
-                firstSeriesConfig.setProperty(PropertyNames.BOTH_SAME, Boolean.TRUE.toString());
-                break;
-            case ZERO_NEGATIVE_INTERSECTING:
-                // Second series falls below the value of the first series,
-                // which
-                // remains constant at...
-                break;
-            case ZERO_POSITIVE_INTERSECTING:
-                // Second series rises above the value of the first series,
-                // which
-                // remains constant at...
-                break;
-            case NEGATIVE_NEGATIVE_INTERSECTING:
-                // Need to know which one is steeper (or has higher initial
-                // value)
-                // to know which is undertaking
-                break;
-            case NEGATIVE_POSITIVE_INTERSECTING:
-                // S1 increases to y, while S2 decreases to a lower value, x.
-                break;
-            case POSITIVE_NEGATIVE_INTERSECTING:
-                // S1 decreases to y, while S2 increases to a higher value, x.
-                break;
-            case POSITIVE_POSITIVE_INTERSECTING:
-                // Need to know which one is steeper (or has lower initial value
-                // to
-                // know which is overtaking
-                break;
-            case NEGATIVE_ZERO_INTERSECTING:
-                // S1 decreases to x, below the value of y, which S2 holds
-                // until...
-                break;
-            case POSITIVE_ZERO_INTERSECTING:
-                // S1 increases to x, above the value of y, which S2 holds
-                // until...
-                break;
-            default:
-                break;
+        // Mention higher series at start
+        compareSeries.addComponent(describeHigherSeriesAtStart(graphSegment));
+        if (graphSegment.getFirstSeriesTrend().equals(graphSegment.getSecondSeriesTrend())) {
+            // mention the relative gradients
+            compareSeries.addComponent(describeTwoSeriesWithSameGradientType(graphSegment));
+        } else {
+            // Describe trend of the initially higher series (or the first
+            // series if they are tied)
+            SeriesSegment higherInitialSeries = graphSegment.getHigherSeriesAtStart();
+            if (null == higherInitialSeries) {
+                higherInitialSeries = graphSegment.getSeriesSegments().get(0);
             }
+            compareSeries.addComponent(describeTrend(higherInitialSeries));
+
+            // Describe the trend of the other series
+            final SeriesSegment otherSeries = higherInitialSeries.equals(graphSegment.getSeriesSegment(0))
+                    ? graphSegment.getSeriesSegment(1) : graphSegment.getSeriesSegment(0);
+            compareSeries.addComponent(describeTrend(otherSeries));
         }
-        return Arrays.asList(firstSeriesConfig, secondSeriesConfig);
+        // Describe the change in the gap.
+        compareSeries.addComponent(describeGapChange(graphSegment));
+        // (Don't mention higher series at end, as it will be repeated at the
+        // start of the next segment), unless this is the last segment of the
+        // graph.
+
+        // FIXME: describe the end state of the
+        // graph!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+        return this.nlgFactory.createSentence(compareSeries);
+    }
+
+    private PhraseElement describeHigherSeriesAtStart(final GraphSegment graphSegment) {
+        final List<PhraseElement> labels = this.labelService.getLabelsForCommonUse(graphSegment);
+        final SeriesSegment higherSeries = graphSegment.getHigherSeriesAtStart();
+        final String startTime = graphSegment.getStartTime();
+        // If getHigherSeriesAtStart() is null then both have the same value.
+        PhraseElement higherSeriesLabel = this.nlgFactory.createNounPhrase("both");
+        if (null != higherSeries) {
+            higherSeriesLabel = labels.get(graphSegment.indexOf(higherSeries));
+        }
+        final SPhraseSpec higherSeriesPhrase = this.nlgFactory.createClause();
+        higherSeriesPhrase.setSubject(higherSeriesLabel);
+        higherSeriesPhrase.setVerb("is higher in");
+        higherSeriesPhrase.setObject(startTime);
+        return higherSeriesPhrase;
+    }
+
+    private PhraseElement describeGapChange(final GraphSegment graphSegment) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    private PhraseElement describeTrend(final SeriesSegment higherInitialSeries) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    private PhraseElement describeTwoSeriesWithSameGradientType(final GraphSegment graphSegment) {
+        final List<PhraseElement> labels = this.labelService.getLabelsForCommonUse(graphSegment);
+        final SPhraseSpec sameTrendPhrase = this.nlgFactory.createClause();
+        sameTrendPhrase.setSubject(labels.get(0));
+        sameTrendPhrase.setSubject(labels.get(1));
+        sameTrendPhrase.setVerb(getPhraseForTrend(graphSegment.getFirstSeriesTrend()));
+
+        return sameTrendPhrase;
+    }
+
+    private PhraseElement getPhraseForTrend(final GradientType trend) {
+        PhraseElement trendPhrase = null;
+        switch (trend) {
+        case NEGATIVE:
+            trendPhrase = this.nlgFactory.createVerbPhrase(this.synonymService.getSynonym(Constants.FALL));
+            break;
+        case POSITIVE:
+            trendPhrase = this.nlgFactory.createVerbPhrase(this.synonymService.getSynonym(Constants.RISE));
+            break;
+        case ZERO:
+            trendPhrase = this.nlgFactory.createVerbPhrase(this.synonymService.getSynonym(Constants.CONSTANT));
+            break;
+        default:
+            break;
+        }
+        return trendPhrase;
     }
 
 }

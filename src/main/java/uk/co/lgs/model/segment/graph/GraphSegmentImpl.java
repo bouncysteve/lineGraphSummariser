@@ -21,6 +21,12 @@ import uk.co.lgs.model.segment.graph.category.GapTrend;
 import uk.co.lgs.model.segment.graph.category.GraphSegmentGradient;
 import uk.co.lgs.model.segment.series.SeriesSegment;
 
+/**
+ * I represent a segment of the graph between two points on the x axis.
+ *
+ * @author bouncysteve
+ *
+ */
 public class GraphSegmentImpl implements GraphSegment {
 
     private static final DecimalFormat DF = new DecimalFormat("#.00");
@@ -33,7 +39,7 @@ public class GraphSegmentImpl implements GraphSegment {
 
     private Double valueAtIntersection = null;
 
-    private List<SeriesSegment> seriesSegments;
+    private final List<SeriesSegment> seriesSegments;
 
     private boolean intersecting;
 
@@ -43,11 +49,18 @@ public class GraphSegmentImpl implements GraphSegment {
 
     private GapTrend gapTrend;
 
-    private SeriesSegment firstSeriesSegment;
+    private final SeriesSegment firstSeriesSegment;
 
-    private SeriesSegment secondSeriesSegment;
+    private final SeriesSegment secondSeriesSegment;
 
-    public GraphSegmentImpl(SeriesSegment firstSeriesSegment, SeriesSegment secondSeriesSegment)
+    /**
+     * I create an object representing two series between two points in time.
+     *
+     * @param firstSeriesSegment
+     * @param secondSeriesSegment
+     * @throws SegmentCategoryNotFoundException
+     */
+    public GraphSegmentImpl(final SeriesSegment firstSeriesSegment, final SeriesSegment secondSeriesSegment)
             throws SegmentCategoryNotFoundException {
         this.firstSeriesSegment = firstSeriesSegment;
         this.secondSeriesSegment = secondSeriesSegment;
@@ -91,7 +104,7 @@ public class GraphSegmentImpl implements GraphSegment {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         sb.append(this.getStartTime()).append(" - ");
         sb.append(this.getEndTime()).append("\t");
         sb.append("(").append(this.getLength()).append(")\t");
@@ -118,7 +131,7 @@ public class GraphSegmentImpl implements GraphSegment {
         }
         sb.append(endHigherSeries + "\t\t");
 
-        sb.append("(" + (DF.format(this.seriesSegments.get(0).getGradient())) + ", ");
+        sb.append("(" + DF.format(this.seriesSegments.get(0).getGradient()) + ", ");
         sb.append(DF.format(this.seriesSegments.get(1).getGradient()) + ")\t");
 
         if (this.isIntersecting()) {
@@ -135,15 +148,15 @@ public class GraphSegmentImpl implements GraphSegment {
     /**
      * This will need more work to be able to tell if there are intersections
      * between n series (n>2)
-     * 
+     *
      */
     private void determineIntersectionDetails() {
-        SeriesSegment segment1 = this.seriesSegments.get(0);
-        SeriesSegment segment2 = this.seriesSegments.get(1);
-        double firstSeriesStartValue = segment1.getStartValue();
-        double firstSeriesEndValue = segment1.getEndValue();
-        double secondSeriesStartValue = segment2.getStartValue();
-        double secondSeriesEndValue = segment2.getEndValue();
+        final SeriesSegment segment1 = this.seriesSegments.get(0);
+        final SeriesSegment segment2 = this.seriesSegments.get(1);
+        final double firstSeriesStartValue = segment1.getStartValue();
+        final double firstSeriesEndValue = segment1.getEndValue();
+        final double secondSeriesStartValue = segment2.getStartValue();
+        final double secondSeriesEndValue = segment2.getEndValue();
 
         /*
          * equation of series: y = mx + c; y = (endValue - startValue)x +
@@ -152,15 +165,15 @@ public class GraphSegmentImpl implements GraphSegment {
          * {startValue}
          * http://commons.apache.org/proper/commons-math/userguide/linear.html
          */
-        RealMatrix coefficients = new Array2DRowRealMatrix(
+        final RealMatrix coefficients = new Array2DRowRealMatrix(
                 new double[][] { { firstSeriesStartValue - firstSeriesEndValue, 1 },
                         { secondSeriesStartValue - secondSeriesEndValue, 1 } },
                 false);
-        DecompositionSolver solver = new LUDecomposition(coefficients).getSolver();
-        RealVector constants = new ArrayRealVector(new double[] { firstSeriesStartValue, secondSeriesStartValue },
+        final DecompositionSolver solver = new LUDecomposition(coefficients).getSolver();
+        final RealVector constants = new ArrayRealVector(new double[] { firstSeriesStartValue, secondSeriesStartValue },
                 false);
         try {
-            RealVector solution = solver.solve(constants);
+            final RealVector solution = solver.solve(constants);
             this.segmentDistanceToIntersection = solution.getEntry(0);
             /*
              * There may be a solution to this simultaneous equation, but it
@@ -170,7 +183,7 @@ public class GraphSegmentImpl implements GraphSegment {
                 this.valueAtIntersection = solution.getEntry(1);
                 this.intersecting = null != this.valueAtIntersection;
             }
-        } catch (SingularMatrixException e) {
+        } catch (final SingularMatrixException e) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Lines are parallel, they either don't intersect or they are the identical", e);
             }
@@ -186,9 +199,9 @@ public class GraphSegmentImpl implements GraphSegment {
     }
 
     private void determineSegmentCategory() {
-        GradientType firstSeriesGradient = this.seriesSegments.get(0).getGradientType();
-        GradientType secondSeriesGradient = this.seriesSegments.get(1).getGradientType();
-        for (GraphSegmentGradient category : GraphSegmentGradient.values()) {
+        final GradientType firstSeriesGradient = this.seriesSegments.get(0).getGradientType();
+        final GradientType secondSeriesGradient = this.seriesSegments.get(1).getGradientType();
+        for (final GraphSegmentGradient category : GraphSegmentGradient.values()) {
             if (category.getFirstSeriesGradient().equals(firstSeriesGradient)
                     && category.getSecondSeriesGradient().equals(secondSeriesGradient)
                     && category.isIntersecting() == this.intersecting) {
@@ -199,15 +212,15 @@ public class GraphSegmentImpl implements GraphSegment {
     }
 
     private void determineGraphSegmentGap() {
-        SeriesSegment segment1 = this.seriesSegments.get(0);
-        SeriesSegment segment2 = this.seriesSegments.get(1);
-        double firstSeriesStartValue = segment1.getStartValue();
-        double firstSeriesEndValue = segment1.getEndValue();
-        double secondSeriesStartValue = segment2.getStartValue();
-        double secondSeriesEndValue = segment2.getEndValue();
+        final SeriesSegment segment1 = this.seriesSegments.get(0);
+        final SeriesSegment segment2 = this.seriesSegments.get(1);
+        final double firstSeriesStartValue = segment1.getStartValue();
+        final double firstSeriesEndValue = segment1.getEndValue();
+        final double secondSeriesStartValue = segment2.getStartValue();
+        final double secondSeriesEndValue = segment2.getEndValue();
 
-        double differenceAtStart = firstSeriesStartValue - secondSeriesStartValue;
-        double differenceAtEnd = firstSeriesEndValue - secondSeriesEndValue;
+        final double differenceAtStart = firstSeriesStartValue - secondSeriesStartValue;
+        final double differenceAtEnd = firstSeriesEndValue - secondSeriesEndValue;
 
         if (differenceAtStart > differenceAtEnd) {
             this.gapTrend = GapTrend.CONVERGING;
@@ -219,15 +232,17 @@ public class GraphSegmentImpl implements GraphSegment {
     }
 
     @Override
-    public GraphSegment append(GraphSegment newSegment) throws SegmentAppendException {
+    public GraphSegment append(final GraphSegment newSegment) throws SegmentAppendException {
         // check that the type is the same, if not, throw an exception.
         // TODO: handle near same type (same but with/without intersection)
-        for (SeriesSegment seriesSegment : this.seriesSegments) {
-            SeriesSegment segmentToAppend = newSegment.getSeriesSegment(this.seriesSegments.indexOf(seriesSegment));
+        for (final SeriesSegment seriesSegment : this.seriesSegments) {
+            final SeriesSegment segmentToAppend = newSegment
+                    .getSeriesSegment(this.seriesSegments.indexOf(seriesSegment));
             if (seriesSegment.getGradientType().equals(segmentToAppend.getGradientType())) {
                 seriesSegment.append(segmentToAppend);
-            } else
+            } else {
                 throw new SegmentAppendException(APPEND_INVALID_GRADIENT_MESSAGE);
+            }
         }
         determineIntersectionDetails();
         determineSegmentCategory();
@@ -245,7 +260,7 @@ public class GraphSegmentImpl implements GraphSegment {
     }
 
     @Override
-    public SeriesSegment getSeriesSegment(int index) {
+    public SeriesSegment getSeriesSegment(final int index) {
         return this.seriesSegments.get(index);
     }
 
@@ -256,11 +271,11 @@ public class GraphSegmentImpl implements GraphSegment {
 
     /**
      * Provides a header to explain the output of toString().
-     * 
+     *
      * @return
      */
     public static String getHeader() {
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         sb.append("PERIOD\t\t").append("LENGTH\t").append("GRADIENT_TYPES\t").append("GAP\t").append("1st_HIGH\t")
                 .append("2nd_HIGH\t").append("GRADIENTS\t").append("(VALUE_AT_INTERSECTION)\t").append("NOTES\t");
         return sb.toString();
@@ -277,7 +292,7 @@ public class GraphSegmentImpl implements GraphSegment {
         return getHigherSeriesFromValues(this.firstSeriesSegment.getEndValue(), this.secondSeriesSegment.getEndValue());
     }
 
-    private SeriesSegment getHigherSeriesFromValues(double firstSeriesValue, double secondSeriesValue) {
+    private SeriesSegment getHigherSeriesFromValues(final double firstSeriesValue, final double secondSeriesValue) {
         SeriesSegment higherSeriesSegment = null;
         if (firstSeriesValue > secondSeriesValue) {
             higherSeriesSegment = this.firstSeriesSegment;
@@ -295,6 +310,17 @@ public class GraphSegmentImpl implements GraphSegment {
     @Override
     public GradientType getSecondSeriesTrend() {
         return this.secondSeriesSegment.getGradientType();
+    }
+
+    @Override
+    public int indexOf(final SeriesSegment seriesSegment) {
+        int index = -1;
+        if (this.firstSeriesSegment.equals(seriesSegment)) {
+            index = 0;
+        } else if (this.secondSeriesSegment.equals(seriesSegment)) {
+            index = 1;
+        }
+        return index;
     }
 
 }
