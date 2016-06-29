@@ -2,9 +2,10 @@ package uk.co.lgs.text.service.label;
 
 import java.util.List;
 
-import simplenlg.framework.PhraseElement;
+import simplenlg.phrasespec.NPPhraseSpec;
 import uk.co.lgs.model.graph.GraphModel;
 import uk.co.lgs.model.segment.graph.GraphSegment;
+import uk.co.lgs.model.segment.series.SeriesSegment;
 
 /**
  * @author bouncysteve
@@ -20,7 +21,7 @@ public interface LabelService {
      *            the graph
      * @return a list of labels for use in simpleNLG.
      */
-    List<PhraseElement> getLabelsForInitialUse(GraphModel graphModel);
+    List<NPPhraseSpec> getLabelsForInitialUse(GraphModel graphModel);
 
     /**
      * In the first sentence of the description the full label should be used,
@@ -30,7 +31,7 @@ public interface LabelService {
      *            the graph segmment
      * @return a list of labels for use in simpleNLG.
      */
-    List<PhraseElement> getLabelsForInitialUse(GraphSegment graphSegment);
+    List<NPPhraseSpec> getLabelsForInitialUse(GraphSegment graphSegment);
 
     /**
      * In the first sentence of the description the full label should be used,
@@ -40,7 +41,7 @@ public interface LabelService {
      *            a list of labels, the first one is the time series label.
      * @return
      */
-    List<PhraseElement> getLabelsForInitialUse(List<String> labels);
+    List<NPPhraseSpec> getLabelsForInitialUse(List<String> labels);
 
     /**
      * In the main body of the text a series' label may be too long to repeat.
@@ -50,5 +51,14 @@ public interface LabelService {
      * @param graphSegment
      * @return
      */
-    List<PhraseElement> getLabelsForCommonUse(GraphSegment graphSegment);
+    List<NPPhraseSpec> getLabelsForCommonUse(GraphSegment graphSegment);
+
+    /**
+     * Return the label for the given seriesSegment.
+     *
+     * @param graphSegment
+     * @param seriesSegment
+     * @return
+     */
+    NPPhraseSpec getLabelForCommonUse(GraphSegment graphSegment, SeriesSegment seriesSegment);
 }

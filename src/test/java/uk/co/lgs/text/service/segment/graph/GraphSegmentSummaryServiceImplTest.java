@@ -14,8 +14,8 @@ import org.slf4j.LoggerFactory;
 
 import simplenlg.framework.DocumentElement;
 import simplenlg.framework.NLGFactory;
-import simplenlg.framework.PhraseElement;
 import simplenlg.lexicon.Lexicon;
+import simplenlg.phrasespec.NPPhraseSpec;
 import simplenlg.realiser.english.Realiser;
 import uk.co.lgs.model.gradient.GradientType;
 import uk.co.lgs.model.segment.exception.SegmentCategoryNotFoundException;
@@ -23,6 +23,7 @@ import uk.co.lgs.model.segment.series.SeriesSegment;
 import uk.co.lgs.segment.graph.AbstractGraphSegmentTest;
 import uk.co.lgs.text.service.label.LabelService;
 import uk.co.lgs.text.service.segment.series.SeriesSegmentSummaryService;
+import uk.co.lgs.text.service.synonym.SynonymService;
 
 public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest {
 
@@ -36,12 +37,14 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
     private static final Lexicon LEXICON = Lexicon.getDefaultLexicon();
     private static final Realiser REALISER = new Realiser(LEXICON);
 
-    private List<PhraseElement> labels;
+    private List<NPPhraseSpec> labels;
     private final NLGFactory nlgFactory = new NLGFactory(LEXICON);
     @Mock
     private SeriesSegmentSummaryService seriesSegmentSummaryService;
     @Mock
     private LabelService labelService;
+    @Mock
+    private SynonymService synonymService;
 
     @InjectMocks
     private final GraphSegmentSummaryService underTest = new GraphSegmentSummaryServiceImpl();
@@ -105,10 +108,15 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
                 .thenReturn(higherSeriesOf(firstSeriesStartValue, secondSeriesStartValue));
         when(this.graphSegment.getHigherSeriesAtEnd())
                 .thenReturn(higherSeriesOf(firstSeriesEndValue, secondSeriesEndValue));
-        when(this.graphSegment.getFirstSeriesTrend())
-                .thenReturn(trendFromValues(firstSeriesStartValue, firstSeriesEndValue));
-        when(this.graphSegment.getSecondSeriesTrend())
-                .thenReturn(trendFromValues(secondSeriesStartValue, secondSeriesEndValue));
+
+        final GradientType firstSeriesTrend = trendFromValues(firstSeriesStartValue, firstSeriesEndValue);
+
+        when(this.graphSegment.getFirstSeriesTrend()).thenReturn(firstSeriesTrend);
+        when(this.firstSeriesSegment.getGradientType()).thenReturn(firstSeriesTrend);
+
+        final GradientType secondSeriesTrend = trendFromValues(secondSeriesStartValue, secondSeriesEndValue);
+        when(this.graphSegment.getSecondSeriesTrend()).thenReturn(secondSeriesTrend);
+        when(this.secondSeriesSegment.getGradientType()).thenReturn(secondSeriesTrend);
 
     }
 

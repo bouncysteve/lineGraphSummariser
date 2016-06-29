@@ -24,8 +24,8 @@ public class SynonymServiceImpl implements SynonymService {
             Arrays.asList("fall", "decline", "drop", "shrink", "decrease", "lower", "reduce")); // ("weaken","diminish",
                                                                                                 // "slide",)
     private static final Set<String> RISE_SYNONYMS = new HashSet<>(
-            Arrays.asList("rise", "increase", "grow", "improve", "progress", "extend", "build", "go up")); // ("ascend",
-                                                                                                           // "advance",)
+            Arrays.asList("rise", "increase", "grow", "improve", "progress", "build", "go up")); // ("ascend","extend",
+                                                                                                 // "advance",)
     private static final Set<String> CONSTANT_SYNONYMS = new HashSet<>(
             Arrays.asList("is constant", "remain", "continue", "freeze", "stop", "persist", "rest"));// ("endure",
     private static final Random random = new Random();

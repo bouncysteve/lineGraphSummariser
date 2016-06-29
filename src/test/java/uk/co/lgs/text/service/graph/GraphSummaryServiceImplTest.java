@@ -15,6 +15,7 @@ import org.mockito.Mock;
 import simplenlg.framework.NLGFactory;
 import simplenlg.framework.PhraseElement;
 import simplenlg.lexicon.Lexicon;
+import simplenlg.phrasespec.NPPhraseSpec;
 import uk.co.lgs.model.graph.GraphModel;
 import uk.co.lgs.model.segment.graph.GraphSegment;
 import uk.co.lgs.test.AbstractTest;
@@ -52,7 +53,7 @@ public class GraphSummaryServiceImplTest extends AbstractTest {
     @Mock
     private GraphSegment mockGraphSegment;
 
-    private List<PhraseElement> modelLabelList;
+    private List<NPPhraseSpec> modelLabelList;
 
     @Mock
     private PhraseElement phraseElement;

@@ -12,8 +12,8 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
-import simplenlg.framework.PhraseElement;
 import simplenlg.lexicon.Lexicon;
+import simplenlg.phrasespec.NPPhraseSpec;
 import simplenlg.realiser.english.Realiser;
 import uk.co.lgs.model.graph.GraphModel;
 import uk.co.lgs.model.segment.graph.GraphSegment;
@@ -56,7 +56,7 @@ public class LabelServiceImplTest extends AbstractTest {
 
     private List<GraphSegment> segments;
 
-    private List<PhraseElement> phraseElements;
+    private List<NPPhraseSpec> labelNouns;
 
     private List<String> labelStrings;
 
@@ -115,13 +115,13 @@ public class LabelServiceImplTest extends AbstractTest {
     }
 
     private void thenTheLabelsArePlural(final boolean firstSeriesPlural, final boolean secondSeriesPlural) {
-        assertEquals(firstSeriesPlural, this.phraseElements.get(0).isPlural());
-        assertEquals(secondSeriesPlural, this.phraseElements.get(1).isPlural());
+        assertEquals(firstSeriesPlural, this.labelNouns.get(0).isPlural());
+        assertEquals(secondSeriesPlural, this.labelNouns.get(1).isPlural());
     }
 
     private void whenIGetLabelsForCommonUse() {
-        this.phraseElements = this.underTest.getLabelsForCommonUse(this.graphSegment);
-        this.labelStrings = realisePhrases(this.phraseElements);
+        this.labelNouns = this.underTest.getLabelsForCommonUse(this.graphSegment);
+        this.labelStrings = realiseNouns(this.labelNouns);
     }
 
     private void thenTheLabelsAre(final String firstSeriesLabel, final String secondSeriesLabel) {
@@ -129,17 +129,17 @@ public class LabelServiceImplTest extends AbstractTest {
         assertEquals(secondSeriesLabel, this.labelStrings.get(1));
     }
 
-    private List<String> realisePhrases(final List<PhraseElement> phraseElements) {
+    private List<String> realiseNouns(final List<NPPhraseSpec> nouns) {
         final List<String> realisedPhrases = new ArrayList<>();
-        for (final PhraseElement phraseElement : phraseElements) {
-            realisedPhrases.add(REALISER.realise(phraseElement).toString());
+        for (final NPPhraseSpec noun : nouns) {
+            realisedPhrases.add(REALISER.realise(noun).toString());
         }
         return realisedPhrases;
     }
 
     private void whenIGetLabelsForInitialUse() {
-        this.phraseElements = this.underTest.getLabelsForInitialUse(this.graphModel);
-        this.labelStrings = realisePhrases(this.phraseElements);
+        this.labelNouns = this.underTest.getLabelsForInitialUse(this.graphModel);
+        this.labelStrings = realiseNouns(this.labelNouns);
     }
 
     private void givenSeriesLabels(final String firstSeriesLabel, final String secondSeriesLabel) {

@@ -6,10 +6,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import simplenlg.framework.DocumentElement;
+import simplenlg.framework.NLGElement;
 import simplenlg.framework.NLGFactory;
 import simplenlg.framework.PhraseElement;
 import simplenlg.lexicon.Lexicon;
+import simplenlg.phrasespec.NPPhraseSpec;
+import simplenlg.phrasespec.PPPhraseSpec;
 import simplenlg.phrasespec.SPhraseSpec;
+import simplenlg.phrasespec.VPPhraseSpec;
 import uk.co.lgs.model.gradient.GradientType;
 import uk.co.lgs.model.segment.graph.GraphSegment;
 import uk.co.lgs.model.segment.series.SeriesSegment;
@@ -42,22 +46,19 @@ public class GraphSegmentSummaryServiceImpl implements GraphSegmentSummaryServic
 
         // Mention higher series at start
         compareSeries.addComponent(describeHigherSeriesAtStart(graphSegment));
+
         if (graphSegment.getFirstSeriesTrend().equals(graphSegment.getSecondSeriesTrend())) {
             // mention the relative gradients
             compareSeries.addComponent(describeTwoSeriesWithSameGradientType(graphSegment));
         } else {
-            // Describe trend of the initially higher series (or the first
-            // series if they are tied)
-            SeriesSegment higherInitialSeries = graphSegment.getHigherSeriesAtStart();
-            if (null == higherInitialSeries) {
-                higherInitialSeries = graphSegment.getSeriesSegments().get(0);
-            }
-            compareSeries.addComponent(describeTrend(higherInitialSeries));
+            compareSeries.addComponent(describeTrendOfInitiallyHigherSeries(graphSegment));
 
             // Describe the trend of the other series
-            final SeriesSegment otherSeries = higherInitialSeries.equals(graphSegment.getSeriesSegment(0))
-                    ? graphSegment.getSeriesSegment(1) : graphSegment.getSeriesSegment(0);
-            compareSeries.addComponent(describeTrend(otherSeries));
+            final SeriesSegment otherSeries = graphSegment.getHigherSeriesAtStart()
+                    .equals(graphSegment.getSeriesSegment(0)) ? graphSegment.getSeriesSegment(1)
+                            : graphSegment.getSeriesSegment(0);
+            compareSeries.addComponent(describeTrend(otherSeries, graphSegment));
+
         }
         // Describe the change in the gap.
         compareSeries.addComponent(describeGapChange(graphSegment));
@@ -71,20 +72,44 @@ public class GraphSegmentSummaryServiceImpl implements GraphSegmentSummaryServic
         return this.nlgFactory.createSentence(compareSeries);
     }
 
+    private PhraseElement describeTrendOfInitiallyHigherSeries(final GraphSegment graphSegment) {
+        // Describe trend of the initially higher series (or the first
+        // series if they are tied)
+        SeriesSegment higherInitialSeries = graphSegment.getHigherSeriesAtStart();
+        if (null == higherInitialSeries) {
+            higherInitialSeries = graphSegment.getSeriesSegments().get(0);
+        }
+
+        // Else describe them one at time
+        return describeTrend(higherInitialSeries, graphSegment);
+    }
+
     private PhraseElement describeHigherSeriesAtStart(final GraphSegment graphSegment) {
-        final List<PhraseElement> labels = this.labelService.getLabelsForCommonUse(graphSegment);
+        final List<NPPhraseSpec> labels = this.labelService.getLabelsForCommonUse(graphSegment);
         final SeriesSegment higherSeries = graphSegment.getHigherSeriesAtStart();
         final String startTime = graphSegment.getStartTime();
-        // If getHigherSeriesAtStart() is null then both have the same value.
-        PhraseElement higherSeriesLabel = this.nlgFactory.createNounPhrase("both");
+        final SPhraseSpec higherSeriesAtStartPhrase = this.nlgFactory.createClause();
+        NLGElement subject;
+        NLGElement verb;
         if (null != higherSeries) {
-            higherSeriesLabel = labels.get(graphSegment.indexOf(higherSeries));
+            subject = labels.get(graphSegment.indexOf(higherSeries));
+            verb = this.nlgFactory.createVerbPhrase("is higher");
+        } else {
+            // If getHigherSeriesAtStart() is null then both have the same
+            // value.
+            subject = this.nlgFactory.createCoordinatedPhrase(labels.get(0), labels.get(1));
+            // TODO: can "both" be a modifier that could be applied either
+            // before or after the subject?????
+            verb = this.nlgFactory.createVerbPhrase("both have value");
+            higherSeriesAtStartPhrase
+                    .setObject(this.nlgFactory.createNounPhrase(graphSegment.getValueAtIntersection().toString()));
         }
-        final SPhraseSpec higherSeriesPhrase = this.nlgFactory.createClause();
-        higherSeriesPhrase.setSubject(higherSeriesLabel);
-        higherSeriesPhrase.setVerb("is higher in");
-        higherSeriesPhrase.setObject(startTime);
-        return higherSeriesPhrase;
+
+        higherSeriesAtStartPhrase.setSubject(subject);
+        final PPPhraseSpec preposition = this.nlgFactory.createPrepositionPhrase("at", startTime);
+        higherSeriesAtStartPhrase.setVerb(verb);
+        higherSeriesAtStartPhrase.addComplement(preposition);
+        return higherSeriesAtStartPhrase;
     }
 
     private PhraseElement describeGapChange(final GraphSegment graphSegment) {
@@ -92,23 +117,28 @@ public class GraphSegmentSummaryServiceImpl implements GraphSegmentSummaryServic
         return null;
     }
 
-    private PhraseElement describeTrend(final SeriesSegment higherInitialSeries) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    private PhraseElement describeTwoSeriesWithSameGradientType(final GraphSegment graphSegment) {
-        final List<PhraseElement> labels = this.labelService.getLabelsForCommonUse(graphSegment);
+    private PhraseElement describeTrend(final SeriesSegment seriesSegment, final GraphSegment graphSegment) {
         final SPhraseSpec sameTrendPhrase = this.nlgFactory.createClause();
-        sameTrendPhrase.setSubject(labels.get(0));
-        sameTrendPhrase.setSubject(labels.get(1));
-        sameTrendPhrase.setVerb(getPhraseForTrend(graphSegment.getFirstSeriesTrend()));
-
+        final NPPhraseSpec subject = this.labelService.getLabelForCommonUse(graphSegment, seriesSegment);
+        sameTrendPhrase.setVerb(getVerbForTrend(seriesSegment.getGradientType()));
+        sameTrendPhrase.setSubject(subject);
         return sameTrendPhrase;
     }
 
-    private PhraseElement getPhraseForTrend(final GradientType trend) {
-        PhraseElement trendPhrase = null;
+    private PhraseElement describeTwoSeriesWithSameGradientType(final GraphSegment graphSegment) {
+        // FIXME: this needs to describe the relative gradients and say which is
+        // steeper, etc....
+        final List<NPPhraseSpec> labels = this.labelService.getLabelsForCommonUse(graphSegment);
+        final SPhraseSpec sameTrendPhrase = this.nlgFactory.createClause();
+        NLGElement subject;
+        subject = this.nlgFactory.createCoordinatedPhrase(labels.get(0), labels.get(1));
+        sameTrendPhrase.setVerb(getVerbForTrend(graphSegment.getFirstSeriesTrend()));
+        sameTrendPhrase.setSubject(subject);
+        return sameTrendPhrase;
+    }
+
+    private VPPhraseSpec getVerbForTrend(final GradientType trend) {
+        VPPhraseSpec trendPhrase = null;
         switch (trend) {
         case NEGATIVE:
             trendPhrase = this.nlgFactory.createVerbPhrase(this.synonymService.getSynonym(Constants.FALL));

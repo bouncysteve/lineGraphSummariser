@@ -9,10 +9,11 @@ import org.springframework.stereotype.Component;
 import simplenlg.features.Feature;
 import simplenlg.features.NumberAgreement;
 import simplenlg.framework.NLGFactory;
-import simplenlg.framework.PhraseElement;
 import simplenlg.lexicon.Lexicon;
+import simplenlg.phrasespec.NPPhraseSpec;
 import uk.co.lgs.model.graph.GraphModel;
 import uk.co.lgs.model.segment.graph.GraphSegment;
+import uk.co.lgs.model.segment.series.SeriesSegment;
 
 /**
  * I am responsible for converting the series labels as received from the
@@ -40,19 +41,19 @@ public class LabelServiceImpl implements LabelService {
     private final NLGFactory nlgFactory = new NLGFactory(LEXICON);
 
     @Override
-    public List<PhraseElement> getLabelsForInitialUse(final GraphModel graphModel) {
+    public List<NPPhraseSpec> getLabelsForInitialUse(final GraphModel graphModel) {
         return getLabelsForInitialUse(graphModel.getGraphSegments().get(0));
     }
 
     @Override
-    public List<PhraseElement> getLabelsForInitialUse(final GraphSegment graphSegment) {
+    public List<NPPhraseSpec> getLabelsForInitialUse(final GraphSegment graphSegment) {
         final List<String> labels = Arrays.asList(null, graphSegment.getSeriesSegment(0).getLabel(),
                 graphSegment.getSeriesSegment(1).getLabel());
         return getLabelsForInitialUse(labels);
     }
 
     @Override
-    public List<PhraseElement> getLabelsForInitialUse(final List<String> labels) {
+    public List<NPPhraseSpec> getLabelsForInitialUse(final List<String> labels) {
         final List<String> labelsWithoutTimeSeries = labels.subList(1, labels.size());
         final List<String> shortLabels = shortenLabels(labelsWithoutTimeSeries);
         final List<String> newLabels = new ArrayList<>();
@@ -66,18 +67,18 @@ public class LabelServiceImpl implements LabelService {
             }
         }
 
-        final PhraseElement firstSeriesLabel = pluralise(this.nlgFactory.createNounPhrase(newLabels.get(0)));
-        final PhraseElement secondSeriesLabel = pluralise(this.nlgFactory.createNounPhrase(newLabels.get(1)));
+        final NPPhraseSpec firstSeriesLabel = pluralise(this.nlgFactory.createNounPhrase(newLabels.get(0)));
+        final NPPhraseSpec secondSeriesLabel = pluralise(this.nlgFactory.createNounPhrase(newLabels.get(1)));
         return Arrays.asList(firstSeriesLabel, secondSeriesLabel);
     }
 
     @Override
-    public List<PhraseElement> getLabelsForCommonUse(final GraphSegment graphSegment) {
+    public List<NPPhraseSpec> getLabelsForCommonUse(final GraphSegment graphSegment) {
         final List<String> labels = Arrays.asList(graphSegment.getSeriesSegment(0).getLabel(),
                 graphSegment.getSeriesSegment(1).getLabel());
         final List<String> shortLabels = shortenLabels(labels);
-        final PhraseElement firstSeriesShortLabel = pluralise(this.nlgFactory.createNounPhrase(shortLabels.get(0)));
-        final PhraseElement secondSeriesShortLabel = pluralise(this.nlgFactory.createNounPhrase(shortLabels.get(1)));
+        final NPPhraseSpec firstSeriesShortLabel = pluralise(this.nlgFactory.createNounPhrase(shortLabels.get(0)));
+        final NPPhraseSpec secondSeriesShortLabel = pluralise(this.nlgFactory.createNounPhrase(shortLabels.get(1)));
         return Arrays.asList(firstSeriesShortLabel, secondSeriesShortLabel);
     }
 
@@ -138,7 +139,7 @@ public class LabelServiceImpl implements LabelService {
         return shortLabels;
     }
 
-    private PhraseElement pluralise(final PhraseElement subject) {
+    private NPPhraseSpec pluralise(final NPPhraseSpec subject) {
         for (final String term : COMMON_PLURAL_TERMS) {
             if (subject.getHead().toString().toLowerCase().contains(term)) {
                 subject.setFeature(Feature.NUMBER, NumberAgreement.PLURAL);
@@ -151,6 +152,15 @@ public class LabelServiceImpl implements LabelService {
     private String capitaliseFirstLetter(final String input) {
 
         return input.substring(0, 1).toUpperCase() + input.substring(1);
+    }
+
+    @Override
+    public NPPhraseSpec getLabelForCommonUse(final GraphSegment graphSegment, final SeriesSegment seriesSegment) {
+        final List<String> labels = Arrays.asList(graphSegment.getSeriesSegment(0).getLabel(),
+                graphSegment.getSeriesSegment(1).getLabel());
+        final List<String> shortLabels = shortenLabels(labels);
+        final String shortLabel = shortLabels.get(graphSegment.indexOf(seriesSegment));
+        return pluralise(this.nlgFactory.createNounPhrase(shortLabel));
     }
 
 }
