@@ -143,6 +143,7 @@ public class GraphSegmentSummaryServiceImpl implements GraphSegmentSummaryServic
         final SPhraseSpec sameTrendPhrase = this.nlgFactory.createClause();
         NLGElement subject;
         subject = this.nlgFactory.createCoordinatedPhrase(labels.get(0), labels.get(1));
+
         sameTrendPhrase.setVerb(getVerbForTrend(graphSegment.getFirstSeriesTrend()));
         sameTrendPhrase.setSubject(subject);
         logAndOutput(REALISER.realiseSentence(sameTrendPhrase));

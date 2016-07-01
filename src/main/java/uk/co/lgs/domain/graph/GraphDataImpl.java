@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
 import uk.co.lgs.domain.exception.DomainException;
+import uk.co.lgs.domain.graph.iscatter.schema.IScatterAttribute;
 import uk.co.lgs.domain.graph.iscatter.schema.IScatterSchema;
 import uk.co.lgs.domain.record.Record;
 
@@ -13,44 +14,40 @@ public class GraphDataImpl implements GraphData {
 
     private static final String MISSING_RECORDS_MESSAGE = "Graph must contain at least two data records";
 
-    private List<String> header;
+    private final List<String> header;
 
-    private List<Record> records;
+    private final List<Record> records;
 
-    private List<String> units;
+    private final List<String> units;
 
-    private IScatterSchema iScatterSchema;
+    private final IScatterSchema iScatterSchema;
 
     /**
      * The title of the graph, as present in any original publication.
-     * 
+     *
      */
     private String title;
 
-    public GraphDataImpl(IScatterSchema iScatterSchema, List<String> header, List<Record> records) throws DomainException {
+    public GraphDataImpl(final IScatterSchema iScatterSchema, final List<String> header, final List<Record> records)
+            throws DomainException {
         this.iScatterSchema = iScatterSchema;
         this.header = parseLabels(header, iScatterSchema);
         this.records = records;
-        this.units = parseUnits(header, iScatterSchema);
+        this.units = parseUnits(iScatterSchema);
 
         if (null == records || records.size() < 2) {
             throw new DomainException(MISSING_RECORDS_MESSAGE);
         }
     }
 
-    private List<String> parseUnits(List<String> header, IScatterSchema iScatterSchema) {
-        List<String> localUnits = new ArrayList<>();
-        if (null != header) {
-            for (String seriesId : header) {
-                String unit = "";
-                if (null != iScatterSchema) {
-                    unit = iScatterSchema.getUnit(seriesId);
-                }
-                if (StringUtils.isNotEmpty(unit)) {
-                    localUnits.add(unit);
-                } else {
-                    localUnits.add("");
-                }
+    private List<String> parseUnits(final IScatterSchema iScatterSchema) {
+        final List<String> localUnits = new ArrayList<>();
+        for (final IScatterAttribute attribute : iScatterSchema.getAttributes()) {
+            final String unit = attribute.getUnit();
+            if (StringUtils.isNotEmpty(unit)) {
+                localUnits.add(unit);
+            } else {
+                localUnits.add("");
             }
         }
         return localUnits;
@@ -67,8 +64,8 @@ public class GraphDataImpl implements GraphData {
      *             if the title is missing or empty, or if at least two data
      *             series are not present.
      */
-    public GraphDataImpl(String title, IScatterSchema iScatterSchema, List<String> header, List<Record> records)
-            throws DomainException {
+    public GraphDataImpl(final String title, final IScatterSchema iScatterSchema, final List<String> header,
+            final List<Record> records) throws DomainException {
         this(iScatterSchema, header, records);
         this.title = title;
     }
@@ -110,7 +107,7 @@ public class GraphDataImpl implements GraphData {
 
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder();
+        final StringBuilder builder = new StringBuilder();
         builder.append("\n");
         builder.append("***************GRAPH DOMAIN OBJECT (RAW DATA)***************").append("\n");
         builder.append("Title: ").append(this.getTitle()).append("\n");
@@ -118,7 +115,7 @@ public class GraphDataImpl implements GraphData {
         builder.append("Header: ").append(this.getHeader()).append("\n");
         builder.append("Units ").append(this.getUnits()).append("\n");
         builder.append("Records: ").append("\n");
-        for (Record record : this.records) {
+        for (final Record record : this.records) {
             builder.append("\t").append(record).append("\n");
         }
         builder.append("RecordCount: ").append(this.getDataRecordCount()).append("\n");
@@ -126,10 +123,10 @@ public class GraphDataImpl implements GraphData {
         return builder.toString();
     }
 
-    private List<String> parseLabels(List<String> header, IScatterSchema iScatterSchema) {
-        List<String> labels = new ArrayList<>();
+    private List<String> parseLabels(final List<String> header, final IScatterSchema iScatterSchema) {
+        final List<String> labels = new ArrayList<>();
         if (null != header) {
-            for (String seriesId : header) {
+            for (final String seriesId : header) {
                 String description = "";
                 if (null != iScatterSchema) {
                     description = iScatterSchema.getDescription(seriesId);
