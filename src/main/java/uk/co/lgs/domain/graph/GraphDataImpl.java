@@ -10,6 +10,12 @@ import uk.co.lgs.domain.graph.iscatter.schema.IScatterAttribute;
 import uk.co.lgs.domain.graph.iscatter.schema.IScatterSchema;
 import uk.co.lgs.domain.record.Record;
 
+/**
+ * I represent the graph as initially loaded from the data file(s).
+ *
+ * @author bouncysteve
+ *
+ */
 public class GraphDataImpl implements GraphData {
 
     private static final String MISSING_RECORDS_MESSAGE = "Graph must contain at least two data records";
@@ -28,6 +34,19 @@ public class GraphDataImpl implements GraphData {
      */
     private String title;
 
+    /**
+     * @param records
+     *            The collection of data records which are displayed in the
+     *            graph.
+     * @param iScatterSchema
+     *            the schema from schema.csv
+     * @param header
+     *            the first row of data.csv
+     * @throws DomainException
+     *             if the title is missing or empty, or if at least two data
+     *             series are not present.
+     *
+     */
     public GraphDataImpl(final IScatterSchema iScatterSchema, final List<String> header, final List<Record> records)
             throws DomainException {
         this.iScatterSchema = iScatterSchema;
@@ -38,6 +57,28 @@ public class GraphDataImpl implements GraphData {
         if (null == records || records.size() < 2) {
             throw new DomainException(MISSING_RECORDS_MESSAGE);
         }
+    }
+
+    /**
+     * @param title
+     *            The graph title (as present in the original presentation of
+     *            the graph.
+     * @param records
+     *            The collection of data records which are displayed in the
+     *            graph.
+     * @param iScatterSchema
+     *            the schema from schema.csv
+     * @param header
+     *            the first row of data.csv
+     * @throws DomainException
+     *             if the title is missing or empty, or if at least two data
+     *             series are not present.
+     *
+     */
+    public GraphDataImpl(final String title, final IScatterSchema iScatterSchema, final List<String> header,
+            final List<Record> records) throws DomainException {
+        this(iScatterSchema, header, records);
+        this.title = title;
     }
 
     private List<String> parseUnits(final IScatterSchema iScatterSchema) {
@@ -51,23 +92,6 @@ public class GraphDataImpl implements GraphData {
             }
         }
         return localUnits;
-    }
-
-    /**
-     * @param title
-     *            The graph title (as present in the original presentation of
-     *            the graph.
-     * @param records
-     *            The collection of data records which are displayed in the
-     *            graph.
-     * @throws DomainException
-     *             if the title is missing or empty, or if at least two data
-     *             series are not present.
-     */
-    public GraphDataImpl(final String title, final IScatterSchema iScatterSchema, final List<String> header,
-            final List<Record> records) throws DomainException {
-        this(iScatterSchema, header, records);
-        this.title = title;
     }
 
     @Override

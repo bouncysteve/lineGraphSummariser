@@ -23,13 +23,12 @@ import uk.co.lgs.model.graph.GraphModelImpl;
 import uk.co.lgs.model.graph.collator.exception.CollatorException;
 import uk.co.lgs.model.graph.service.GapAndGradientCollator;
 import uk.co.lgs.model.graph.service.ModelCollator;
-import uk.co.lgs.model.segment.exception.SegmentCategoryNotFoundException;
 import uk.co.lgs.text.service.graph.GraphSummaryService;
 
 /**
  * I am the main class in the application. I output the state of the main domain
  * and model classes to string and write the text summary(/ies) to files.
- * 
+ *
  * @author bouncysteve
  *
  */
@@ -41,80 +40,68 @@ public class Controller {
     private static final String GRADIENT_COLLATED_SUMMARY_FILENAME = "collatedSummary.txt";
     private static final String SUMMARY_FILENAME = "summary.txt";
 
-    // TODO: error handling
-    public static void main(String[] args) throws LoaderException, SegmentCategoryNotFoundException, CollatorException {
+    /**
+     * Main method of controller - summarises the graph in the given directory.
+     *
+     * @param args
+     *            command line arguments
+     * @throws LoaderException
+     *             if files can't be loaded
+     * @throws CollatorException
+     *             if an error on collating the graph
+     */
+    public static void main(final String[] args) throws LoaderException, CollatorException {
 
         String directory = args[0];
 
         File parentDir = new File(directory);
         if (!parentDir.exists() || args.length < 1) {
-            Scanner scanner = new Scanner(System.in);
-            System.out.print("Enter the FULL PATH of the directory containing data.csv and schema.csv");
+            final Scanner scanner = new Scanner(System.in);
+            LOG.info("Enter the FULL PATH of the directory containing data.csv and schema.csv");
             directory = scanner.next();
             scanner.close();
             parentDir = new File(directory);
         }
-        System.out.println("Parsing directory: " + directory);
+        LOG.info("Parsing directory: " + directory);
         try (ConfigurableApplicationContext context = new AnnotationConfigApplicationContext(Controller.class)) {
 
             // *************Domain (data) ***************************//
-            Loader loader = context.getBean(Loader.class);
-            GraphData graphData = loader.getGraph(parentDir);
-            System.out.print(graphData.toString());
+            final Loader loader = context.getBean(Loader.class);
+            final GraphData graphData = loader.getGraph(parentDir);
+            LOG.info(graphData.toString());
 
             // *************Model ***************************//
-            GraphModel model = new GraphModelImpl(graphData);
-            System.out.print(model.toString());
-            GraphSummaryService graphSummariser = context.getBean(GraphSummaryService.class);
-            String summary = graphSummariser.getSummary(model);
-            System.out.print(summary + "\n" + "\n");
+            final GraphModel model = new GraphModelImpl(graphData);
+            LOG.info(model.toString());
+            final GraphSummaryService graphSummariser = context.getBean(GraphSummaryService.class);
+            final String summary = graphSummariser.getSummary(model);
+            LOG.info(summary + "\n" + "\n");
             writeToFile(parentDir, SUMMARY_FILENAME, summary);
-
-            // *************Gradient Collated Model
-            // ***************************//
-            /*
-             * ModelCollator gradientCollator =
-             * context.getBean(GradientCollator.class); GraphModel collatedModel
-             * = gradientCollator.collate(model);
-             * 
-             * if (collatedModel.equals(model)) { System.out.println(
-             * "GRADIENT COLLATION HAS NO EFFECT, NOT WRITING A COLLATED SUMMARY"
-             * ); try { Files.deleteIfExists(new File(parentDir,
-             * GRADIENT_COLLATED_SUMMARY_FILENAME).toPath()); } catch
-             * (IOException e) { LOG.error(
-             * "Unable to delete existing collated summary", e); }
-             * 
-             * } else { System.out.print(collatedModel.toString()); String
-             * collatedSummary = graphSummariser.getSummary(collatedModel);
-             * System.out.print(collatedSummary + "\n" + "\n");
-             * writeToFile(parentDir, GRADIENT_COLLATED_SUMMARY_FILENAME,
-             * collatedSummary); }
-             */
 
             // *************Gap and Gradient Collated Model
             // ***************************//
-            ModelCollator gapAndGradientCollator = context.getBean(GapAndGradientCollator.class);
-            GraphModel gapAndGradientCollatedModel = gapAndGradientCollator.collate(model);
+            final ModelCollator gapAndGradientCollator = context.getBean(GapAndGradientCollator.class);
+            final GraphModel gapAndGradientCollatedModel = gapAndGradientCollator.collate(model);
 
             if (gapAndGradientCollatedModel.equals(model)) {
-                System.out.println("GRADIENT COLLATION HAS NO EFFECT, NOT WRITING A COLLATED SUMMARY");
+                LOG.info("GRADIENT COLLATION HAS NO EFFECT, NOT WRITING A COLLATED SUMMARY");
                 try {
                     Files.deleteIfExists(new File(parentDir, GRADIENT_COLLATED_SUMMARY_FILENAME).toPath());
-                } catch (IOException e) {
+                } catch (final IOException e) {
                     LOG.error("Unable to delete existing collated summary", e);
                 }
 
             } else {
-                System.out.print(gapAndGradientCollatedModel.toString());
-                String collatedSummary = graphSummariser.getSummary(gapAndGradientCollatedModel);
-                System.out.print(collatedSummary + "\n" + "\n");
+                LOG.info(gapAndGradientCollatedModel.toString());
+                final String collatedSummary = graphSummariser.getSummary(gapAndGradientCollatedModel);
+                LOG.info(collatedSummary + "\n" + "\n");
                 writeToFile(parentDir, GRADIENT_COLLATED_SUMMARY_FILENAME, collatedSummary);
             }
 
         }
     }
 
-    private static void writeToFile(File parentDir, String fileName, String content) {
+    private static void writeToFile(final File parentDir, final String fileName, final String content) {
         File targetFile = null;
         Writer output = null;
         try {
@@ -122,9 +109,9 @@ public class Controller {
             output = new BufferedWriter(new FileWriter(targetFile));
             output.write(content);
             output.close();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             LOG.error("", e);
-            System.out.println("Could not create file");
+            LOG.info("Could not create file");
         }
     }
 }

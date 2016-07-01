@@ -118,7 +118,7 @@ public class GraphSegmentSummaryServiceImpl implements GraphSegmentSummaryServic
         }
         higherSeriesAtStartPhrase.addComplement(preposition);
 
-        logAndOutput(REALISER.realiseSentence(higherSeriesAtStartPhrase));
+        LOG.info(REALISER.realiseSentence(higherSeriesAtStartPhrase));
         return higherSeriesAtStartPhrase;
     }
 
@@ -132,7 +132,7 @@ public class GraphSegmentSummaryServiceImpl implements GraphSegmentSummaryServic
         final NPPhraseSpec subject = this.labelService.getLabelForCommonUse(graphSegment, seriesSegment);
         sameTrendPhrase.setVerb(getVerbForTrend(seriesSegment.getGradientType()));
         sameTrendPhrase.setSubject(subject);
-        logAndOutput(REALISER.realiseSentence(sameTrendPhrase));
+        LOG.info(REALISER.realiseSentence(sameTrendPhrase));
         return sameTrendPhrase;
     }
 
@@ -146,17 +146,9 @@ public class GraphSegmentSummaryServiceImpl implements GraphSegmentSummaryServic
 
         sameTrendPhrase.setVerb(getVerbForTrend(graphSegment.getFirstSeriesTrend()));
         sameTrendPhrase.setSubject(subject);
-        logAndOutput(REALISER.realiseSentence(sameTrendPhrase));
+        LOG.info(REALISER.realiseSentence(sameTrendPhrase));
         // FIXME
         return null;
-    }
-
-    private void logAndOutput(final String realiseSentence) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug(realiseSentence);
-        } else {
-            System.out.println(realiseSentence);
-        }
     }
 
     private VPPhraseSpec getVerbForTrend(final GradientType trend) {
