@@ -1,6 +1,6 @@
 package uk.co.lgs.text.service.segment.graph;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 import java.text.DecimalFormat;
@@ -65,9 +65,14 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
 
     @Before
     public void beforeEachTest() {
-        this.labels = Arrays.asList(this.nlgFactory.createNounPhrase(FIRST_SERIES_LABEL),
-                this.nlgFactory.createNounPhrase(SECOND_SERIES_LABEL));
+        final NPPhraseSpec firstSeriesLabel = this.nlgFactory.createNounPhrase(FIRST_SERIES_LABEL);
+        final NPPhraseSpec secondSeriesLabel = this.nlgFactory.createNounPhrase(SECOND_SERIES_LABEL);
+        this.labels = Arrays.asList(firstSeriesLabel, secondSeriesLabel);
         when(this.labelService.getLabelsForCommonUse(this.graphSegment)).thenReturn(this.labels);
+        when(this.labelService.getLabelForCommonUse(this.graphSegment, this.firstSeriesSegment))
+                .thenReturn(firstSeriesLabel);
+        when(this.labelService.getLabelForCommonUse(this.graphSegment, this.secondSeriesSegment))
+                .thenReturn(secondSeriesLabel);
         when(this.firstSeriesSegment.getLabel()).thenReturn(FIRST_SERIES_LABEL);
         when(this.secondSeriesSegment.getLabel()).thenReturn(SECOND_SERIES_LABEL);
         when(this.graphSegment.getSeriesSegment(0)).thenReturn(this.firstSeriesSegment);
@@ -114,14 +119,15 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
         final DecimalFormat f = new DecimalFormat("0.##");
 
         if (null == seriesSegment) {
-            description = String.format(FIRST_SERIES_LABEL + " and " + SECOND_SERIES_LABEL + " both have value %1$s at ",
+            description = String.format(
+                    FIRST_SERIES_LABEL + " and " + SECOND_SERIES_LABEL + " both have value %1$s at ",
                     f.format(startValue));
         } else if (seriesSegment.equals(this.firstSeriesSegment)) {
             description = FIRST_SERIES_LABEL + " is higher at ";
         } else {
             description = SECOND_SERIES_LABEL + " is higher at ";
         }
-        assertEquals(description + START_TIME + ".", this.summaryText);
+        assertTrue(this.summaryText.contains(description + START_TIME));
     }
 
     private void givenSeriesValues(final double firstSeriesStartValue, final double firstSeriesEndValue,

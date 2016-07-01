@@ -2,6 +2,8 @@ package uk.co.lgs.text.service.segment.graph;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -14,6 +16,7 @@ import simplenlg.phrasespec.NPPhraseSpec;
 import simplenlg.phrasespec.PPPhraseSpec;
 import simplenlg.phrasespec.SPhraseSpec;
 import simplenlg.phrasespec.VPPhraseSpec;
+import simplenlg.realiser.english.Realiser;
 import uk.co.lgs.model.gradient.GradientType;
 import uk.co.lgs.model.segment.graph.GraphSegment;
 import uk.co.lgs.model.segment.series.SeriesSegment;
@@ -30,8 +33,9 @@ import uk.co.lgs.text.service.value.ValueService;
  */
 @Component
 public class GraphSegmentSummaryServiceImpl implements GraphSegmentSummaryService {
-
+    private static final Logger LOG = LoggerFactory.getLogger(GraphSegmentSummaryServiceImpl.class);
     private static final Lexicon LEXICON = Lexicon.getDefaultLexicon();
+    private static final Realiser REALISER = new Realiser(LEXICON);
 
     private final NLGFactory nlgFactory = new NLGFactory(LEXICON);
 
@@ -48,43 +52,36 @@ public class GraphSegmentSummaryServiceImpl implements GraphSegmentSummaryServic
     public DocumentElement getSummary(final GraphSegment graphSegment) {
         final DocumentElement compareSeries = this.nlgFactory.createSentence();
 
-        // Mention higher series at start
         compareSeries.addComponent(describeHigherSeriesAtStart(graphSegment));
-        /*
-         * if (graphSegment.getFirstSeriesTrend().equals(graphSegment.
-         * getSecondSeriesTrend())) { // mention the relative gradients
-         * compareSeries.addComponent(describeTwoSeriesWithSameGradientType(
-         * graphSegment)); } else {
-         * compareSeries.addComponent(describeTrendOfInitiallyHigherSeries(
-         * graphSegment));
-         *
-         * // Describe the trend of the other series final SeriesSegment
-         * otherSeries = graphSegment.getHigherSeriesAtStart()
-         * .equals(graphSegment.getSeriesSegment(0)) ?
-         * graphSegment.getSeriesSegment(1) : graphSegment.getSeriesSegment(0);
-         * compareSeries.addComponent(describeTrend(otherSeries, graphSegment));
-         *
-         * } // Describe the change in the gap.
-         * compareSeries.addComponent(describeGapChange(graphSegment)); //
-         * (Don't mention higher series at end, as it will be repeated at the //
-         * start of the next segment), unless this is the last segment of the //
-         * graph.
-         *
-         * // FIXME: describe the end state of the //
-         * graph!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-         */
+
+        if (graphSegment.getFirstSeriesTrend().equals(graphSegment.getSecondSeriesTrend())) {
+            compareSeries.addComponent(describeTwoSeriesWithSameGradientType(graphSegment));
+        } else {
+            compareSeries.addComponent(describeTrendOfInitiallyHigherSeries(graphSegment));
+            compareSeries.addComponent(describeTrendOfInitiallyLowerSeries(graphSegment));
+        }
+        // Describe the change in the gap.
+        compareSeries.addComponent(describeGapChange(graphSegment));
+        // (Don't mention higher series at end, as it will be repeated at the
+        // start of the next segment), unless this is the last segment of the
+        // graph.
+
+        // FIXME: describe the end state of the whole graph!!!!!!!!!!!!!!!!
+
         return this.nlgFactory.createSentence(compareSeries);
     }
 
+    private NLGElement describeTrendOfInitiallyLowerSeries(final GraphSegment graphSegment) {
+        final SeriesSegment otherSeries = graphSegment.getHigherSeriesAtStart().equals(graphSegment.getSeriesSegment(0))
+                ? graphSegment.getSeriesSegment(1) : graphSegment.getSeriesSegment(0);
+        return describeTrend(otherSeries, graphSegment);
+    }
+
     private PhraseElement describeTrendOfInitiallyHigherSeries(final GraphSegment graphSegment) {
-        // Describe trend of the initially higher series (or the first
-        // series if they are tied)
         SeriesSegment higherInitialSeries = graphSegment.getHigherSeriesAtStart();
         if (null == higherInitialSeries) {
             higherInitialSeries = graphSegment.getSeriesSegments().get(0);
         }
-
-        // Else describe them one at time
         return describeTrend(higherInitialSeries, graphSegment);
     }
 
@@ -114,12 +111,14 @@ public class GraphSegmentSummaryServiceImpl implements GraphSegmentSummaryServic
         }
 
         higherSeriesAtStartPhrase.setSubject(subject);
+        final PPPhraseSpec preposition = this.nlgFactory.createPrepositionPhrase("at", startTime);
         higherSeriesAtStartPhrase.setVerb(verb);
         if (null != object) {
             higherSeriesAtStartPhrase.setObject(object);
         }
-        final PPPhraseSpec preposition = this.nlgFactory.createPrepositionPhrase("at", startTime);
         higherSeriesAtStartPhrase.addComplement(preposition);
+
+        logAndOutput(REALISER.realiseSentence(higherSeriesAtStartPhrase));
         return higherSeriesAtStartPhrase;
     }
 
@@ -133,6 +132,7 @@ public class GraphSegmentSummaryServiceImpl implements GraphSegmentSummaryServic
         final NPPhraseSpec subject = this.labelService.getLabelForCommonUse(graphSegment, seriesSegment);
         sameTrendPhrase.setVerb(getVerbForTrend(seriesSegment.getGradientType()));
         sameTrendPhrase.setSubject(subject);
+        logAndOutput(REALISER.realiseSentence(sameTrendPhrase));
         return sameTrendPhrase;
     }
 
@@ -145,7 +145,17 @@ public class GraphSegmentSummaryServiceImpl implements GraphSegmentSummaryServic
         subject = this.nlgFactory.createCoordinatedPhrase(labels.get(0), labels.get(1));
         sameTrendPhrase.setVerb(getVerbForTrend(graphSegment.getFirstSeriesTrend()));
         sameTrendPhrase.setSubject(subject);
-        return sameTrendPhrase;
+        logAndOutput(REALISER.realiseSentence(sameTrendPhrase));
+        // FIXME
+        return null;
+    }
+
+    private void logAndOutput(final String realiseSentence) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug(realiseSentence);
+        } else {
+            System.out.println(realiseSentence);
+        }
     }
 
     private VPPhraseSpec getVerbForTrend(final GradientType trend) {
