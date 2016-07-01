@@ -20,6 +20,7 @@ import uk.co.lgs.model.segment.series.SeriesSegment;
 import uk.co.lgs.text.service.label.LabelService;
 import uk.co.lgs.text.service.synonym.Constants;
 import uk.co.lgs.text.service.synonym.SynonymService;
+import uk.co.lgs.text.service.value.ValueService;
 
 /**
  * I am responsible for constucting text summaries of segments.
@@ -40,35 +41,38 @@ public class GraphSegmentSummaryServiceImpl implements GraphSegmentSummaryServic
     @Autowired
     private SynonymService synonymService;
 
+    @Autowired
+    private ValueService valueService;
+
     @Override
     public DocumentElement getSummary(final GraphSegment graphSegment) {
         final DocumentElement compareSeries = this.nlgFactory.createSentence();
 
         // Mention higher series at start
         compareSeries.addComponent(describeHigherSeriesAtStart(graphSegment));
-
-        if (graphSegment.getFirstSeriesTrend().equals(graphSegment.getSecondSeriesTrend())) {
-            // mention the relative gradients
-            compareSeries.addComponent(describeTwoSeriesWithSameGradientType(graphSegment));
-        } else {
-            compareSeries.addComponent(describeTrendOfInitiallyHigherSeries(graphSegment));
-
-            // Describe the trend of the other series
-            final SeriesSegment otherSeries = graphSegment.getHigherSeriesAtStart()
-                    .equals(graphSegment.getSeriesSegment(0)) ? graphSegment.getSeriesSegment(1)
-                            : graphSegment.getSeriesSegment(0);
-            compareSeries.addComponent(describeTrend(otherSeries, graphSegment));
-
-        }
-        // Describe the change in the gap.
-        compareSeries.addComponent(describeGapChange(graphSegment));
-        // (Don't mention higher series at end, as it will be repeated at the
-        // start of the next segment), unless this is the last segment of the
-        // graph.
-
-        // FIXME: describe the end state of the
-        // graph!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
+        /*
+         * if (graphSegment.getFirstSeriesTrend().equals(graphSegment.
+         * getSecondSeriesTrend())) { // mention the relative gradients
+         * compareSeries.addComponent(describeTwoSeriesWithSameGradientType(
+         * graphSegment)); } else {
+         * compareSeries.addComponent(describeTrendOfInitiallyHigherSeries(
+         * graphSegment));
+         *
+         * // Describe the trend of the other series final SeriesSegment
+         * otherSeries = graphSegment.getHigherSeriesAtStart()
+         * .equals(graphSegment.getSeriesSegment(0)) ?
+         * graphSegment.getSeriesSegment(1) : graphSegment.getSeriesSegment(0);
+         * compareSeries.addComponent(describeTrend(otherSeries, graphSegment));
+         *
+         * } // Describe the change in the gap.
+         * compareSeries.addComponent(describeGapChange(graphSegment)); //
+         * (Don't mention higher series at end, as it will be repeated at the //
+         * start of the next segment), unless this is the last segment of the //
+         * graph.
+         *
+         * // FIXME: describe the end state of the //
+         * graph!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+         */
         return this.nlgFactory.createSentence(compareSeries);
     }
 
@@ -91,23 +95,30 @@ public class GraphSegmentSummaryServiceImpl implements GraphSegmentSummaryServic
         final SPhraseSpec higherSeriesAtStartPhrase = this.nlgFactory.createClause();
         NLGElement subject;
         NLGElement verb;
-        if (null != higherSeries) {
-            subject = labels.get(graphSegment.indexOf(higherSeries));
-            verb = this.nlgFactory.createVerbPhrase("is higher");
-        } else {
+        NLGElement object = null;
+
+        if (null == higherSeries) {
             // If getHigherSeriesAtStart() is null then both have the same
             // value.
             subject = this.nlgFactory.createCoordinatedPhrase(labels.get(0), labels.get(1));
             // TODO: can "both" be a modifier that could be applied either
             // before or after the subject?????
             verb = this.nlgFactory.createVerbPhrase("both have value");
-            higherSeriesAtStartPhrase
-                    .setObject(this.nlgFactory.createNounPhrase(graphSegment.getValueAtIntersection().toString()));
+            final SeriesSegment firstSeriesSegment = graphSegment.getSeriesSegment(0);
+
+            object = this.nlgFactory.createNounPhrase(this.valueService
+                    .formatValueWithUnits(firstSeriesSegment.getStartValue(), firstSeriesSegment.getUnits()));
+        } else {
+            subject = labels.get(graphSegment.indexOf(higherSeries));
+            verb = this.nlgFactory.createVerbPhrase("is higher");
         }
 
         higherSeriesAtStartPhrase.setSubject(subject);
-        final PPPhraseSpec preposition = this.nlgFactory.createPrepositionPhrase("at", startTime);
         higherSeriesAtStartPhrase.setVerb(verb);
+        if (null != object) {
+            higherSeriesAtStartPhrase.setObject(object);
+        }
+        final PPPhraseSpec preposition = this.nlgFactory.createPrepositionPhrase("at", startTime);
         higherSeriesAtStartPhrase.addComplement(preposition);
         return higherSeriesAtStartPhrase;
     }

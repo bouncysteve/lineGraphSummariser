@@ -18,12 +18,14 @@ import uk.co.lgs.model.segment.series.SeriesSegment;
 import uk.co.lgs.text.service.graph.PropertyNames;
 
 /**
- * TODO: Incorporate the units into the values.
- * 
+ *
+ * @deprecated - too difficult to summarise each series in isolation. Use
+ *             GraphSegmentSummaryService instance instead.
  * @author bouncysteve
  *
  */
 @Component
+@Deprecated
 public class SeriesSegmentSummaryServiceImpl implements SeriesSegmentSummaryService {
 
     private static final Lexicon lexicon = Lexicon.getDefaultLexicon();
@@ -47,10 +49,10 @@ public class SeriesSegmentSummaryServiceImpl implements SeriesSegmentSummaryServ
     private boolean randomise = true;
 
     @Override
-    public PhraseElement getSummary(SeriesSegment mainSeriesSegment, SeriesSegment minorSeriesSegment,
-            Configuration config) {
+    public PhraseElement getSummary(final SeriesSegment mainSeriesSegment, final SeriesSegment minorSeriesSegment,
+            final Configuration config) {
 
-        PhraseElement subject1 = pluralise(NLG_FACTORY.createNounPhrase(mainSeriesSegment.getLabel()));
+        final PhraseElement subject1 = pluralise(NLG_FACTORY.createNounPhrase(mainSeriesSegment.getLabel()));
         Object subject;
         if (null != config && config.getBoolean(PropertyNames.BOTH_SAME, false)) {
             subject = NLG_FACTORY.createCoordinatedPhrase(subject1,
@@ -58,7 +60,7 @@ public class SeriesSegmentSummaryServiceImpl implements SeriesSegmentSummaryServ
         } else {
             subject = subject1;
         }
-        PhraseElement gradient = NLG_FACTORY.createClause(subject,
+        final PhraseElement gradient = NLG_FACTORY.createClause(subject,
                 gradientTypeDescription(mainSeriesSegment.getGradientType()), null);
         PhraseElement behaviour;
         if (mainSeriesSegment.getGradientType().equals(GradientType.ZERO)) {
@@ -74,7 +76,7 @@ public class SeriesSegmentSummaryServiceImpl implements SeriesSegmentSummaryServ
         return gradient;
     }
 
-    private String formatValueWithUnits(double value, String units) {
+    private String formatValueWithUnits(final double value, final String units) {
         String valueString = f.format(value);
         if (isPrefixable(units)) {
             valueString = units + valueString;
@@ -84,15 +86,15 @@ public class SeriesSegmentSummaryServiceImpl implements SeriesSegmentSummaryServ
         return valueString;
     }
 
-    private boolean needsLeadingSpace(String units) {
+    private boolean needsLeadingSpace(final String units) {
         if ("%".equals(units)) {
             return false;
         }
         return true;
     }
 
-    private boolean isPrefixable(String units) {
-        for (String prefix : PREFIX) {
+    private boolean isPrefixable(final String units) {
+        for (final String prefix : PREFIX) {
             if (prefix.equals(units)) {
                 return true;
             }
@@ -100,8 +102,8 @@ public class SeriesSegmentSummaryServiceImpl implements SeriesSegmentSummaryServ
         return false;
     }
 
-    private PhraseElement pluralise(PhraseElement subject) {
-        for (String term : COMMON_PLURAL_TERMS) {
+    private PhraseElement pluralise(final PhraseElement subject) {
+        for (final String term : COMMON_PLURAL_TERMS) {
             if (subject.getHead().toString().toLowerCase().contains(term)) {
                 subject.setFeature(Feature.NUMBER, NumberAgreement.PLURAL);
                 break;
@@ -110,7 +112,7 @@ public class SeriesSegmentSummaryServiceImpl implements SeriesSegmentSummaryServ
         return subject;
     }
 
-    private PhraseElement gradientTypeDescription(GradientType gradientType) {
+    private PhraseElement gradientTypeDescription(final GradientType gradientType) {
         String description;
         switch (gradientType) {
         case NEGATIVE:
@@ -127,7 +129,7 @@ public class SeriesSegmentSummaryServiceImpl implements SeriesSegmentSummaryServ
         return NLG_FACTORY.createVerbPhrase(description);
     }
 
-    private String getSynonym(List<String> synonyms) {
+    private String getSynonym(final List<String> synonyms) {
         int randomNumber = 0;
         if (this.randomise) {
             randomNumber = random.nextInt(synonyms.size() - 0);
@@ -136,7 +138,7 @@ public class SeriesSegmentSummaryServiceImpl implements SeriesSegmentSummaryServ
     }
 
     @Override
-    public void setRandomise(boolean randomise) {
+    public void setRandomise(final boolean randomise) {
         this.randomise = randomise;
     }
 }

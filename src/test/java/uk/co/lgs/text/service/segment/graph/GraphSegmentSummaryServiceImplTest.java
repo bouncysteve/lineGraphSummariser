@@ -1,7 +1,9 @@
 package uk.co.lgs.text.service.segment.graph;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
+import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.List;
 
@@ -24,6 +26,7 @@ import uk.co.lgs.segment.graph.AbstractGraphSegmentTest;
 import uk.co.lgs.text.service.label.LabelService;
 import uk.co.lgs.text.service.segment.series.SeriesSegmentSummaryService;
 import uk.co.lgs.text.service.synonym.SynonymService;
+import uk.co.lgs.text.service.value.ValueService;
 
 public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest {
 
@@ -45,6 +48,8 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
     private LabelService labelService;
     @Mock
     private SynonymService synonymService;
+    @Mock
+    private ValueService valueService;
 
     @InjectMocks
     private final GraphSegmentSummaryService underTest = new GraphSegmentSummaryServiceImpl();
@@ -72,21 +77,31 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
         when(this.graphSegment.getStartTime()).thenReturn(START_TIME);
         when(this.graphSegment.getEndTime()).thenReturn(END_TIME);
 
+        when(this.valueService.formatValueWithUnits(10, null)).thenReturn("10");
+
     }
 
-    /**
-     * "Between start time and end time...
-     * "series 1 remains constant at a value and series 2 remains constant at a (different) value"
-     * .
-     *
-     * @throws SegmentCategoryNotFoundException
-     */
     @Test
-    public void testS1FlatLowerS2Rising() throws SegmentCategoryNotFoundException {
+    public void testDivergingSeriesWithOneConstant() throws SegmentCategoryNotFoundException {
         givenSeriesValues(10, 10, 20, 30);
         whenTheGraphSegmentIsSummarised();
-        thenTheSummarySaysThatThisSeriesIsHigher(this.firstSeriesSegment);
+        thenTheSummarySaysThatThisSeriesIsHigher(this.secondSeriesSegment, null);
+        thenTheSummarySaysThatThisSeriesIsConstant(this.firstSeriesSegment, null);
         thenTheSummarySaysThatTheSeriesAreDiverging();
+    }
+
+    @Test
+    public void testDivergingSeriesStartingAtSameValue() throws SegmentCategoryNotFoundException {
+        givenSeriesValues(10, 20, 10, 30);
+        whenTheGraphSegmentIsSummarised();
+        thenTheSummarySaysThatThisSeriesIsHigher(null, 10D);
+        thenTheSummarySaysThatTheSeriesAreDiverging();
+    }
+
+    private void thenTheSummarySaysThatThisSeriesIsConstant(final SeriesSegment firstSeriesSegment,
+            final Double startValue) {
+        // TODO Auto-generated method stub
+
     }
 
     private void thenTheSummarySaysThatTheSeriesAreDiverging() {
@@ -94,8 +109,19 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
 
     }
 
-    private void thenTheSummarySaysThatThisSeriesIsHigher(final SeriesSegment seriesSegment) {
-        when(this.graphSegment.getHigherSeriesAtStart()).thenReturn(seriesSegment);
+    private void thenTheSummarySaysThatThisSeriesIsHigher(final SeriesSegment seriesSegment, final Double startValue) {
+        String description;
+        final DecimalFormat f = new DecimalFormat("0.##");
+
+        if (null == seriesSegment) {
+            description = String.format(FIRST_SERIES_LABEL + " and " + SECOND_SERIES_LABEL + " both have value %1$s at ",
+                    f.format(startValue));
+        } else if (seriesSegment.equals(this.firstSeriesSegment)) {
+            description = FIRST_SERIES_LABEL + " is higher at ";
+        } else {
+            description = SECOND_SERIES_LABEL + " is higher at ";
+        }
+        assertEquals(description + START_TIME + ".", this.summaryText);
     }
 
     private void givenSeriesValues(final double firstSeriesStartValue, final double firstSeriesEndValue,
@@ -108,7 +134,6 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
                 .thenReturn(higherSeriesOf(firstSeriesStartValue, secondSeriesStartValue));
         when(this.graphSegment.getHigherSeriesAtEnd())
                 .thenReturn(higherSeriesOf(firstSeriesEndValue, secondSeriesEndValue));
-
         final GradientType firstSeriesTrend = trendFromValues(firstSeriesStartValue, firstSeriesEndValue);
 
         when(this.graphSegment.getFirstSeriesTrend()).thenReturn(firstSeriesTrend);
