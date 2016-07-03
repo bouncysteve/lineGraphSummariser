@@ -14,6 +14,12 @@ public class Constants {
 
     public static final String CONSTANT = "constant";
 
+    public static final String CONVERGE = "converge";
+
+    public static final String DIVERGE = "diverge";
+
+    public static final String PARALLEL = "parallel";
+
     private Constants() {
         // I should not be instantiated.
     }

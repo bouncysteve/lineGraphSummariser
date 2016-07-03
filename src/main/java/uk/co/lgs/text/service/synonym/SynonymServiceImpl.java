@@ -21,13 +21,17 @@ import org.springframework.stereotype.Component;
 public class SynonymServiceImpl implements SynonymService {
 
     private static final Set<String> FALL_SYNONYMS = new HashSet<>(
-            Arrays.asList("fall", "decline", "drop", "shrink", "decrease", "lower", "reduce")); // ("weaken","diminish",
-                                                                                                // "slide",)
+            Arrays.asList("fall", "decline", "drop", "shrink", "decrease", "lower", "reduce", "show a downward trend")); // ("weaken","diminish",
+    // "slide",)
     private static final Set<String> RISE_SYNONYMS = new HashSet<>(
-            Arrays.asList("rise", "increase", "grow", "improve", "progress", "build", "go up")); // ("ascend","extend",
-                                                                                                 // "advance",)
-    private static final Set<String> CONSTANT_SYNONYMS = new HashSet<>(
-            Arrays.asList("is constant", "remain", "continue", "freeze", "stop", "persist", "rest"));// ("endure",
+            Arrays.asList("rise", "increase", "grow", "improve", "progress", "build", "go up", "show an upward trend")); // ("ascend","extend",
+    // "advance",)
+    private static final Set<String> CONSTANT_SYNONYMS = new HashSet<>(Arrays.asList("be constant", "remain",
+            "continue", "freeze", "stop", "persist", "rest", "hold a constant value"));// ("endure",
+    private static final Set<String> CONVERGING_SYNONYMS = new HashSet<>(Arrays.asList("decreases", "reduces"));
+    private static final Set<String> DIVERGING_SYNONYMS = new HashSet<>(Arrays.asList("increases", "gets larger"));
+    private static final Set<String> PARALLEL_SYNONYMS = new HashSet<>(
+            Arrays.asList("stay the same", "be constant", "does not change"));
     private static final Random random = new Random();
 
     private static final Map<String, Set<String>> LOOKUPS;
@@ -37,6 +41,9 @@ public class SynonymServiceImpl implements SynonymService {
         LOOKUPS.put(Constants.FALL, FALL_SYNONYMS);
         LOOKUPS.put(Constants.RISE, RISE_SYNONYMS);
         LOOKUPS.put(Constants.CONSTANT, CONSTANT_SYNONYMS);
+        LOOKUPS.put(Constants.CONVERGE, CONVERGING_SYNONYMS);
+        LOOKUPS.put(Constants.DIVERGE, DIVERGING_SYNONYMS);
+        LOOKUPS.put(Constants.PARALLEL, PARALLEL_SYNONYMS);
     }
 
     private boolean randomise = true;

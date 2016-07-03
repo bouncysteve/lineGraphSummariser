@@ -21,10 +21,12 @@ import simplenlg.phrasespec.NPPhraseSpec;
 import simplenlg.realiser.english.Realiser;
 import uk.co.lgs.model.gradient.GradientType;
 import uk.co.lgs.model.segment.exception.SegmentCategoryNotFoundException;
+import uk.co.lgs.model.segment.graph.category.GapTrend;
 import uk.co.lgs.model.segment.series.SeriesSegment;
 import uk.co.lgs.segment.graph.AbstractGraphSegmentTest;
 import uk.co.lgs.text.service.label.LabelService;
 import uk.co.lgs.text.service.segment.series.SeriesSegmentSummaryService;
+import uk.co.lgs.text.service.synonym.Constants;
 import uk.co.lgs.text.service.synonym.SynonymService;
 import uk.co.lgs.text.service.value.ValueService;
 
@@ -73,8 +75,10 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
                 .thenReturn(firstSeriesLabel);
         when(this.labelService.getLabelForCommonUse(this.graphSegment, this.secondSeriesSegment))
                 .thenReturn(secondSeriesLabel);
+
         when(this.firstSeriesSegment.getLabel()).thenReturn(FIRST_SERIES_LABEL);
         when(this.secondSeriesSegment.getLabel()).thenReturn(SECOND_SERIES_LABEL);
+
         when(this.graphSegment.getSeriesSegment(0)).thenReturn(this.firstSeriesSegment);
         when(this.graphSegment.indexOf(this.firstSeriesSegment)).thenReturn(0);
         when(this.graphSegment.getSeriesSegment(1)).thenReturn(this.secondSeriesSegment);
@@ -84,6 +88,13 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
 
         when(this.valueService.formatValueWithUnits(10, null)).thenReturn("10");
 
+        when(this.synonymService.getSynonym(Constants.FALL)).thenReturn("fall");
+        when(this.synonymService.getSynonym(Constants.RISE)).thenReturn("rise");
+        when(this.synonymService.getSynonym(Constants.CONSTANT)).thenReturn("be constant");
+        when(this.synonymService.getSynonym(Constants.CONVERGE)).thenReturn("decrease");
+        when(this.synonymService.getSynonym(Constants.DIVERGE)).thenReturn("increase");
+        when(this.synonymService.getSynonym(Constants.PARALLEL)).thenReturn("stay the same");
+
     }
 
     @Test
@@ -91,7 +102,8 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
         givenSeriesValues(10, 10, 20, 30);
         whenTheGraphSegmentIsSummarised();
         thenTheSummarySaysThatThisSeriesIsHigher(this.secondSeriesSegment, null);
-        thenTheSummarySaysThatThisSeriesIsConstant(this.firstSeriesSegment, null);
+        thenTheSummarySaysThatThisSeriesIsConstant(this.firstSeriesSegment, 10D);
+        thenTheSummarySaysThatThisSeriesIsRising(this.secondSeriesSegment);
         thenTheSummarySaysThatTheSeriesAreDiverging();
     }
 
@@ -100,18 +112,92 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
         givenSeriesValues(10, 20, 10, 30);
         whenTheGraphSegmentIsSummarised();
         thenTheSummarySaysThatThisSeriesIsHigher(null, 10D);
+        thenTheSummarySaysThatBothSeries("rise");
         thenTheSummarySaysThatTheSeriesAreDiverging();
     }
 
-    private void thenTheSummarySaysThatThisSeriesIsConstant(final SeriesSegment firstSeriesSegment,
-            final Double startValue) {
+    @Test
+    public void testSeriesWithDifferentGradientTypes() throws SegmentCategoryNotFoundException {
+        givenSeriesValues(10, 20, 40, 30);
+        whenTheGraphSegmentIsSummarised();
+        thenTheSummarySaysThatThisSeriesIsHigher(this.secondSeriesSegment, null);
+        thenTheSummarySaysThatThisSeriesIsRising(this.firstSeriesSegment);
+        thenTheSummarySaysThatThisSeriesIsFalling(this.secondSeriesSegment);
+        thenTheSummarySaysThatTheSeriesAreConverging();
+    }
+
+    @Test
+    public void testFallingSeriesWithSteadyGap() throws SegmentCategoryNotFoundException {
+        givenSeriesValues(20, 0, 40, 20);
+        whenTheGraphSegmentIsSummarised();
+        thenTheSummarySaysThatThisSeriesIsHigher(this.secondSeriesSegment, null);
+        thenTheSummarySaysThatBothSeries("fall");
+        thenTheSummarySaysThatTheSeriesAreParallel();
+    }
+
+    @Test
+    public void testConvergingSeriesWithDifferentGradientTypesIntersecting() throws SegmentCategoryNotFoundException {
+        givenSeriesValues(10, 20, 40, 10);
+        whenTheGraphSegmentIsSummarised();
+        thenTheSummarySaysThatThisSeriesIsHigher(this.secondSeriesSegment, null);
+        thenTheSummarySaysThatThisSeriesIsRising(this.firstSeriesSegment);
+        thenTheSummarySaysThatThisSeriesIsFalling(this.secondSeriesSegment);
+        thenTheSummarySaysThatTheSeriesAreConverging();
+        thenTheSummarySaysThatTheSeriesIntersect();
+    }
+
+    private void thenTheSummarySaysThatBothSeries(final String trend) {
+        final String description = FIRST_SERIES_LABEL + " and " + SECOND_SERIES_LABEL + " ";
+        assertTrue(this.summaryText.contains(description + trend));
+    }
+
+    private void thenTheSummarySaysThatTheSeriesAreConverging() {
+        assertTrue(this.summaryText.contains("the difference between the two decreases"));
+    }
+
+    private void thenTheSummarySaysThatTheSeriesAreDiverging() {
+        assertTrue(this.summaryText.contains("the difference between the two increases"));
+    }
+
+    private void thenTheSummarySaysThatTheSeriesAreParallel() {
+        assertTrue(this.summaryText.contains("the difference between the two stays the same"));
+    }
+
+    private void thenTheSummarySaysThatTheSeriesIntersect() {
         // TODO Auto-generated method stub
 
     }
 
-    private void thenTheSummarySaysThatTheSeriesAreDiverging() {
+    private void thenTheSummarySaysThatTheSeriesAchievesGlobalMaximum() {
         // TODO Auto-generated method stub
+    }
 
+    private void thenTheSummarySaysThatTheSeriesAchievesGlobalMinimum() {
+        // TODO Auto-generated method stub
+    }
+
+    private void thenTheSummarySaysThatThisSeriesIsRising(final SeriesSegment seriesSegment) {
+        assertTrue(this.summaryText.contains(getLabelForSeries(seriesSegment) + " rises"));
+    }
+
+    private void thenTheSummarySaysThatThisSeriesIsFalling(final SeriesSegment seriesSegment) {
+        assertTrue(this.summaryText.contains(getLabelForSeries(seriesSegment) + " falls"));
+    }
+
+    private void thenTheSummarySaysThatThisSeriesIsConstant(final SeriesSegment seriesSegment, final Double value) {
+        final DecimalFormat f = new DecimalFormat("0.##");
+        assertTrue(this.summaryText
+                .contains(String.format(getLabelForSeries(seriesSegment) + " is constant at %1$s", f.format(value))));
+    }
+
+    private String getLabelForSeries(final SeriesSegment seriesSegment) {
+        String label;
+        if (this.firstSeriesSegment.equals(seriesSegment)) {
+            label = FIRST_SERIES_LABEL;
+        } else {
+            label = SECOND_SERIES_LABEL;
+        }
+        return label;
     }
 
     private void thenTheSummarySaysThatThisSeriesIsHigher(final SeriesSegment seriesSegment, final Double startValue) {
@@ -149,6 +235,33 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
         when(this.graphSegment.getSecondSeriesTrend()).thenReturn(secondSeriesTrend);
         when(this.secondSeriesSegment.getGradientType()).thenReturn(secondSeriesTrend);
 
+        when(this.graphSegment.getGraphSegmentTrend()).thenReturn(trendFromValues(firstSeriesStartValue,
+                firstSeriesEndValue, secondSeriesStartValue, secondSeriesEndValue));
+
+    }
+
+    /**
+     * NB This is a naive reading of gradient trends, and does not yet consider
+     * intersection. When considering intersection, care needs to be taken about
+     * whether the intersection is at the start, end, or within the segment.
+     *
+     * @param firstSeriesStartValue
+     * @param firstSeriesEndValue
+     * @param secondSeriesStartValue
+     * @param secondSeriesEndValue
+     * @return
+     */
+    private GapTrend trendFromValues(final double firstSeriesStartValue, final double firstSeriesEndValue,
+            final double secondSeriesStartValue, final double secondSeriesEndValue) {
+        GapTrend gapTrend = GapTrend.PARALLEL;
+        final double differenceAtStart = secondSeriesStartValue - firstSeriesStartValue;
+        final double differenceAtEnd = secondSeriesEndValue - firstSeriesEndValue;
+        if (differenceAtStart > differenceAtEnd) {
+            gapTrend = GapTrend.CONVERGING;
+        } else if (differenceAtStart < differenceAtEnd) {
+            gapTrend = GapTrend.DIVERGING;
+        }
+        return gapTrend;
     }
 
     private GradientType trendFromValues(final double startValue, final double endValue) {

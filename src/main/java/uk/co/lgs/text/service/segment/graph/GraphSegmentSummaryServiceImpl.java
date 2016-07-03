@@ -19,6 +19,7 @@ import simplenlg.phrasespec.VPPhraseSpec;
 import simplenlg.realiser.english.Realiser;
 import uk.co.lgs.model.gradient.GradientType;
 import uk.co.lgs.model.segment.graph.GraphSegment;
+import uk.co.lgs.model.segment.graph.category.GapTrend;
 import uk.co.lgs.model.segment.series.SeriesSegment;
 import uk.co.lgs.text.service.label.LabelService;
 import uk.co.lgs.text.service.synonym.Constants;
@@ -53,7 +54,6 @@ public class GraphSegmentSummaryServiceImpl implements GraphSegmentSummaryServic
         final DocumentElement compareSeries = this.nlgFactory.createSentence();
 
         compareSeries.addComponent(describeHigherSeriesAtStart(graphSegment));
-
         if (graphSegment.getFirstSeriesTrend().equals(graphSegment.getSecondSeriesTrend())) {
             compareSeries.addComponent(describeTwoSeriesWithSameGradientType(graphSegment));
         } else {
@@ -69,20 +69,6 @@ public class GraphSegmentSummaryServiceImpl implements GraphSegmentSummaryServic
         // FIXME: describe the end state of the whole graph!!!!!!!!!!!!!!!!
 
         return this.nlgFactory.createSentence(compareSeries);
-    }
-
-    private NLGElement describeTrendOfInitiallyLowerSeries(final GraphSegment graphSegment) {
-        final SeriesSegment otherSeries = graphSegment.getHigherSeriesAtStart().equals(graphSegment.getSeriesSegment(0))
-                ? graphSegment.getSeriesSegment(1) : graphSegment.getSeriesSegment(0);
-        return describeTrend(otherSeries, graphSegment);
-    }
-
-    private PhraseElement describeTrendOfInitiallyHigherSeries(final GraphSegment graphSegment) {
-        SeriesSegment higherInitialSeries = graphSegment.getHigherSeriesAtStart();
-        if (null == higherInitialSeries) {
-            higherInitialSeries = graphSegment.getSeriesSegments().get(0);
-        }
-        return describeTrend(higherInitialSeries, graphSegment);
     }
 
     private PhraseElement describeHigherSeriesAtStart(final GraphSegment graphSegment) {
@@ -123,17 +109,63 @@ public class GraphSegmentSummaryServiceImpl implements GraphSegmentSummaryServic
     }
 
     private PhraseElement describeGapChange(final GraphSegment graphSegment) {
-        // TODO Auto-generated method stub
-        return null;
+        // TODO: consider intersection ("crosses")
+        final SPhraseSpec gapPhrase = this.nlgFactory.createClause();
+        final NPPhraseSpec subject = this.nlgFactory.createNounPhrase("the difference between the two");
+        final VPPhraseSpec verb = this.nlgFactory.createVerbPhrase(getVerbForGap(graphSegment.getGraphSegmentTrend()));
+        gapPhrase.setVerb(verb);
+        gapPhrase.setSubject(subject);
+        return gapPhrase;
+    }
+
+    private VPPhraseSpec getVerbForGap(final GapTrend gapTrend) {
+        VPPhraseSpec gapVerb;
+        String gapString = null;
+        switch (gapTrend) {
+        case CONVERGING:
+            gapString = this.synonymService.getSynonym(Constants.CONVERGE);
+            break;
+        case DIVERGING:
+            gapString = this.synonymService.getSynonym(Constants.DIVERGE);
+            break;
+        case PARALLEL:
+            gapString = this.synonymService.getSynonym(Constants.PARALLEL);
+            break;
+        default:
+            break;
+        }
+        gapVerb = this.nlgFactory.createVerbPhrase(gapString);
+        return gapVerb;
     }
 
     private PhraseElement describeTrend(final SeriesSegment seriesSegment, final GraphSegment graphSegment) {
-        final SPhraseSpec sameTrendPhrase = this.nlgFactory.createClause();
+        final SPhraseSpec trendPhrase = this.nlgFactory.createClause();
         final NPPhraseSpec subject = this.labelService.getLabelForCommonUse(graphSegment, seriesSegment);
-        sameTrendPhrase.setVerb(getVerbForTrend(seriesSegment.getGradientType()));
-        sameTrendPhrase.setSubject(subject);
-        LOG.info(REALISER.realiseSentence(sameTrendPhrase));
-        return sameTrendPhrase;
+        final NLGElement verb = getVerbForTrend(seriesSegment.getGradientType());
+        trendPhrase.setSubject(subject);
+        trendPhrase.setVerb(verb);
+        if (GradientType.ZERO.equals(seriesSegment.getGradientType())) {
+            final NLGElement object = this.nlgFactory.createNounPhrase(
+                    this.valueService.formatValueWithUnits(seriesSegment.getStartValue(), seriesSegment.getUnits()));
+            final PPPhraseSpec preposition = this.nlgFactory.createPrepositionPhrase("at", object);
+            trendPhrase.addComplement(preposition);
+        }
+        LOG.info(REALISER.realiseSentence(trendPhrase));
+        return trendPhrase;
+    }
+
+    private PhraseElement describeTrendOfInitiallyHigherSeries(final GraphSegment graphSegment) {
+        SeriesSegment higherInitialSeries = graphSegment.getHigherSeriesAtStart();
+        if (null == higherInitialSeries) {
+            higherInitialSeries = graphSegment.getSeriesSegments().get(0);
+        }
+        return describeTrend(higherInitialSeries, graphSegment);
+    }
+
+    private NLGElement describeTrendOfInitiallyLowerSeries(final GraphSegment graphSegment) {
+        final SeriesSegment otherSeries = graphSegment.getHigherSeriesAtStart().equals(graphSegment.getSeriesSegment(0))
+                ? graphSegment.getSeriesSegment(1) : graphSegment.getSeriesSegment(0);
+        return describeTrend(otherSeries, graphSegment);
     }
 
     private PhraseElement describeTwoSeriesWithSameGradientType(final GraphSegment graphSegment) {
@@ -143,29 +175,31 @@ public class GraphSegmentSummaryServiceImpl implements GraphSegmentSummaryServic
         final SPhraseSpec sameTrendPhrase = this.nlgFactory.createClause();
         NLGElement subject;
         subject = this.nlgFactory.createCoordinatedPhrase(labels.get(0), labels.get(1));
-
-        sameTrendPhrase.setVerb(getVerbForTrend(graphSegment.getFirstSeriesTrend()));
+        NLGElement verb;
+        verb = getVerbForTrend(graphSegment.getFirstSeriesTrend());
         sameTrendPhrase.setSubject(subject);
+        sameTrendPhrase.setVerb(verb);
         LOG.info(REALISER.realiseSentence(sameTrendPhrase));
-        // FIXME
-        return null;
+        return sameTrendPhrase;
     }
 
     private VPPhraseSpec getVerbForTrend(final GradientType trend) {
-        VPPhraseSpec trendPhrase = null;
+        VPPhraseSpec trendPhrase;
+        String trendString = null;
         switch (trend) {
         case NEGATIVE:
-            trendPhrase = this.nlgFactory.createVerbPhrase(this.synonymService.getSynonym(Constants.FALL));
+            trendString = this.synonymService.getSynonym(Constants.FALL);
             break;
         case POSITIVE:
-            trendPhrase = this.nlgFactory.createVerbPhrase(this.synonymService.getSynonym(Constants.RISE));
+            trendString = this.synonymService.getSynonym(Constants.RISE);
             break;
         case ZERO:
-            trendPhrase = this.nlgFactory.createVerbPhrase(this.synonymService.getSynonym(Constants.CONSTANT));
+            trendString = this.synonymService.getSynonym(Constants.CONSTANT);
             break;
         default:
             break;
         }
+        trendPhrase = this.nlgFactory.createVerbPhrase(trendString);
         return trendPhrase;
     }
 

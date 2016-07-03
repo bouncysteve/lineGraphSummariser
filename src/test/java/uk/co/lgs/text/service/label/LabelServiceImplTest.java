@@ -33,7 +33,7 @@ public class LabelServiceImplTest extends AbstractTest {
     private static final String GROSS = "Gross interest basis";
     private static final String SHORT_FIRST_LABEL = "Short label";
     private static final String SALES_OF_FISH = "Sales of fish and chips";
-    private static final String AVERAGE_CAR_LENGTH = "Average car length in the Isle of Man";
+    private static final String PRICE_OF_PYJAMAS = "Price of pyjamas in the Isle of Man";
     private static final String LIVERPOOLS_TOTAL_NUMBER_OF_MAJOR_TROPHY_WINS = "Liverpool's total number of major trophy wins";
     private static final String MANCHESTER_UNITEDS_TOTAL_NUMBER_OF_MAJOR_TROPHY_WINS = "Manchester United's total number of major trophy wins";
     private static final String LIVERPOOL = "Liverpool";
@@ -105,13 +105,13 @@ public class LabelServiceImplTest extends AbstractTest {
 
     @Test
     public void testPluraliseSales() {
-        givenSeriesLabels(SALES_OF_FISH, AVERAGE_CAR_LENGTH);
+        givenSeriesLabels(SALES_OF_FISH, PRICE_OF_PYJAMAS);
         whenIGetLabelsForInitialUse();
         thenTheLabelsArePlural(true, false);
-        thenTheLabelsAre(SALES_OF_FISH, AVERAGE_CAR_LENGTH);
+        thenTheLabelsAre(SALES_OF_FISH, PRICE_OF_PYJAMAS);
         whenIGetLabelsForCommonUse();
         thenTheLabelsArePlural(true, false);
-        thenTheLabelsAre(SALES_OF_FISH, AVERAGE_CAR_LENGTH);
+        thenTheLabelsAre(SALES_OF_FISH, PRICE_OF_PYJAMAS);
     }
 
     private void thenTheLabelsArePlural(final boolean firstSeriesPlural, final boolean secondSeriesPlural) {
