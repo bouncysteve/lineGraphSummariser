@@ -147,7 +147,7 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
     }
 
     private void thenTheSummarySaysThatBothSeries(final String trend) {
-        final String description = FIRST_SERIES_LABEL + " and " + SECOND_SERIES_LABEL + " ";
+        final String description = FIRST_SERIES_LABEL + " and " + SECOND_SERIES_LABEL + " both ";
         assertTrue(this.summaryText.contains(description + trend));
     }
 

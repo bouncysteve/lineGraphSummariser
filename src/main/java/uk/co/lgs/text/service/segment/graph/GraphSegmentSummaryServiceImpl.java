@@ -141,7 +141,7 @@ public class GraphSegmentSummaryServiceImpl implements GraphSegmentSummaryServic
     private PhraseElement describeTrend(final SeriesSegment seriesSegment, final GraphSegment graphSegment) {
         final SPhraseSpec trendPhrase = this.nlgFactory.createClause();
         final NPPhraseSpec subject = this.labelService.getLabelForCommonUse(graphSegment, seriesSegment);
-        final NLGElement verb = getVerbForTrend(seriesSegment.getGradientType());
+        final NLGElement verb = this.nlgFactory.createVerbPhrase(getVerbForTrend(seriesSegment.getGradientType()));
         trendPhrase.setSubject(subject);
         trendPhrase.setVerb(verb);
         if (GradientType.ZERO.equals(seriesSegment.getGradientType())) {
@@ -176,16 +176,15 @@ public class GraphSegmentSummaryServiceImpl implements GraphSegmentSummaryServic
         NLGElement subject;
         subject = this.nlgFactory.createCoordinatedPhrase(labels.get(0), labels.get(1));
         NLGElement verb;
-        verb = getVerbForTrend(graphSegment.getFirstSeriesTrend());
+        verb = this.nlgFactory.createVerbPhrase("both " + getVerbForTrend(graphSegment.getFirstSeriesTrend()));
         sameTrendPhrase.setSubject(subject);
         sameTrendPhrase.setVerb(verb);
         LOG.info(REALISER.realiseSentence(sameTrendPhrase));
         return sameTrendPhrase;
     }
 
-    private VPPhraseSpec getVerbForTrend(final GradientType trend) {
-        VPPhraseSpec trendPhrase;
-        String trendString = null;
+    private String getVerbForTrend(final GradientType trend) {
+        String trendString = "";
         switch (trend) {
         case NEGATIVE:
             trendString = this.synonymService.getSynonym(Constants.FALL);
@@ -199,8 +198,8 @@ public class GraphSegmentSummaryServiceImpl implements GraphSegmentSummaryServic
         default:
             break;
         }
-        trendPhrase = this.nlgFactory.createVerbPhrase(trendString);
-        return trendPhrase;
+
+        return trendString;
     }
 
 }
