@@ -17,24 +17,65 @@ import uk.co.lgs.model.segment.series.SeriesSegment;
  */
 public interface GraphSegment {
 
+    /**
+     * @return true if the series intersect at any point in the segment, false
+     *         otherwise.
+     */
     boolean isIntersecting();
 
-    Double getValueAtIntersection();
-
+    /**
+     * @return true if all(both) series segments have identical gradients, false
+     *         otherwise.
+     */
     boolean isParallel();
 
+    /**
+     * @return the GraphSegmentGradient This describes the gradients of the two
+     *         series and any intersections.
+     */
     GraphSegmentGradient getGraphSegmentGradientCategory();
 
+    /**
+     * @return the label of the time at the start of the segment
+     */
     String getStartTime();
 
+    /**
+     * @return the label of the time at the end of the segment
+     */
     String getEndTime();
 
+    /**
+     * For use in collation. Makes a single (longer) segment by appending the
+     * new segment to the old.
+     *
+     * @param newSegment
+     *            the segment to be appended.
+     * @return the new longer segment.
+     * @throws SegmentAppendException
+     *             if the segments are non-contiguous.
+     */
     GraphSegment append(GraphSegment newSegment) throws SegmentAppendException;
 
+    /**
+     * @param index
+     * @return the seriesSegment at the given index.
+     */
     SeriesSegment getSeriesSegment(int index);
 
+    /**
+     * Assuming that all data points are equidistant, the distance between two
+     * adjacent points is one. For collated segments the length may be any
+     * integer multiple of one.
+     *
+     * @return the length of the series
+     */
     int getLength();
 
+    /**
+     * @return a list of seriesSegments. The order will be consistent for any
+     *         given GraphSegment.
+     */
     List<SeriesSegment> getSeriesSegments();
 
     /**
@@ -67,10 +108,10 @@ public interface GraphSegment {
     GradientType getSecondSeriesTrend();
 
     /**
-     * @param higherSeries
+     * @param seriesSegment
      * @return The index of the series, i.e. 0 for firstSeries, 1 for
      *         secondSeries...
      */
-    int indexOf(SeriesSegment higherSeries);
+    int indexOf(SeriesSegment seriesSegment);
 
 }
