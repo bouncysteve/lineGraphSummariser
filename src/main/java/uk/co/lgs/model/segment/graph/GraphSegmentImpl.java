@@ -37,8 +37,6 @@ public class GraphSegmentImpl implements GraphSegment {
 
     private GraphSegmentGradient graphSegmentGradient;
 
-    private Double valueAtIntersection = null;
-
     private final List<SeriesSegment> seriesSegments;
 
     private boolean intersecting;
@@ -75,11 +73,6 @@ public class GraphSegmentImpl implements GraphSegment {
     @Override
     public boolean isIntersecting() {
         return this.intersecting;
-    }
-
-    @Override
-    public Double getValueAtIntersection() {
-        return this.valueAtIntersection;
     }
 
     @Override
@@ -134,11 +127,6 @@ public class GraphSegmentImpl implements GraphSegment {
         sb.append("(" + DF.format(this.seriesSegments.get(0).getGradient()) + ", ");
         sb.append(DF.format(this.seriesSegments.get(1).getGradient()) + ")\t");
 
-        if (this.isIntersecting()) {
-            sb.append(this.getValueAtIntersection()).append("\t");
-        } else {
-            sb.append("\t\t");
-        }
         if (this.isParallel()) {
             sb.append("Segments are parallel").append("\t");
         }
@@ -158,13 +146,12 @@ public class GraphSegmentImpl implements GraphSegment {
         final double secondSeriesStartValue = segment2.getStartValue();
         final double secondSeriesEndValue = segment2.getEndValue();
 
-        /*
-         * equation of series: y = mx + c; y = (endValue - startValue)x +
-         * startValue; -y = (startValue - endValue)x - startValue; (startValue -
-         * endValue)x + y = startValue; {startValue - endValue, 1} =
-         * {startValue}
-         * http://commons.apache.org/proper/commons-math/userguide/linear.html
-         */
+        // equation of series: y = mx + c
+        // y = (endValue - startValue)x + startValue
+        // -y = (startValue - endValue)x - startValue
+        // (startValue - endValue)x + y = startValue
+        // http://commons.apache.org/proper/commons-math/userguide/linear.html
+        // {startValue - endValue, 1} = {startValue}
         final RealMatrix coefficients = new Array2DRowRealMatrix(
                 new double[][] { { firstSeriesStartValue - firstSeriesEndValue, 1 },
                         { secondSeriesStartValue - secondSeriesEndValue, 1 } },
@@ -180,8 +167,7 @@ public class GraphSegmentImpl implements GraphSegment {
              * only makes sense if it is within this segment.
              */
             if (this.segmentDistanceToIntersection >= 0 && this.segmentDistanceToIntersection <= 1) {
-                this.valueAtIntersection = solution.getEntry(1);
-                this.intersecting = null != this.valueAtIntersection;
+                this.intersecting = null != Double.valueOf(solution.getEntry(1));
             }
         } catch (final SingularMatrixException e) {
             if (LOG.isDebugEnabled()) {
@@ -190,10 +176,6 @@ public class GraphSegmentImpl implements GraphSegment {
             this.parallel = true;
             if (firstSeriesStartValue == secondSeriesStartValue) {
                 this.intersecting = true;
-                if (firstSeriesStartValue == firstSeriesEndValue) {
-                    // series are constant, so we can give an intersection value
-                    this.valueAtIntersection = firstSeriesStartValue;
-                }
             }
         }
     }
