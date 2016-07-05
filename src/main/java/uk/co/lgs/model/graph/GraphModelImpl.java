@@ -4,15 +4,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 import uk.co.lgs.domain.graph.GraphData;
+import uk.co.lgs.model.graph.service.GapServiceImpl;
 import uk.co.lgs.model.graph.service.SegmentationServiceImpl;
 import uk.co.lgs.model.segment.exception.SegmentCategoryNotFoundException;
 import uk.co.lgs.model.segment.graph.GraphSegment;
 import uk.co.lgs.model.segment.graph.GraphSegmentImpl;
 import uk.co.lgs.model.segment.graph.category.GraphSegmentGradient;
 
+/**
+ * I represent a whole graph and its features.
+ *
+ * @author bouncysteve
+ *
+ */
 public class GraphModelImpl implements GraphModel {
 
-    private List<GraphSegment> graphSegments;
+    private final List<GraphSegment> graphSegments;
 
     private List<String> labels;
 
@@ -22,13 +29,23 @@ public class GraphModelImpl implements GraphModel {
 
     private List<String> units;
 
-    public GraphModelImpl(GraphData graphData) throws SegmentCategoryNotFoundException {
-        this.graphSegments = new SegmentationServiceImpl().segment(graphData);
+    /**
+     * Converts graphData into a graphModel, by splitting the data into
+     * segments, and decorating the segments with gap information.
+     * 
+     * @param graphData
+     * @throws SegmentCategoryNotFoundException
+     */
+    public GraphModelImpl(final GraphData graphData) throws SegmentCategoryNotFoundException {
+        this.graphSegments = new GapServiceImpl().addGapInfo(new SegmentationServiceImpl().segment(graphData));
         this.labels = graphData.getHeader();
         this.title = graphData.getTitle();
         this.units = graphData.getUnits();
     }
 
+    /**
+     * For use in collation only.
+     */
     public GraphModelImpl() {
         this.graphSegments = new ArrayList<>();
     }
@@ -55,7 +72,7 @@ public class GraphModelImpl implements GraphModel {
 
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder();
+        final StringBuilder builder = new StringBuilder();
         builder.append("\n");
         if (this.isCollated()) {
             builder.append("*********GRAPH MODEL OBJECT (COLLATED SEGMENTS)*********").append("\n");
@@ -69,7 +86,7 @@ public class GraphModelImpl implements GraphModel {
         builder.append("Units: ").append(this.getUnits()).append("\n");
         boolean doneSegmentHeader = false;
         GraphSegmentGradient previousSegmentCategory = null;
-        for (GraphSegment segment : this.getGraphSegments()) {
+        for (final GraphSegment segment : this.getGraphSegments()) {
             if (!doneSegmentHeader) {
                 builder.append(GraphSegmentImpl.getHeader()).append("\n");
                 doneSegmentHeader = true;
@@ -90,24 +107,24 @@ public class GraphModelImpl implements GraphModel {
     @Override
     public int getLength() {
         int length = 0;
-        for (GraphSegment segment : this.getGraphSegments()) {
+        for (final GraphSegment segment : this.getGraphSegments()) {
             length += segment.getLength();
         }
         return length;
     }
 
     @Override
-    public void append(GraphSegment segment) {
+    public void append(final GraphSegment segment) {
         this.graphSegments.add(segment);
     }
 
     @Override
-    public void setLabels(List<String> labels) {
+    public void setLabels(final List<String> labels) {
         this.labels = labels;
     }
 
     @Override
-    public void setTitle(String title) {
+    public void setTitle(final String title) {
         this.title = title;
     }
 
@@ -117,7 +134,7 @@ public class GraphModelImpl implements GraphModel {
     }
 
     @Override
-    public void setCollated(boolean collated) {
+    public void setCollated(final boolean collated) {
         this.collated = collated;
     }
 
@@ -125,36 +142,45 @@ public class GraphModelImpl implements GraphModel {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((this.graphSegments == null) ? 0 : this.graphSegments.hashCode());
-        result = prime * result + ((this.labels == null) ? 0 : this.labels.hashCode());
-        result = prime * result + ((this.title == null) ? 0 : this.title.hashCode());
+        result = prime * result + (this.graphSegments == null ? 0 : this.graphSegments.hashCode());
+        result = prime * result + (this.labels == null ? 0 : this.labels.hashCode());
+        result = prime * result + (this.title == null ? 0 : this.title.hashCode());
         return result;
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
+    public boolean equals(final Object obj) {
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
-        GraphModelImpl other = (GraphModelImpl) obj;
+        }
+        final GraphModelImpl other = (GraphModelImpl) obj;
         if (this.graphSegments == null) {
-            if (other.graphSegments != null)
+            if (other.graphSegments != null) {
                 return false;
-        } else if (!this.graphSegments.equals(other.graphSegments))
+            }
+        } else if (!this.graphSegments.equals(other.graphSegments)) {
             return false;
+        }
         if (this.labels == null) {
-            if (other.labels != null)
+            if (other.labels != null) {
                 return false;
-        } else if (!this.labels.equals(other.labels))
+            }
+        } else if (!this.labels.equals(other.labels)) {
             return false;
+        }
         if (this.title == null) {
-            if (other.title != null)
+            if (other.title != null) {
                 return false;
-        } else if (!this.title.equals(other.title))
+            }
+        } else if (!this.title.equals(other.title)) {
             return false;
+        }
         return true;
     }
 
@@ -164,7 +190,7 @@ public class GraphModelImpl implements GraphModel {
     }
 
     @Override
-    public void setUnits(List<String> units) {
+    public void setUnits(final List<String> units) {
         this.units = units;
     }
 }

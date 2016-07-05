@@ -21,12 +21,13 @@ import uk.co.lgs.test.AbstractTest;
 
 /**
  * The test assumes that all graphs depict two series.
- * 
+ *
  * @author bouncysteve
  *
  */
 public class GraphModelImplTest extends AbstractTest {
-
+    // FIXME: this is not a unit test as real gapService and segmentationService
+    // are used!!!!!!
     @Mock
     private GraphData mockGraphData;
 
@@ -72,16 +73,16 @@ public class GraphModelImplTest extends AbstractTest {
         thenItIsCollated(false);
     }
 
-    private void whenASegmentIsAppendedWithLength(int length) {
+    private void whenASegmentIsAppendedWithLength(final int length) {
         when(this.mockGraphSegment.getLength()).thenReturn(length);
         this.underTest.append(this.mockGraphSegment);
     }
 
-    private void thenItWillHaveLength(int i) {
+    private void thenItWillHaveLength(final int i) {
         assertEquals(i, this.underTest.getLength());
     }
 
-    private void givenAGraphWithTwoSeriesAndRecords(int recordCount) throws DomainException {
+    private void givenAGraphWithTwoSeriesAndRecords(final int recordCount) throws DomainException {
         for (int i = 0; i < recordCount; i++) {
             this.records.add(new RecordImpl("Label" + i, Arrays.asList(1d * i, 2d * i)));
         }
@@ -93,11 +94,11 @@ public class GraphModelImplTest extends AbstractTest {
         this.underTest = new GraphModelImpl(this.mockGraphData);
     }
 
-    private void thenItWillContainThisManySegments(int i) {
+    private void thenItWillContainThisManySegments(final int i) {
         assertEquals(i, this.underTest.getSegmentCount());
     }
 
-    private void thenItIsCollated(boolean collated) {
+    private void thenItIsCollated(final boolean collated) {
         assertEquals(collated, this.underTest.isCollated());
     }
 

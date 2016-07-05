@@ -16,7 +16,7 @@ import uk.co.lgs.segment.graph.AbstractGraphSegmentTest;
 
 public class GraphSegmentImplTest extends AbstractGraphSegmentTest {
 
-    private static String expectedHeader = "PERIOD\t\tLENGTH\tGRADIENT_TYPES\tGAP\t1st_HIGH\t2nd_HIGH\tGRADIENTS\t(VALUE_AT_INTERSECTION)\tNOTES\t";
+    private static String expectedHeader = "PERIOD\t\tLENGTH\tGRADIENT_TYPES\tGAP\t1st_HIGH\t2nd_HIGH\tGRADIENTS\tNOTES\t";
 
     private GraphSegmentImpl underTest;
 

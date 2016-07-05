@@ -51,6 +51,10 @@ public class GraphSegmentImpl implements GraphSegment {
 
     private final SeriesSegment secondSeriesSegment;
 
+    private boolean endValuesAreGlobalMaximumGap;
+
+    private boolean endValuesAreGlobalMinimumGap;
+
     /**
      * I create an object representing two series between two points in time.
      *
@@ -259,7 +263,7 @@ public class GraphSegmentImpl implements GraphSegment {
     public static String getHeader() {
         final StringBuilder sb = new StringBuilder();
         sb.append("PERIOD\t\t").append("LENGTH\t").append("GRADIENT_TYPES\t").append("GAP\t").append("1st_HIGH\t")
-                .append("2nd_HIGH\t").append("GRADIENTS\t").append("(VALUE_AT_INTERSECTION)\t").append("NOTES\t");
+                .append("2nd_HIGH\t").append("GRADIENTS\t").append("NOTES\t");
         return sb.toString();
     }
 
@@ -305,4 +309,29 @@ public class GraphSegmentImpl implements GraphSegment {
         return index;
     }
 
+    @Override
+    public boolean isGlobalMaximumGapAtSegmentEnd() {
+        return this.endValuesAreGlobalMaximumGap;
+    }
+
+    @Override
+    public void setGlobalMaximumGapAtSegmentEnd(final boolean b) {
+        this.endValuesAreGlobalMaximumGap = b;
+
+    }
+
+    @Override
+    public boolean isGlobalMinimumGapAtSegmentEnd() {
+        return this.endValuesAreGlobalMinimumGap;
+    }
+
+    @Override
+    public void setGlobalMinimumGapAtSegmentEnd(final boolean b) {
+        this.endValuesAreGlobalMinimumGap = b;
+    }
+
+    @Override
+    public double getGapBetweenSeriesEndValues() {
+        return Math.abs(this.getSeriesSegment(0).getEndValue() - this.getSeriesSegment(1).getEndValue());
+    }
 }

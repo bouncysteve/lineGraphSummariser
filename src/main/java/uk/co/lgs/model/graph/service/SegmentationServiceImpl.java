@@ -3,6 +3,8 @@ package uk.co.lgs.model.graph.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.stereotype.Component;
+
 import uk.co.lgs.domain.graph.GraphData;
 import uk.co.lgs.domain.record.Record;
 import uk.co.lgs.model.point.PointImpl;
@@ -12,17 +14,18 @@ import uk.co.lgs.model.segment.graph.GraphSegmentImpl;
 import uk.co.lgs.model.segment.series.SeriesSegment;
 import uk.co.lgs.model.segment.series.SeriesSegmentImpl;
 
+@Component
 public class SegmentationServiceImpl implements SegmentationService {
 
     @Override
-    public List<GraphSegment> segment(GraphData graphData) throws SegmentCategoryNotFoundException {
-        List<Record> records = graphData.getRecords();
-        List<GraphSegment> segments = new ArrayList<>();
-        List<String> labels = graphData.getHeader();
-        List<String> units = graphData.getUnits();
+    public List<GraphSegment> segment(final GraphData graphData) throws SegmentCategoryNotFoundException {
+        final List<Record> records = graphData.getRecords();
+        final List<GraphSegment> segments = new ArrayList<>();
+        final List<String> labels = graphData.getHeader();
+        final List<String> units = graphData.getUnits();
         Record segmentStartRecord = null;
         Record segmentEndRecord;
-        for (Record record : records) {
+        for (final Record record : records) {
             if (null == segmentStartRecord) {
                 segmentStartRecord = record;
             } else {
@@ -34,20 +37,22 @@ public class SegmentationServiceImpl implements SegmentationService {
         return segments;
     }
 
-    private GraphSegment convertRecordsToSegment(Record segmentStartRecord, Record segmentEndRecord,
-            List<String> labels, List<String> units) throws SegmentCategoryNotFoundException {
-        String startTimePoint = segmentStartRecord.getPointInTime();
-        Double firstSeriesStartValue = segmentStartRecord.getValues().get(0);
-        Double firstSeriesEndValue = segmentEndRecord.getValues().get(0);
+    private GraphSegment convertRecordsToSegment(final Record segmentStartRecord, final Record segmentEndRecord,
+            final List<String> labels, final List<String> units) throws SegmentCategoryNotFoundException {
+        final String startTimePoint = segmentStartRecord.getPointInTime();
+        final Double firstSeriesStartValue = segmentStartRecord.getValues().get(0);
+        final Double firstSeriesEndValue = segmentEndRecord.getValues().get(0);
 
-        Double secondSeriesStartValue = segmentStartRecord.getValues().get(1);
-        Double secondSeriesEndValue = segmentEndRecord.getValues().get(1);
+        final Double secondSeriesStartValue = segmentStartRecord.getValues().get(1);
+        final Double secondSeriesEndValue = segmentEndRecord.getValues().get(1);
 
-        String endTimePoint = segmentEndRecord.getPointInTime();
+        final String endTimePoint = segmentEndRecord.getPointInTime();
 
-        SeriesSegment firstSeriesSegment = new SeriesSegmentImpl(new PointImpl(startTimePoint, firstSeriesStartValue),
-                new PointImpl(endTimePoint, firstSeriesEndValue), labels.get(1), units.get(1));
-        SeriesSegment secondSeriesSegment = new SeriesSegmentImpl(new PointImpl(startTimePoint, secondSeriesStartValue),
+        final SeriesSegment firstSeriesSegment = new SeriesSegmentImpl(
+                new PointImpl(startTimePoint, firstSeriesStartValue), new PointImpl(endTimePoint, firstSeriesEndValue),
+                labels.get(1), units.get(1));
+        final SeriesSegment secondSeriesSegment = new SeriesSegmentImpl(
+                new PointImpl(startTimePoint, secondSeriesStartValue),
                 new PointImpl(endTimePoint, secondSeriesEndValue), labels.get(2), units.get(2));
 
         return new GraphSegmentImpl(firstSeriesSegment, secondSeriesSegment);

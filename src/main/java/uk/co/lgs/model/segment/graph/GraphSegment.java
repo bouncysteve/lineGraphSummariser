@@ -114,4 +114,43 @@ public interface GraphSegment {
      */
     int indexOf(SeriesSegment seriesSegment);
 
+    /**
+     * The modulus of the difference between the series' values at the end of
+     * the segment is the largest it is during the period covered by the graph.
+     * NB. The maximum gap may be exhibited by multiple segments.
+     *
+     * @return
+     */
+    boolean isGlobalMaximumGapAtSegmentEnd();
+
+    /**
+     * @param b
+     *            whether the end values of this segment exhibit the largest
+     *            difference between series in the whole graph.
+     */
+    void setGlobalMaximumGapAtSegmentEnd(boolean b);
+
+    /**
+     * The modulus of the difference between the series' values at the end of
+     * the segment is the smallest it is during the period covered by the graph.
+     * NB. The minimum gap may be exhibited by multiple segments. NB. If any
+     * segments intersect then this value is false for all segments.
+     *
+     * @return
+     */
+    boolean isGlobalMinimumGapAtSegmentEnd();
+
+    /**
+     * @param b
+     *            whether the end values of this segment exhibit the smallest
+     *            difference between series in the whole graph (if such a
+     *            difference exists, i.e. there are no intersections).
+     **/
+    void setGlobalMinimumGapAtSegmentEnd(boolean b);
+
+    /**
+     * @return the modulus of the difference between the series' values at the
+     *         end of the segment.
+     */
+    double getGapBetweenSeriesEndValues();
 }
