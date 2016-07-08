@@ -20,7 +20,7 @@ public class GapServiceImpl implements GapService {
     @Override
     public List<GraphSegment> addGapInfo(final List<GraphSegment> graphSegments) {
         Double minimumGap = Double.MAX_VALUE;
-        Double maximumGap = Double.MIN_VALUE;
+        Double maximumGap = 0D;
         boolean graphContainsIntersection = false;
         for (final GraphSegment graphSegment : graphSegments) {
             final double gap = graphSegment.getGapBetweenSeriesEndValues();
