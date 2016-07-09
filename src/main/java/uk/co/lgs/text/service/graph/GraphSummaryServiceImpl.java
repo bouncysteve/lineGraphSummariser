@@ -1,6 +1,5 @@
 package uk.co.lgs.text.service.graph;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.codehaus.plexus.util.StringUtils;
@@ -96,8 +95,8 @@ public class GraphSummaryServiceImpl implements GraphSummaryService {
         final DocumentElement body = this.nlgFactory.createParagraph();
         final NLGElement startOfGraph = this.nlgFactory.createSentence(describeStartOfGraph(model));
         body.addComponent(startOfGraph);
-        for (final DocumentElement sentence : getSegmentSummaries(model)) {
-            body.addComponent(sentence);
+        for (final DocumentElement segmentSummary : this.graphSegmentSummaryService.getSegmentSummaries(model)) {
+            body.addComponent(segmentSummary);
         }
         return body;
     }
@@ -175,14 +174,6 @@ public class GraphSummaryServiceImpl implements GraphSummaryService {
             LOG.debug("Diiferent start values phrase: {}", REALISER.realiseSentence(differentValuesPhrase));
         }
         return differentValuesPhrase;
-    }
-
-    private List<DocumentElement> getSegmentSummaries(final GraphModel model) {
-        final List<DocumentElement> segmentSummaries = new ArrayList<>();
-        for (final GraphSegment graphSegment : model.getGraphSegments()) {
-            segmentSummaries.add(this.graphSegmentSummaryService.getSummary(graphSegment));
-        }
-        return segmentSummaries;
     }
 
     private SPhraseSpec getTitle(final GraphModel model) {
