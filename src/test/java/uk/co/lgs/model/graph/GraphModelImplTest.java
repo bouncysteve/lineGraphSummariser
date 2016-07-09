@@ -9,12 +9,13 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
 import uk.co.lgs.domain.exception.DomainException;
 import uk.co.lgs.domain.graph.GraphData;
-import uk.co.lgs.domain.record.Record;
-import uk.co.lgs.domain.record.RecordImpl;
+import uk.co.lgs.model.graph.service.GapService;
+import uk.co.lgs.model.graph.service.SegmentationService;
 import uk.co.lgs.model.segment.exception.SegmentCategoryNotFoundException;
 import uk.co.lgs.model.segment.graph.GraphSegment;
 import uk.co.lgs.test.AbstractTest;
@@ -26,72 +27,92 @@ import uk.co.lgs.test.AbstractTest;
  *
  */
 public class GraphModelImplTest extends AbstractTest {
-    // FIXME: this is not a unit test as real gapService and segmentationService
-    // are used!!!!!!
+
+    private static final String TITLE = "A Lovely Graph";
+
+    private static final List<String> UNITS = Arrays.asList("", "$", "cm");
+
+    private static final List<String> LABELS = Arrays.asList("time", "series1", "series2");
+
     @Mock
     private GraphData mockGraphData;
 
     @Mock
     private GraphSegment mockGraphSegment;
 
-    private List<Record> records;
+    @Mock
+    private GapService gapService;
 
-    private GraphModel underTest;
+    @Mock
+    private SegmentationService segmentationService;
+
+    @InjectMocks
+    private GraphModelImpl underTest;
+
+    @Mock
+    private GraphSegment mockAppendedGraphSegment;
 
     @Before
-    public void setup() {
-        this.records = new ArrayList<Record>();
-        when(this.mockGraphData.getHeader()).thenReturn(Arrays.asList(new String[] { "time", "series1", "series2" }));
+    public void beforeEachTest() throws SegmentCategoryNotFoundException {
+        when(this.mockGraphSegment.getLength()).thenReturn(1);
+        when(this.mockGraphData.getHeader()).thenReturn(LABELS);
+        when(this.mockGraphData.getTitle()).thenReturn(TITLE);
+        when(this.mockGraphData.getUnits()).thenReturn(UNITS);
     }
 
     @Test
     public void test() throws DomainException, SegmentCategoryNotFoundException {
-        givenAGraphWithTwoSeriesAndRecords(3);
+        givenAGraphWithThisManySegments(2);
         whenTheGraphModelIsCreated();
         thenItWillContainThisManySegments(2);
         thenItWillHaveLength(2);
         thenItIsCollated(false);
+        thenTheMetaDataIsAvailable();
+    }
+
+    private void givenAGraphWithThisManySegments(final int count) throws SegmentCategoryNotFoundException {
+        final List<GraphSegment> graphSegments = new ArrayList<>();
+        for (int index = 0; index < count; index++) {
+            graphSegments.add(this.mockGraphSegment);
+        }
+        when(this.segmentationService.segment(this.mockGraphData)).thenReturn(graphSegments);
+        when(this.gapService.addGapInfo(graphSegments)).thenReturn(graphSegments);
+
     }
 
     @Test
     public void testAppend() throws DomainException, SegmentCategoryNotFoundException {
-        givenAGraphWithTwoSeriesAndRecords(3);
+        givenAGraphWithThisManySegments(2);
         whenTheGraphModelIsCreated();
         whenASegmentIsAppendedWithLength(1);
         thenItWillContainThisManySegments(3);
         thenItWillHaveLength(3);
         thenItIsCollated(false);
+        thenTheMetaDataIsAvailable();
     }
 
     @Test
     public void testAppendLongSegment() throws DomainException, SegmentCategoryNotFoundException {
-        givenAGraphWithTwoSeriesAndRecords(3);
+        givenAGraphWithThisManySegments(2);
         whenTheGraphModelIsCreated();
         whenASegmentIsAppendedWithLength(2);
         thenItWillContainThisManySegments(3);
         thenItWillHaveLength(4);
         thenItIsCollated(false);
+        thenTheMetaDataIsAvailable();
     }
 
     private void whenASegmentIsAppendedWithLength(final int length) {
-        when(this.mockGraphSegment.getLength()).thenReturn(length);
-        this.underTest.append(this.mockGraphSegment);
+        when(this.mockAppendedGraphSegment.getLength()).thenReturn(length);
+        this.underTest.append(this.mockAppendedGraphSegment);
     }
 
     private void thenItWillHaveLength(final int i) {
         assertEquals(i, this.underTest.getLength());
     }
 
-    private void givenAGraphWithTwoSeriesAndRecords(final int recordCount) throws DomainException {
-        for (int i = 0; i < recordCount; i++) {
-            this.records.add(new RecordImpl("Label" + i, Arrays.asList(1d * i, 2d * i)));
-        }
-    }
-
     private void whenTheGraphModelIsCreated() throws SegmentCategoryNotFoundException {
-        when(this.mockGraphData.getRecords()).thenReturn(this.records);
-        when(this.mockGraphData.getUnits()).thenReturn(Arrays.asList("", "", ""));
-        this.underTest = new GraphModelImpl(this.mockGraphData);
+        this.underTest.setGraphData(this.mockGraphData);
     }
 
     private void thenItWillContainThisManySegments(final int i) {
@@ -100,6 +121,12 @@ public class GraphModelImplTest extends AbstractTest {
 
     private void thenItIsCollated(final boolean collated) {
         assertEquals(collated, this.underTest.isCollated());
+    }
+
+    private void thenTheMetaDataIsAvailable() {
+        assertEquals(LABELS, this.underTest.getLabels());
+        assertEquals(TITLE, this.underTest.getTitle());
+        assertEquals(UNITS, this.underTest.getUnits());
     }
 
 }

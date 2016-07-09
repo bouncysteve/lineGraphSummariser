@@ -3,9 +3,11 @@ package uk.co.lgs.model.graph;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import uk.co.lgs.domain.graph.GraphData;
-import uk.co.lgs.model.graph.service.GapServiceImpl;
-import uk.co.lgs.model.graph.service.SegmentationServiceImpl;
+import uk.co.lgs.model.graph.service.GapService;
+import uk.co.lgs.model.graph.service.SegmentationService;
 import uk.co.lgs.model.segment.exception.SegmentCategoryNotFoundException;
 import uk.co.lgs.model.segment.graph.GraphSegment;
 import uk.co.lgs.model.segment.graph.GraphSegmentImpl;
@@ -19,7 +21,7 @@ import uk.co.lgs.model.segment.graph.category.GraphSegmentGradient;
  */
 public class GraphModelImpl implements GraphModel {
 
-    private final List<GraphSegment> graphSegments;
+    private List<GraphSegment> graphSegments;
 
     private List<String> labels;
 
@@ -29,25 +31,25 @@ public class GraphModelImpl implements GraphModel {
 
     private List<String> units;
 
-    /**
-     * Converts graphData into a graphModel, by splitting the data into
-     * segments, and decorating the segments with gap information.
-     * 
-     * @param graphData
-     * @throws SegmentCategoryNotFoundException
-     */
-    public GraphModelImpl(final GraphData graphData) throws SegmentCategoryNotFoundException {
-        this.graphSegments = new GapServiceImpl().addGapInfo(new SegmentationServiceImpl().segment(graphData));
+    private boolean intersects;
+
+    @Autowired
+    private SegmentationService segmentationService;
+
+    @Autowired
+    private GapService gapService;
+
+    public GraphModelImpl() {
+        this.graphSegments = new ArrayList<>();
+    }
+
+    @Override
+    public void setGraphData(final GraphData graphData) throws SegmentCategoryNotFoundException {
+        final List<GraphSegment> segments = this.segmentationService.segment(graphData);
+        this.graphSegments = this.gapService.addGapInfo(segments);
         this.labels = graphData.getHeader();
         this.title = graphData.getTitle();
         this.units = graphData.getUnits();
-    }
-
-    /**
-     * For use in collation only.
-     */
-    public GraphModelImpl() {
-        this.graphSegments = new ArrayList<>();
     }
 
     @Override
@@ -192,5 +194,15 @@ public class GraphModelImpl implements GraphModel {
     @Override
     public void setUnits(final List<String> units) {
         this.units = units;
+    }
+
+    @Override
+    public boolean isIntersecting() {
+        return this.intersects;
+    }
+
+    @Override
+    public void setIntersecting(final boolean intersecting) {
+        this.intersects = intersecting;
     }
 }
