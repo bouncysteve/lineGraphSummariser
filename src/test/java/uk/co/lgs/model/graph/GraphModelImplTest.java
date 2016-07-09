@@ -62,57 +62,109 @@ public class GraphModelImplTest extends AbstractTest {
 
     @Test
     public void test() throws DomainException, SegmentCategoryNotFoundException {
-        givenAGraphWithThisManySegments(2);
+        givenAGraphWithThisManySegmentsWhereAtLeastOneIntersects(2, false);
         whenTheGraphModelIsCreated();
         thenItWillContainThisManySegments(2);
         thenItWillHaveLength(2);
         thenItIsCollated(false);
+        thenItIntersects(false);
         thenTheMetaDataIsAvailable();
     }
 
-    private void givenAGraphWithThisManySegments(final int count) throws SegmentCategoryNotFoundException {
-        final List<GraphSegment> graphSegments = new ArrayList<>();
-        for (int index = 0; index < count; index++) {
-            graphSegments.add(this.mockGraphSegment);
-        }
-        when(this.segmentationService.segment(this.mockGraphData)).thenReturn(graphSegments);
-        when(this.gapService.addGapInfo(graphSegments)).thenReturn(graphSegments);
-
+    @Test
+    public void testIntersects() throws DomainException, SegmentCategoryNotFoundException {
+        givenAGraphWithThisManySegmentsWhereAtLeastOneIntersects(2, true);
+        whenTheGraphModelIsCreated();
+        thenItWillContainThisManySegments(2);
+        thenItWillHaveLength(2);
+        thenItIsCollated(false);
+        thenItIntersects(true);
+        thenTheMetaDataIsAvailable();
     }
 
     @Test
-    public void testAppend() throws DomainException, SegmentCategoryNotFoundException {
-        givenAGraphWithThisManySegments(2);
+    public void testIntersectingAppendNonIntersecting() throws DomainException, SegmentCategoryNotFoundException {
+        givenAGraphWithThisManySegmentsWhereAtLeastOneIntersects(2, true);
         whenTheGraphModelIsCreated();
-        whenASegmentIsAppendedWithLength(1);
+        whenASegmentIsAppendedWithLengthAndItIntersects(1, false);
         thenItWillContainThisManySegments(3);
         thenItWillHaveLength(3);
         thenItIsCollated(false);
+        thenItIntersects(true);
+        thenTheMetaDataIsAvailable();
+    }
+
+    @Test
+    public void testIntersectingAppendIntersecting() throws DomainException, SegmentCategoryNotFoundException {
+        givenAGraphWithThisManySegmentsWhereAtLeastOneIntersects(2, true);
+        whenTheGraphModelIsCreated();
+        whenASegmentIsAppendedWithLengthAndItIntersects(1, true);
+        thenItWillContainThisManySegments(3);
+        thenItWillHaveLength(3);
+        thenItIsCollated(false);
+        thenItIntersects(true);
+        thenTheMetaDataIsAvailable();
+    }
+
+    @Test
+    public void testNonIntersectingAppendIntersecting() throws DomainException, SegmentCategoryNotFoundException {
+        givenAGraphWithThisManySegmentsWhereAtLeastOneIntersects(2, false);
+        whenTheGraphModelIsCreated();
+        whenASegmentIsAppendedWithLengthAndItIntersects(1, true);
+        thenItWillContainThisManySegments(3);
+        thenItWillHaveLength(3);
+        thenItIsCollated(false);
+        thenItIntersects(true);
+        thenTheMetaDataIsAvailable();
+    }
+
+    @Test
+    public void testNonIntersectingAppendNonIntersecting() throws DomainException, SegmentCategoryNotFoundException {
+        givenAGraphWithThisManySegmentsWhereAtLeastOneIntersects(2, false);
+        whenTheGraphModelIsCreated();
+        whenASegmentIsAppendedWithLengthAndItIntersects(1, false);
+        thenItWillContainThisManySegments(3);
+        thenItWillHaveLength(3);
+        thenItIsCollated(false);
+        thenItIntersects(false);
         thenTheMetaDataIsAvailable();
     }
 
     @Test
     public void testAppendLongSegment() throws DomainException, SegmentCategoryNotFoundException {
-        givenAGraphWithThisManySegments(2);
+        givenAGraphWithThisManySegmentsWhereAtLeastOneIntersects(2, false);
         whenTheGraphModelIsCreated();
-        whenASegmentIsAppendedWithLength(2);
+        whenASegmentIsAppendedWithLengthAndItIntersects(2, true);
         thenItWillContainThisManySegments(3);
         thenItWillHaveLength(4);
         thenItIsCollated(false);
+        thenItIntersects(true);
         thenTheMetaDataIsAvailable();
     }
 
-    private void whenASegmentIsAppendedWithLength(final int length) {
-        when(this.mockAppendedGraphSegment.getLength()).thenReturn(length);
-        this.underTest.append(this.mockAppendedGraphSegment);
+    private void givenAGraphWithThisManySegmentsWhereAtLeastOneIntersects(final int count, final boolean intersects)
+            throws SegmentCategoryNotFoundException {
+        final List<GraphSegment> graphSegments = new ArrayList<>();
+        for (int index = 0; index < count; index++) {
+            graphSegments.add(this.mockGraphSegment);
+        }
+        when(this.mockGraphSegment.isIntersecting()).thenReturn(intersects);
+        when(this.segmentationService.segment(this.mockGraphData)).thenReturn(graphSegments);
+        when(this.gapService.addGapInfo(graphSegments)).thenReturn(graphSegments);
     }
 
-    private void thenItWillHaveLength(final int i) {
-        assertEquals(i, this.underTest.getLength());
+    private void whenASegmentIsAppendedWithLengthAndItIntersects(final int length, final boolean intersects) {
+        when(this.mockAppendedGraphSegment.getLength()).thenReturn(length);
+        when(this.mockAppendedGraphSegment.isIntersecting()).thenReturn(intersects);
+        this.underTest.append(this.mockAppendedGraphSegment);
     }
 
     private void whenTheGraphModelIsCreated() throws SegmentCategoryNotFoundException {
         this.underTest.setGraphData(this.mockGraphData);
+    }
+
+    private void thenItWillHaveLength(final int i) {
+        assertEquals(i, this.underTest.getLength());
     }
 
     private void thenItWillContainThisManySegments(final int i) {
@@ -121,6 +173,10 @@ public class GraphModelImplTest extends AbstractTest {
 
     private void thenItIsCollated(final boolean collated) {
         assertEquals(collated, this.underTest.isCollated());
+    }
+
+    private void thenItIntersects(final boolean intersects) {
+        assertEquals(intersects, this.underTest.isIntersecting());
     }
 
     private void thenTheMetaDataIsAvailable() {

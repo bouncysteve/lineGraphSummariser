@@ -45,11 +45,16 @@ public class GraphModelImpl implements GraphModel {
 
     @Override
     public void setGraphData(final GraphData graphData) throws SegmentCategoryNotFoundException {
-        final List<GraphSegment> segments = this.segmentationService.segment(graphData);
-        this.graphSegments = this.gapService.addGapInfo(segments);
+        this.graphSegments = this.gapService.addGapInfo(this.segmentationService.segment(graphData));
         this.labels = graphData.getHeader();
         this.title = graphData.getTitle();
         this.units = graphData.getUnits();
+        for (final GraphSegment graphSegment : this.graphSegments) {
+            if (graphSegment.isIntersecting()) {
+                this.intersects = true;
+                break;
+            }
+        }
     }
 
     @Override
@@ -117,6 +122,9 @@ public class GraphModelImpl implements GraphModel {
 
     @Override
     public void append(final GraphSegment segment) {
+        if (!this.intersects && segment.isIntersecting()) {
+            this.intersects = true;
+        }
         this.graphSegments.add(segment);
     }
 
