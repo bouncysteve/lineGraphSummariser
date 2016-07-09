@@ -14,6 +14,12 @@ import uk.co.lgs.model.segment.graph.GraphSegmentImpl;
 import uk.co.lgs.model.segment.series.SeriesSegment;
 import uk.co.lgs.model.segment.series.SeriesSegmentImpl;
 
+/**
+ * I am responsible for converting graph data into segments.
+ * 
+ * @author bouncysteve
+ *
+ */
 @Component
 public class SegmentationServiceImpl implements SegmentationService {
 
