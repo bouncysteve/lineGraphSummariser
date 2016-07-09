@@ -19,13 +19,13 @@ public class GapAndGradientCollatorImpl extends AbstractModelCollatorImpl implem
 
     @Override
     protected boolean shouldCollate(GraphSegment segmentBeingBuilt, GraphSegment segment) {
-        GapTrend gt1 = segmentBeingBuilt.getGraphSegmentTrend();
-        GapTrend gt2 = segment.getGraphSegmentTrend();
+        GapTrend gt1 = segmentBeingBuilt.getGapTrend();
+        GapTrend gt2 = segment.getGapTrend();
         GraphSegmentGradient gsg1 = segmentBeingBuilt.getGraphSegmentGradientCategory();
         GraphSegmentGradient gsg2 = segment.getGraphSegmentGradientCategory();
         
 
-        return segmentBeingBuilt.getGraphSegmentTrend().equals(segment.getGraphSegmentTrend())
+        return segmentBeingBuilt.getGapTrend().equals(segment.getGapTrend())
                 && segmentBeingBuilt.getGraphSegmentGradientCategory().equals(segment.getGraphSegmentGradientCategory())
                 && !segmentBeingBuilt.isIntersecting()
                 && !segment.isIntersecting();

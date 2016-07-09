@@ -237,7 +237,7 @@ public class OldGraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentT
         when(this.graphSegment.getSecondSeriesTrend()).thenReturn(secondSeriesTrend);
         when(this.secondSeriesSegment.getGradientType()).thenReturn(secondSeriesTrend);
 
-        when(this.graphSegment.getGraphSegmentTrend()).thenReturn(trendFromValues(firstSeriesStartValue,
+        when(this.graphSegment.getGapTrend()).thenReturn(trendFromValues(firstSeriesStartValue,
                 firstSeriesEndValue, secondSeriesStartValue, secondSeriesEndValue));
 
     }

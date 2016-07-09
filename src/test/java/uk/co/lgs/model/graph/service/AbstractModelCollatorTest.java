@@ -50,7 +50,7 @@ public abstract class AbstractModelCollatorTest extends AbstractTest {
         when(collatedSegment.getGraphSegmentGradientCategory()).thenReturn(categories.get(0));
         when(collatedSegment.getStartTime()).thenReturn(DUMMY_START_TIME);
         when(collatedSegment.getEndTime()).thenReturn(COLLATED_END_TIME);
-        when(collatedSegment.getGraphSegmentTrend()).thenReturn(gapTrendList.get(0));
+        when(collatedSegment.getGapTrend()).thenReturn(gapTrendList.get(0));
         for (GraphSegmentGradient category : categories) {
             GraphSegment segment = mock(GraphSegmentImpl.class);
             when(segment.getGraphSegmentGradientCategory()).thenReturn(category);
@@ -63,7 +63,7 @@ public abstract class AbstractModelCollatorTest extends AbstractTest {
 
             when(segment.append(any(GraphSegment.class))).thenReturn(collatedSegment);
             if (null != gapTrendList) {
-                when(segment.getGraphSegmentTrend()).thenReturn(gapTrendList.get(index++));
+                when(segment.getGapTrend()).thenReturn(gapTrendList.get(index++));
             }
             segments.add(segment);
         }
@@ -98,7 +98,7 @@ public abstract class AbstractModelCollatorTest extends AbstractTest {
     protected void thenTheModelHasGaps(List<GapTrend> gapTrends) {
         List<GraphSegment> segments = this.outputGraphModel.getGraphSegments();
         for (int i = 0; i < gapTrends.size(); i++) {
-            assertEquals(gapTrends.get(i), segments.get(i).getGraphSegmentTrend());
+            assertEquals(gapTrends.get(i), segments.get(i).getGapTrend());
         }
     }
 

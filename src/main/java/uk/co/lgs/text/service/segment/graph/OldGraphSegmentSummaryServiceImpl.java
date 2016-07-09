@@ -110,7 +110,7 @@ public class OldGraphSegmentSummaryServiceImpl {
         // TODO: consider intersection ("crosses")
         final SPhraseSpec gapPhrase = this.nlgFactory.createClause();
         final NPPhraseSpec subject = this.nlgFactory.createNounPhrase("the difference between the two");
-        final VPPhraseSpec verb = this.nlgFactory.createVerbPhrase(getVerbForGap(graphSegment.getGraphSegmentTrend()));
+        final VPPhraseSpec verb = this.nlgFactory.createVerbPhrase(getVerbForGap(graphSegment.getGapTrend()));
         gapPhrase.setVerb(verb);
         gapPhrase.setSubject(subject);
         return gapPhrase;

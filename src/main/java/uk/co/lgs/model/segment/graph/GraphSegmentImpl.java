@@ -110,7 +110,7 @@ public class GraphSegmentImpl implements GraphSegment {
             sb.append("\t");
         }
 
-        sb.append(this.getGraphSegmentTrend() + "\t");
+        sb.append(this.getGapTrend() + "\t");
 
         String initialHigherSeries = "==";
         if (this.firstSeriesSegment.equals(this.getHigherSeriesAtStart())) {
@@ -251,7 +251,7 @@ public class GraphSegmentImpl implements GraphSegment {
     }
 
     @Override
-    public GapTrend getGraphSegmentTrend() {
+    public GapTrend getGapTrend() {
         return this.gapTrend;
     }
 

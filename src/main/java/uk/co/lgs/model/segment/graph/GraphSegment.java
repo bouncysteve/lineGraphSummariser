@@ -81,7 +81,7 @@ public interface GraphSegment {
     /**
      * @return whether the two series are converging, diverging or neither.
      */
-    GapTrend getGraphSegmentTrend();
+    GapTrend getGapTrend();
 
     /**
      *
