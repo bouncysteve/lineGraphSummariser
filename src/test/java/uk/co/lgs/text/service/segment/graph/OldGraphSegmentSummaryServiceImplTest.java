@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -30,14 +31,15 @@ import uk.co.lgs.text.service.synonym.Constants;
 import uk.co.lgs.text.service.synonym.SynonymService;
 import uk.co.lgs.text.service.value.ValueService;
 
-public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest {
+@Ignore
+public class OldGraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest {
 
     private static final String FIRST_SERIES_LABEL = "Sales of soap";
     private static final String SECOND_SERIES_LABEL = "Price of pyjamas";
 
     private static final String START_TIME = "2012";
     private static final String END_TIME = "2013";
-    private static final Logger LOG = LoggerFactory.getLogger(GraphSegmentSummaryServiceImplTest.class);
+    private static final Logger LOG = LoggerFactory.getLogger(OldGraphSegmentSummaryServiceImplTest.class);
 
     private static final Lexicon LEXICON = Lexicon.getDefaultLexicon();
     private static final Realiser REALISER = new Realiser(LEXICON);
@@ -54,7 +56,7 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
     private ValueService valueService;
 
     @InjectMocks
-    private final GraphSegmentSummaryService underTest = new GraphSegmentSummaryServiceImpl();
+    private final OldGraphSegmentSummaryServiceImpl underTest = new OldGraphSegmentSummaryServiceImpl();
 
     private DocumentElement summary;
     private String summaryText;
