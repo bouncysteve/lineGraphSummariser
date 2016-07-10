@@ -8,6 +8,8 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.slf4j.Logger;
@@ -18,8 +20,10 @@ import simplenlg.framework.NLGFactory;
 import simplenlg.lexicon.Lexicon;
 import simplenlg.phrasespec.NPPhraseSpec;
 import simplenlg.realiser.english.Realiser;
+import uk.co.lgs.model.gradient.GradientType;
 import uk.co.lgs.model.graph.GraphModel;
 import uk.co.lgs.model.segment.graph.GraphSegment;
+import uk.co.lgs.model.segment.graph.category.GapTrend;
 import uk.co.lgs.model.segment.series.SeriesSegment;
 import uk.co.lgs.segment.graph.AbstractGraphSegmentTest;
 import uk.co.lgs.text.service.label.LabelService;
@@ -30,12 +34,17 @@ import uk.co.lgs.text.service.value.ValueService;
 public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest {
     private static final Lexicon LEXICON = Lexicon.getDefaultLexicon();
     private static final Realiser REALISER = new Realiser(LEXICON);
+    private static final String START = "March 2016";
     private static final String END = "April 2016";
     private static final String FIRST_SERIES_LABEL = "Cost of sunglasses";
     private static final String SECOND_SERIES_LABEL = "Sales of doughnuts";
     private static final Logger LOG = LoggerFactory.getLogger(GraphSegmentSummaryServiceImplTest.class);
+
     private String summaryText;
     private DocumentElement summary;
+
+    @Captor
+    private ArgumentCaptor<String> stringCaptor;
 
     @Mock
     private LabelService labelService;
@@ -43,9 +52,6 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
     private SynonymService synonymService;
     @Mock
     private ValueService valueService;
-
-    @InjectMocks
-    private GraphSegmentSummaryService graphSegmentSummaryService;
 
     @Mock
     private GraphModel model;
@@ -58,6 +64,9 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
     @Mock
     private GraphSegment graphSegment;
 
+    @InjectMocks
+    private GraphSegmentSummaryServiceImpl graphSegmentSummaryService;
+
     private List<NPPhraseSpec> labels;
     private final NLGFactory nlgFactory = new NLGFactory(LEXICON);
 
@@ -65,6 +74,7 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
     public void beforeEachTest() {
         final NPPhraseSpec firstSeriesLabel = this.nlgFactory.createNounPhrase(FIRST_SERIES_LABEL);
         final NPPhraseSpec secondSeriesLabel = this.nlgFactory.createNounPhrase(SECOND_SERIES_LABEL);
+        secondSeriesLabel.setPlural(true);
         this.labels = Arrays.asList(firstSeriesLabel, secondSeriesLabel);
 
         when(this.labelService.getLabelsForCommonUse(this.graphSegment)).thenReturn(this.labels);
@@ -75,7 +85,7 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
 
         when(this.firstSeriesSegment.getLabel()).thenReturn(FIRST_SERIES_LABEL);
         when(this.secondSeriesSegment.getLabel()).thenReturn(SECOND_SERIES_LABEL);
-
+        when(this.model.getGraphSegments()).thenReturn(Arrays.asList(this.graphSegment));
         prepareGraphSegment();
         prepareSynonymService();
     }
@@ -86,9 +96,8 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
      * its maximum value].
      */
     @Test
-    public void testOppositeTrendsDiverging() {
-        givenFirstSeriesWithValues(50, 70);
-        givenSecondSeriesWithValues(30, -100);
+    public void testOppositeTrendsDiverging01() {
+        givenSeriesValues(50, 100, 20, 10);
         whenTheSegmentIsSummarised();
         thenTheSummaryIs("Until " + END + " " + FIRST_SERIES_LABEL + " rises but " + SECOND_SERIES_LABEL
                 + " fall, so the gap between them increases.");
@@ -101,7 +110,7 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
      * order of series}
      */
     @Test
-    public void testOppositeTrendsDivergingToGlobalMaximumGap() { //
+    public void testOppositeTrendsDivergingToGlobalMaximumGap02() { //
     }
 
     /**
@@ -111,7 +120,7 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
      * order of series}
      */
     @Test
-    public void testOppositeTrendsDivergingToGlobalMaximumGapFirstTimeMentioned() {
+    public void testOppositeTrendsDivergingToGlobalMaximumGapFirstTimeMentioned03() {
         //
     }
 
@@ -122,7 +131,7 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
      * intersections}
      */
     @Test
-    public void testOppositeTrendsConverging() {
+    public void testOppositeTrendsConverging04() {
         //
     }
 
@@ -133,7 +142,7 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
      * intersections}
      */
     @Test
-    public void testOppositeTrendsConvergingToGlobalMinimumGap() { //
+    public void testOppositeTrendsConvergingToGlobalMinimumGap05() { //
     }
 
     /**
@@ -143,17 +152,19 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
      * intersections}
      */
     @Test
-    public void testOppositeTrendsConvergingToGlobalMinimumGapFirstTimeMentioned() {
+    public void testOppositeTrendsConvergingToGlobalMinimumGapFirstTimeMentioned06() {
         //
     }
 
     /**
-     * Until <END><seriesA> rises to value [conjunction] <seriesB> falls to the
-     * same value.
+     * Until <END><higher series> falls [conjunction] <lower series> rises, [so]
+     * the gap between them decreases to <value>,(if first time mentioned:) its
+     * minimum value] {NB. Do not mention minimum gap if there are any
+     * intersections}
      */
     @Test
-    public void testOppositeTrendsConvergingToIntersectionAtEndOfSection() {
-
+    public void testOppositeTrendsConvergingToGlobalMinimumGapFirstTimeMentionedGraphHasIntersection07() {
+        //
     }
 
     /**
@@ -162,7 +173,16 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
      * <otherSeries> has <value>
      */
     @Test
-    public void testOppositeTrendsConvergingToIntersectionDuringSection() {
+    public void testOppositeTrendsConvergingToIntersectionDuringSection08() {
+
+    }
+
+    /**
+     * Until <END><seriesA> rises to value [conjunction] <seriesB> falls to the
+     * same value.
+     */
+    @Test
+    public void testOppositeTrendsConvergingToIntersectionAtEndOfSection09() {
 
     }
 
@@ -175,7 +195,7 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
      * decreases.
      */
     @Test
-    public void testBothFallingConverging() {
+    public void testBothFallingConverging10a() {
         //
 
     }
@@ -186,7 +206,7 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
      * decreases to <value>
      */
     @Test
-    public void testBothFallingConvergingToGlobalMinimumGap() {
+    public void testBothFallingConvergingToGlobalMinimumGap11a() {
         //
 
     }
@@ -198,7 +218,7 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
      * if there are any intersections in the graph}
      */
     @Test
-    public void testBothFallingConvergingToGlobalMinimumGapFirstTimeMentioned() {
+    public void testBothFallingConvergingToGlobalMinimumGapFirstTimeMentioned12a() {
         //
 
     }
@@ -209,7 +229,7 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
      * decreases to <value>.
      */
     @Test
-    public void testBothFallingConvergingToGlobalMinimumGapWhenGraphHasIntersections() {
+    public void testBothFallingConvergingToGlobalMinimumGapWhenGraphHasIntersections13a() {
         //
 
     }
@@ -220,7 +240,7 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
      * increases.
      */
     @Test
-    public void testBothFallingDiverging() {
+    public void testBothFallingDiverging14a() {
         //
 
     }
@@ -231,7 +251,7 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
      * increases to <value>.
      */
     @Test
-    public void testBothFallingDivergingToGlobalMinimumGap() {
+    public void testBothFallingDivergingToGlobalMaximumGap15a() {
 
     }
 
@@ -241,7 +261,7 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
      * increases to <value>, its maximum value.
      */
     @Test
-    public void testBothFallingDivergingToGlobalMinimumGapFirstTimeMentioned() {
+    public void testBothFallingDivergingToGlobalMaximumGapFirstTimeMentioned16a() {
         //
 
     }
@@ -251,7 +271,7 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
      * rate], consequently the gap between them remains <value>.
      */
     @Test
-    public void testBothFallingConstant() {
+    public void testBothFallingConstant17a() {
         //
     }
 
@@ -259,7 +279,7 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
      * Both <seriesA> and <SeriesB> fall to <value> at <END>.
      */
     @Test
-    public void testBothFallingConvergingToIntersectionAtEndOfSection() {
+    public void testBothFallingConvergingToIntersectionAtEndOfSection18a() {
         //
     }
 
@@ -270,7 +290,7 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
      * <value>
      */
     @Test
-    public void testBothFallingConvergingToIntersectionDuringSection() {
+    public void testBothFallingConvergingToIntersectionDuringSection19a() {
 
     }
 
@@ -284,7 +304,7 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
      * decreases.
      */
     @Test
-    public void testBothRisingConverging() {
+    public void testBothRisingConverging10b() {
         //
 
     }
@@ -295,7 +315,7 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
      * decreases to <value>
      */
     @Test
-    public void testBothRisingConvergingToGlobalMinimumGap() {
+    public void testBothRisingConvergingToGlobalMinimumGap11b() {
         //
 
     }
@@ -307,7 +327,7 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
      * if there are any intersections in the graph}
      */
     @Test
-    public void testBothRisingConvergingToGlobalMinimumGapFirstTimeMentioned() {
+    public void testBothRisingConvergingToGlobalMinimumGapFirstTimeMentioned12b() {
         //
 
     }
@@ -318,7 +338,7 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
      * decreases to <value>.
      */
     @Test
-    public void testBothRisingConvergingToGlobalMinimumGapWhenGraphHasIntersections() {
+    public void testBothRisingConvergingToGlobalMinimumGapWhenGraphHasIntersections13b() {
         //
 
     }
@@ -329,7 +349,7 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
      * increases.
      */
     @Test
-    public void testBothRisingDiverging() {
+    public void testBothRisingDiverging14b() {
         //
 
     }
@@ -340,7 +360,7 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
      * increases to <value>.
      */
     @Test
-    public void testBothRisingDivergingToGlobalMinimumGap() {
+    public void testBothRisingDivergingToGlobalMaximumGap15b() {
 
     }
 
@@ -350,7 +370,7 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
      * increases to <value>, its maximum value.
      */
     @Test
-    public void testBothRisingDivergingToGlobalMinimumGapFirstTimeMentioned() {
+    public void testBothRisingDivergingToGlobalMaximumGapFirstTimeMentioned16b() {
         //
 
     }
@@ -360,7 +380,7 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
      * rate], consequently the gap between them remains <value>.
      */
     @Test
-    public void testBothRisingConstant() {
+    public void testBothRisingConstant17b() {
         //
     }
 
@@ -368,7 +388,7 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
      * Both <seriesA> and <SeriesB> rise to <value> at <END>.
      */
     @Test
-    public void testBothRisingConvergingToIntersectionAtEndOfSection() {
+    public void testBothRisingConvergingToIntersectionAtEndOfSection18b() {
         //
     }
 
@@ -379,7 +399,7 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
      * <value>
      */
     @Test
-    public void testBothRisingConvergingToIntersectionDuringSection() {
+    public void testBothRisingConvergingToIntersectionDuringSection19b() {
 
     }
 
@@ -389,21 +409,134 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
      * <END>, while <lowerSeriesAtEnd> has <value>.
      */
     @Test
-    public void testSectionWhereBothSeriesStartOnSameValue() {
+    public void testOppositeTrendsDivergingFromSameValue20() {
 
     }
 
-    private void givenFirstSeriesWithValues(final double startValue, final double endValue) {
-        when(this.firstSeriesSegment.getStartValue()).thenReturn(startValue);
-        when(this.firstSeriesSegment.getEndValue()).thenReturn(endValue);
+    @Test
+    public void testOppositeTrendsDivergingFromSameValueToGlobalMaximumGap21() {
+
     }
 
-    private void givenSecondSeriesWithValues(final double startValue, final double endValue) {
-        when(this.secondSeriesSegment.getStartValue()).thenReturn(startValue);
-        when(this.secondSeriesSegment.getEndValue()).thenReturn(endValue);
+    @Test
+    public void testOppositeTrendsDivergingFromSameValueToGlobalMaximumGapFirstTimeMentioned22() {
+
+    }
+
+    @Test
+    public void testBothFallingDivergingFromSameValue23a() {
+        //
+
+    }
+
+    @Test
+    public void testBothFallingDivergingToGlobalMaximumGapFromSameValue24a() {
+
+    }
+
+    @Test
+    public void testBothFallingDivergingToGlobalMaximumGapFromSameValueFirstTimeMentioned25a() {
+        //
+
+    }
+
+    @Test
+    public void testBothFallingConstantGapFromSameValue26a() {
+
+    }
+
+    @Test
+    public void testBothRisingDivergingFromSameValue23b() {
+        //
+
+    }
+
+    @Test
+    public void testBothRisingDivergingToGlobalMaximumGapFromSameValue24b() {
+
+    }
+
+    @Test
+    public void testBothRisingDivergingToGlobalMaximumGapFromSameValueFirstTimeMentioned25b() {
+        //
+
+    }
+
+    @Test
+    public void testBothRisingConstantGapFromSameValue26b() {
+
+    }
+
+    private void givenSeriesValues(final double firstSeriesStartValue, final double firstSeriesEndValue,
+            final double secondSeriesStartValue, final double secondSeriesEndValue) {
+        when(this.firstSeriesSegment.getStartValue()).thenReturn(firstSeriesStartValue);
+        when(this.firstSeriesSegment.getEndValue()).thenReturn(firstSeriesEndValue);
+        when(this.secondSeriesSegment.getStartValue()).thenReturn(secondSeriesStartValue);
+        when(this.secondSeriesSegment.getEndValue()).thenReturn(secondSeriesEndValue);
+        when(this.graphSegment.getHigherSeriesAtStart())
+                .thenReturn(higherSeriesOf(firstSeriesStartValue, secondSeriesStartValue));
+        when(this.graphSegment.getHigherSeriesAtEnd())
+                .thenReturn(higherSeriesOf(firstSeriesEndValue, secondSeriesEndValue));
+        final GradientType firstSeriesTrend = trendFromValues(firstSeriesStartValue, firstSeriesEndValue);
+
+        when(this.graphSegment.getFirstSeriesTrend()).thenReturn(firstSeriesTrend);
+        when(this.firstSeriesSegment.getGradientType()).thenReturn(firstSeriesTrend);
+
+        final GradientType secondSeriesTrend = trendFromValues(secondSeriesStartValue, secondSeriesEndValue);
+        when(this.graphSegment.getSecondSeriesTrend()).thenReturn(secondSeriesTrend);
+        when(this.secondSeriesSegment.getGradientType()).thenReturn(secondSeriesTrend);
+
+        when(this.graphSegment.getGapTrend()).thenReturn(trendFromValues(firstSeriesStartValue, firstSeriesEndValue,
+                secondSeriesStartValue, secondSeriesEndValue));
+    }
+
+    private SeriesSegment higherSeriesOf(final double firstSeriesValue, final double secondSeriesValue) {
+        SeriesSegment seriesSegment = null;
+        if (firstSeriesValue > secondSeriesValue) {
+            seriesSegment = this.firstSeriesSegment;
+        } else if (secondSeriesValue > firstSeriesValue) {
+            seriesSegment = this.secondSeriesSegment;
+        }
+        return seriesSegment;
+    }
+
+    private GradientType trendFromValues(final double startValue, final double endValue) {
+        GradientType type = GradientType.ZERO;
+        final double valueDiff = endValue - startValue;
+        if (valueDiff > 0) {
+            type = GradientType.POSITIVE;
+        } else if (valueDiff < 0) {
+            type = GradientType.NEGATIVE;
+        }
+        return type;
+    }
+
+    /**
+     * NB This is a naive reading of gradient trends, and does not yet consider
+     * intersection. When considering intersection, care needs to be taken about
+     * whether the intersection is at the start, end, or within the segment.
+     *
+     * @param firstSeriesStartValue
+     * @param firstSeriesEndValue
+     * @param secondSeriesStartValue
+     * @param secondSeriesEndValue
+     * @return
+     */
+    private GapTrend trendFromValues(final double firstSeriesStartValue, final double firstSeriesEndValue,
+            final double secondSeriesStartValue, final double secondSeriesEndValue) {
+        GapTrend gapTrend = GapTrend.PARALLEL;
+        final double differenceAtStart = Math.abs(secondSeriesStartValue - firstSeriesStartValue);
+        final double differenceAtEnd = Math.abs(secondSeriesEndValue - firstSeriesEndValue);
+        if (differenceAtStart > differenceAtEnd) {
+            gapTrend = GapTrend.CONVERGING;
+        } else if (differenceAtStart < differenceAtEnd) {
+            gapTrend = GapTrend.DIVERGING;
+        }
+        return gapTrend;
     }
 
     private void whenTheSegmentIsSummarised() {
+
         this.summary = this.graphSegmentSummaryService.getSegmentSummaries(this.model).get(0);
         this.summaryText = REALISER.realise(this.summary).toString();
         LOG.debug(this.summaryText);
@@ -415,6 +548,7 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
         when(this.graphSegment.indexOf(this.firstSeriesSegment)).thenReturn(0);
         when(this.graphSegment.getSeriesSegment(1)).thenReturn(this.secondSeriesSegment);
         when(this.graphSegment.indexOf(this.secondSeriesSegment)).thenReturn(1);
+        when(this.graphSegment.getStartTime()).thenReturn(START);
         when(this.graphSegment.getEndTime()).thenReturn(END);
     }
 
@@ -425,6 +559,10 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
         when(this.synonymService.getSynonym(Constants.CONVERGE)).thenReturn("decrease");
         when(this.synonymService.getSynonym(Constants.DIVERGE)).thenReturn("increase");
         when(this.synonymService.getSynonym(Constants.PARALLEL)).thenReturn("stay the same");
+        when(this.synonymService.getSynonym(Constants.AT)).thenReturn("at");
+        when(this.synonymService.getSynonym(Constants.UNTIL)).thenReturn("until");
+        when(this.synonymService.getSynonym(Constants.BUT)).thenReturn("but");
+
     }
 
     private void thenTheSummaryIs(final String string) {
