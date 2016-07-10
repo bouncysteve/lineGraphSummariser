@@ -71,8 +71,7 @@ public class Controller {
             LOG.info(graphData.toString());
 
             // *************Model ***************************//
-            final GraphModel model = new GraphModelImpl();
-            model.setGraphData(graphData);
+            final GraphModel model = new GraphModelImpl(graphData);
             LOG.info(model.toString());
             final GraphSummaryService graphSummariser = context.getBean(GraphSummaryService.class);
             final String summary = graphSummariser.getSummary(model);
