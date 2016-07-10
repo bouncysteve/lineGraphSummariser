@@ -9,13 +9,12 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
 import uk.co.lgs.domain.exception.DomainException;
 import uk.co.lgs.domain.graph.GraphData;
-import uk.co.lgs.model.graph.service.GapService;
-import uk.co.lgs.model.graph.service.SegmentationService;
+import uk.co.lgs.domain.record.Record;
+import uk.co.lgs.domain.record.RecordImpl;
 import uk.co.lgs.model.segment.exception.SegmentCategoryNotFoundException;
 import uk.co.lgs.model.segment.graph.GraphSegment;
 import uk.co.lgs.test.AbstractTest;
@@ -27,144 +26,72 @@ import uk.co.lgs.test.AbstractTest;
  *
  */
 public class GraphModelImplTest extends AbstractTest {
-
-    private static final String TITLE = "A Lovely Graph";
-
-    private static final List<String> UNITS = Arrays.asList("", "$", "cm");
-
-    private static final List<String> LABELS = Arrays.asList("time", "series1", "series2");
-
+    // FIXME: this is not a unit test as real gapService and segmentationService
+    // are used!!!!!!
     @Mock
     private GraphData mockGraphData;
 
     @Mock
     private GraphSegment mockGraphSegment;
 
-    @Mock
-    private GapService gapService;
+    private List<Record> records;
 
-    @Mock
-    private SegmentationService segmentationService;
-
-    @InjectMocks
-    private GraphModelImpl underTest;
-
-    @Mock
-    private GraphSegment mockAppendedGraphSegment;
+    private GraphModel underTest;
 
     @Before
-    public void beforeEachTest() throws SegmentCategoryNotFoundException {
-        when(this.mockGraphSegment.getLength()).thenReturn(1);
-        when(this.mockGraphData.getHeader()).thenReturn(LABELS);
-        when(this.mockGraphData.getTitle()).thenReturn(TITLE);
-        when(this.mockGraphData.getUnits()).thenReturn(UNITS);
+    public void setup() {
+        this.records = new ArrayList<Record>();
+        when(this.mockGraphData.getHeader()).thenReturn(Arrays.asList(new String[] { "time", "series1", "series2" }));
     }
 
     @Test
     public void test() throws DomainException, SegmentCategoryNotFoundException {
-        givenAGraphWithThisManySegmentsWhereAtLeastOneIntersects(2, false);
+        givenAGraphWithTwoSeriesAndRecords(3);
         whenTheGraphModelIsCreated();
         thenItWillContainThisManySegments(2);
         thenItWillHaveLength(2);
         thenItIsCollated(false);
-        thenItIntersects(false);
-        thenTheMetaDataIsAvailable();
     }
 
     @Test
-    public void testIntersects() throws DomainException, SegmentCategoryNotFoundException {
-        givenAGraphWithThisManySegmentsWhereAtLeastOneIntersects(2, true);
+    public void testAppend() throws DomainException, SegmentCategoryNotFoundException {
+        givenAGraphWithTwoSeriesAndRecords(3);
         whenTheGraphModelIsCreated();
-        thenItWillContainThisManySegments(2);
-        thenItWillHaveLength(2);
-        thenItIsCollated(false);
-        thenItIntersects(true);
-        thenTheMetaDataIsAvailable();
-    }
-
-    @Test
-    public void testIntersectingAppendNonIntersecting() throws DomainException, SegmentCategoryNotFoundException {
-        givenAGraphWithThisManySegmentsWhereAtLeastOneIntersects(2, true);
-        whenTheGraphModelIsCreated();
-        whenASegmentIsAppendedWithLengthAndItIntersects(1, false);
+        whenASegmentIsAppendedWithLength(1);
         thenItWillContainThisManySegments(3);
         thenItWillHaveLength(3);
         thenItIsCollated(false);
-        thenItIntersects(true);
-        thenTheMetaDataIsAvailable();
-    }
-
-    @Test
-    public void testIntersectingAppendIntersecting() throws DomainException, SegmentCategoryNotFoundException {
-        givenAGraphWithThisManySegmentsWhereAtLeastOneIntersects(2, true);
-        whenTheGraphModelIsCreated();
-        whenASegmentIsAppendedWithLengthAndItIntersects(1, true);
-        thenItWillContainThisManySegments(3);
-        thenItWillHaveLength(3);
-        thenItIsCollated(false);
-        thenItIntersects(true);
-        thenTheMetaDataIsAvailable();
-    }
-
-    @Test
-    public void testNonIntersectingAppendIntersecting() throws DomainException, SegmentCategoryNotFoundException {
-        givenAGraphWithThisManySegmentsWhereAtLeastOneIntersects(2, false);
-        whenTheGraphModelIsCreated();
-        whenASegmentIsAppendedWithLengthAndItIntersects(1, true);
-        thenItWillContainThisManySegments(3);
-        thenItWillHaveLength(3);
-        thenItIsCollated(false);
-        thenItIntersects(true);
-        thenTheMetaDataIsAvailable();
-    }
-
-    @Test
-    public void testNonIntersectingAppendNonIntersecting() throws DomainException, SegmentCategoryNotFoundException {
-        givenAGraphWithThisManySegmentsWhereAtLeastOneIntersects(2, false);
-        whenTheGraphModelIsCreated();
-        whenASegmentIsAppendedWithLengthAndItIntersects(1, false);
-        thenItWillContainThisManySegments(3);
-        thenItWillHaveLength(3);
-        thenItIsCollated(false);
-        thenItIntersects(false);
-        thenTheMetaDataIsAvailable();
     }
 
     @Test
     public void testAppendLongSegment() throws DomainException, SegmentCategoryNotFoundException {
-        givenAGraphWithThisManySegmentsWhereAtLeastOneIntersects(2, false);
+        givenAGraphWithTwoSeriesAndRecords(3);
         whenTheGraphModelIsCreated();
-        whenASegmentIsAppendedWithLengthAndItIntersects(2, true);
+        whenASegmentIsAppendedWithLength(2);
         thenItWillContainThisManySegments(3);
         thenItWillHaveLength(4);
         thenItIsCollated(false);
-        thenItIntersects(true);
-        thenTheMetaDataIsAvailable();
     }
 
-    private void givenAGraphWithThisManySegmentsWhereAtLeastOneIntersects(final int count, final boolean intersects)
-            throws SegmentCategoryNotFoundException {
-        final List<GraphSegment> graphSegments = new ArrayList<>();
-        for (int index = 0; index < count; index++) {
-            graphSegments.add(this.mockGraphSegment);
-        }
-        when(this.mockGraphSegment.isIntersecting()).thenReturn(intersects);
-        when(this.segmentationService.segment(this.mockGraphData)).thenReturn(graphSegments);
-        when(this.gapService.addGapInfo(graphSegments)).thenReturn(graphSegments);
-    }
-
-    private void whenASegmentIsAppendedWithLengthAndItIntersects(final int length, final boolean intersects) {
-        when(this.mockAppendedGraphSegment.getLength()).thenReturn(length);
-        when(this.mockAppendedGraphSegment.isIntersecting()).thenReturn(intersects);
-        this.underTest.append(this.mockAppendedGraphSegment);
-    }
-
-    private void whenTheGraphModelIsCreated() throws SegmentCategoryNotFoundException {
-        this.underTest.setGraphData(this.mockGraphData);
+    private void whenASegmentIsAppendedWithLength(final int length) {
+        when(this.mockGraphSegment.getLength()).thenReturn(length);
+        this.underTest.append(this.mockGraphSegment);
     }
 
     private void thenItWillHaveLength(final int i) {
         assertEquals(i, this.underTest.getLength());
+    }
+
+    private void givenAGraphWithTwoSeriesAndRecords(final int recordCount) throws DomainException {
+        for (int i = 0; i < recordCount; i++) {
+            this.records.add(new RecordImpl("Label" + i, Arrays.asList(1d * i, 2d * i)));
+        }
+    }
+
+    private void whenTheGraphModelIsCreated() throws SegmentCategoryNotFoundException {
+        when(this.mockGraphData.getRecords()).thenReturn(this.records);
+        when(this.mockGraphData.getUnits()).thenReturn(Arrays.asList("", "", ""));
+        this.underTest = new GraphModelImpl(this.mockGraphData);
     }
 
     private void thenItWillContainThisManySegments(final int i) {
@@ -173,16 +100,6 @@ public class GraphModelImplTest extends AbstractTest {
 
     private void thenItIsCollated(final boolean collated) {
         assertEquals(collated, this.underTest.isCollated());
-    }
-
-    private void thenItIntersects(final boolean intersects) {
-        assertEquals(intersects, this.underTest.isIntersecting());
-    }
-
-    private void thenTheMetaDataIsAvailable() {
-        assertEquals(LABELS, this.underTest.getLabels());
-        assertEquals(TITLE, this.underTest.getTitle());
-        assertEquals(UNITS, this.underTest.getUnits());
     }
 
 }

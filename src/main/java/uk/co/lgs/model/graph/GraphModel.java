@@ -2,8 +2,6 @@ package uk.co.lgs.model.graph;
 
 import java.util.List;
 
-import uk.co.lgs.domain.graph.GraphData;
-import uk.co.lgs.model.segment.exception.SegmentCategoryNotFoundException;
 import uk.co.lgs.model.segment.graph.GraphSegment;
 
 /**
@@ -99,12 +97,4 @@ public interface GraphModel {
      */
     void setIntersecting(boolean intersecting);
 
-    /**
-     * Converts graphData into a graphModel, by splitting the data into
-     * segments, and decorating the segments with gap information.
-     *
-     * @param graphData
-     * @throws SegmentCategoryNotFoundException
-     */
-    void setGraphData(GraphData graphData) throws SegmentCategoryNotFoundException;
 }
