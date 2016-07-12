@@ -26,6 +26,13 @@ public class Constants {
 
     public static final String BUT = "but";
 
+    public static final String SO = "so";
+
+    public static final String INCREASE = "increase";
+    public static final String DECREASE = "decrease";
+
+    public static final String STAY_SAME = "stay the same";
+
     private Constants() {
         // I should not be instantiated.
     }
