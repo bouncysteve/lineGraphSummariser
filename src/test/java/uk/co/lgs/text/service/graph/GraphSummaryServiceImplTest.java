@@ -101,7 +101,7 @@ public class GraphSummaryServiceImplTest extends AbstractTest {
         final NPPhraseSpec firstSeriesLabel = this.nlgFactory.createNounPhrase(SERIES1_LABEL);
         final NPPhraseSpec secondSeriesLabel = this.nlgFactory.createNounPhrase(SERIES2_LABEL);
         this.labels = Arrays.asList(firstSeriesLabel, secondSeriesLabel);
-        when(this.labelService.getLabelsForCommonUse(this.graphSegment)).thenReturn(this.labels);
+        when(this.labelService.getLabelsForCommonUse(this.mockGraphModel)).thenReturn(this.labels);
         when(this.labelService.getLabelForCommonUse(this.graphSegment, this.firstSeriesSegment))
                 .thenReturn(firstSeriesLabel);
         when(this.labelService.getLabelForCommonUse(this.graphSegment, this.secondSeriesSegment))

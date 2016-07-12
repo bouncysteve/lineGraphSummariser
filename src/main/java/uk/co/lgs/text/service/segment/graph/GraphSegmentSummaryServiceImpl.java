@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import simplenlg.features.Feature;
 import simplenlg.framework.CoordinatedPhraseElement;
 import simplenlg.framework.DocumentElement;
 import simplenlg.framework.NLGElement;
@@ -51,18 +52,14 @@ public class GraphSegmentSummaryServiceImpl implements GraphSegmentSummaryServic
 
     @Override
     public List<DocumentElement> getSegmentSummaries(final GraphModel model) {
-        List<NPPhraseSpec> labels = null;
+        REALISER.setCommaSepCuephrase(true);
+        final List<NPPhraseSpec> labels = this.labelService.getLabelsForCommonUse(model);
         final boolean intersectingGraph = model.isIntersecting();
 
         final List<DocumentElement> segmentSummaries = new ArrayList<>();
         boolean mentionedMaxGapYet = false;
         boolean mentionedMinGapYet = false;
         for (final GraphSegment graphSegment : model.getGraphSegments()) {
-            if (null == labels) {
-                // TODO: introduce a method which retrieves the labels from the
-                // model (they don't change per segment).
-                labels = this.labelService.getLabelsForCommonUse(graphSegment);
-            }
             segmentSummaries
                     .add(getSummary(graphSegment, intersectingGraph, mentionedMaxGapYet, mentionedMinGapYet, labels));
             if (!mentionedMaxGapYet && graphSegment.isGlobalMaximumGapAtSegmentEnd()) {
@@ -79,8 +76,9 @@ public class GraphSegmentSummaryServiceImpl implements GraphSegmentSummaryServic
             final boolean mentionedMaxGapYet, final boolean mentionedMinGapYet, final List<NPPhraseSpec> labels) {
         final DocumentElement summary = this.nlgFactory.createSentence();
 
-        summary.addComponent(getSameValueAtStartSentence(graphSegment, intersectingGraph, mentionedMaxGapYet,
-                mentionedMinGapYet, labels));
+        if (null == graphSegment.getHigherSeriesAtStart()) {
+            summary.addComponent(getSameValueAtStartSentence(graphSegment, labels));
+        }
 
         if (isSameTrends(graphSegment)) {
             summary.addComponent(getSameTrendsSummary(graphSegment, intersectingGraph, mentionedMaxGapYet,
@@ -94,8 +92,7 @@ public class GraphSegmentSummaryServiceImpl implements GraphSegmentSummaryServic
         return summary;
     }
 
-    private NLGElement getSameValueAtStartSentence(final GraphSegment graphSegment, final boolean intersectingGraph,
-            final boolean mentionedMaxGapYet, final boolean mentionedMinGapYet, final List<NPPhraseSpec> labels) {
+    private NLGElement getSameValueAtStartSentence(final GraphSegment graphSegment, final List<NPPhraseSpec> labels) {
         SPhraseSpec sameStartValuePhrase = null;
         if (graphSegment.getSeriesSegment(0).getStartValue() == graphSegment.getSeriesSegment(1).getStartValue()) {
             sameStartValuePhrase = this.nlgFactory.createClause();
@@ -127,19 +124,15 @@ public class GraphSegmentSummaryServiceImpl implements GraphSegmentSummaryServic
             final boolean mentionedMaxGapYet, final boolean mentionedMinGapYet, final List<NPPhraseSpec> labels) {
         NLGElement oppositeTrendsPhrase = null;
         switch (graphSegment.getGapTrend()) {
-        case CONVERGING:
-            oppositeTrendsPhrase = getOppositeTrendsConvergingPhrase(graphSegment, intersectingGraph,
-                    mentionedMaxGapYet, mentionedMinGapYet, labels);
-            break;
-        case DIVERGING:
-            oppositeTrendsPhrase = getOppositeTrendsDivergingPhrase(graphSegment, intersectingGraph, mentionedMaxGapYet,
-                    mentionedMinGapYet, labels);
-            break;
         case PARALLEL:
             oppositeTrendsPhrase = getOppositeTrendsConstantGapPhrase(graphSegment, intersectingGraph,
                     mentionedMaxGapYet, mentionedMinGapYet, labels);
             break;
+        case CONVERGING:
+        case DIVERGING:
         default:
+            oppositeTrendsPhrase = getOppositeTrendsNonConstantPhrase(graphSegment, intersectingGraph,
+                    mentionedMaxGapYet, mentionedMinGapYet, labels);
             break;
         }
         LOG.info(REALISER.realiseSentence(oppositeTrendsPhrase));
@@ -153,46 +146,105 @@ public class GraphSegmentSummaryServiceImpl implements GraphSegmentSummaryServic
         return null;
     }
 
-    private NLGElement getOppositeTrendsDivergingPhrase(final GraphSegment graphSegment,
+    private NLGElement getOppositeTrendsNonConstantPhrase(final GraphSegment graphSegment,
             final boolean intersectingGraph, final boolean mentionedMaxGapYet, final boolean mentionedMinGapYet,
             final List<NPPhraseSpec> labels) {
-        final int higherSeriesIndex = graphSegment.indexOf(graphSegment.getHigherSeriesAtStart());
-        final CoordinatedPhraseElement oppositeTrendPhrase = this.nlgFactory.createCoordinatedPhrase();
 
-        oppositeTrendPhrase.addPreModifier(getEndTimePhrase(Constants.UNTIL, graphSegment));
-        oppositeTrendPhrase
-                .addCoordinate(getTrendPhrase(graphSegment.getHigherSeriesAtStart(), labels.get(higherSeriesIndex)));
-        oppositeTrendPhrase.setConjunction(this.synonymService.getSynonym(Constants.BUT));
-        oppositeTrendPhrase.addCoordinate(getTrendPhrase(graphSegment.getSeriesSegment(1 - higherSeriesIndex),
-                labels.get(1 - higherSeriesIndex)));
-        // TODO: use simplenlg properly here
-        oppositeTrendPhrase.addPostModifier(", so the gap between them increases");
-        return oppositeTrendPhrase;
+        final CoordinatedPhraseElement riseAndFallPhrase = getOppositeTrendsPhrase(graphSegment, labels);
+        final CoordinatedPhraseElement parentPhrase = this.nlgFactory.createCoordinatedPhrase();
+        parentPhrase.addCoordinate(riseAndFallPhrase);
+        parentPhrase.setConjunction(this.synonymService.getSynonym(Constants.SO));
+        parentPhrase
+                .addCoordinate(getGapPhrase(graphSegment, intersectingGraph, mentionedMaxGapYet, mentionedMinGapYet));
+        return parentPhrase;
     }
 
-    private SPhraseSpec getTrendPhrase(final SeriesSegment seriesSegment, final NPPhraseSpec label) {
+    private CoordinatedPhraseElement getOppositeTrendsPhrase(final GraphSegment graphSegment,
+            final List<NPPhraseSpec> labels) {
+        final CoordinatedPhraseElement riseAndFallPhrase = this.nlgFactory.createCoordinatedPhrase();
+        SeriesSegment higherSeriesAtStart = graphSegment.getHigherSeriesAtStart();
+        if (null == higherSeriesAtStart) {
+            higherSeriesAtStart = graphSegment.getSeriesSegment(0);
+        }
+        final int higherSeriesIndex = graphSegment.indexOf(higherSeriesAtStart);
+        riseAndFallPhrase.addPreModifier(getEndTimePhrase(Constants.UNTIL, graphSegment));
+        riseAndFallPhrase.addCoordinate(getTrendPhrase(higherSeriesAtStart, labels.get(higherSeriesIndex)));
+        riseAndFallPhrase.setConjunction(this.synonymService.getSynonym(Constants.BUT));
+        riseAndFallPhrase.addCoordinate(getTrendPhrase(graphSegment.getSeriesSegment(1 - higherSeriesIndex),
+                labels.get(1 - higherSeriesIndex)));
+        // This in combination with REALISER.setCommaSepCuephrase(true) above,
+        // should add a comma here, but doesn't seem to.
+        riseAndFallPhrase.setFeature(Feature.CUE_PHRASE, true);
+        return riseAndFallPhrase;
+    }
+
+    // ** For the gap between two series. */
+    private SPhraseSpec getGapPhrase(final GraphSegment graphSegment, final boolean intersectingGraph,
+            final boolean mentionedMaxGapYet, final boolean mentionedMinGapYet) {
+        final SPhraseSpec gapPhrase = this.nlgFactory.createClause();
         String verbString = null;
-        switch (seriesSegment.getGradientType()) {
-        case NEGATIVE:
-            verbString = this.synonymService.getSynonym(Constants.FALL);
+        switch (graphSegment.getGapTrend()) {
+        case CONVERGING:
+            verbString = Constants.DECREASE;
             break;
-        case POSITIVE:
-            verbString = this.synonymService.getSynonym(Constants.RISE);
+        case DIVERGING:
+            verbString = Constants.INCREASE;
             break;
-        case ZERO:
-            verbString = this.synonymService.getSynonym(Constants.CONSTANT);
+        case PARALLEL:
+            verbString = Constants.STAY_SAME;
             break;
         default:
             break;
         }
-        return this.nlgFactory.createClause(label, verbString);
+
+        gapPhrase.setSubject("the gap between them");
+        gapPhrase.setVerb(this.synonymService.getSynonym(verbString));
+        if (graphSegment.isGlobalMaximumGapAtSegmentEnd()) {
+            gapPhrase
+                    .addComplement(this.nlgFactory.createPrepositionPhrase("to",
+                            this.valueService.formatValueWithUnits(graphSegment
+                                    .getGapBetweenSeriesEndValues(),
+                            graphSegment.getSeriesSegment(0).getUnits() + getMaximumValuePhrase(mentionedMaxGapYet))));
+        } else if (graphSegment.isGlobalMinimumGapAtSegmentEnd()) {
+            gapPhrase.addComplement(this.nlgFactory.createPrepositionPhrase("to",
+                    this.valueService.formatValueWithUnits(graphSegment.getGapBetweenSeriesEndValues(),
+                            graphSegment.getSeriesSegment(0).getUnits()
+                                    + getMinimumValuePhrase(mentionedMinGapYet, intersectingGraph, graphSegment))));
+        }
+        return gapPhrase;
     }
 
-    private NLGElement getOppositeTrendsConvergingPhrase(final GraphSegment graphSegment,
-            final boolean intersectingGraph, final boolean mentionedMaxGapYet, final boolean mentionedMinGapYet,
-            final List<NPPhraseSpec> labels) {
-        // TODO Auto-generated method stub
-        return null;
+    private String getMaximumValuePhrase(final boolean mentionedMaxGapYet) {
+        return mentionedMaxGapYet ? "" : "its maximum value";
+    }
+
+    private String getMinimumValuePhrase(final boolean mentionedMinGapYet, final boolean intersectingGraph,
+            final GraphSegment graphSegment) {
+        String minPhrase = "its minimum value";
+
+        if (mentionedMinGapYet || intersectingGraph) {
+            minPhrase = "";
+        }
+        return minPhrase;
+    }
+
+    /** For the trend of an individual series. */
+    private SPhraseSpec getTrendPhrase(final SeriesSegment seriesSegment, final NPPhraseSpec label) {
+        String verbString = null;
+        switch (seriesSegment.getGradientType()) {
+        case NEGATIVE:
+            verbString = Constants.FALL;
+            break;
+        case POSITIVE:
+            verbString = Constants.RISE;
+            break;
+        case ZERO:
+            verbString = Constants.CONSTANT;
+            break;
+        default:
+            break;
+        }
+        return this.nlgFactory.createClause(label, this.synonymService.getSynonym(verbString));
     }
 
     private PhraseElement getSameTrendsSummary(final GraphSegment graphSegment, final boolean intersectingGraph,
@@ -210,9 +262,8 @@ public class GraphSegmentSummaryServiceImpl implements GraphSegmentSummaryServic
     }
 
     private final PPPhraseSpec getEndTimePhrase(final String preposition, final GraphSegment graphSegment) {
-        final PPPhraseSpec p = this.nlgFactory.createPrepositionPhrase(this.synonymService.getSynonym(preposition),
+        return this.nlgFactory.createPrepositionPhrase(this.synonymService.getSynonym(preposition),
                 graphSegment.getEndTime());
-        return p;
     }
 
     private PPPhraseSpec getStartTimePhrase(final String preposition, final GraphSegment graphSegment) {

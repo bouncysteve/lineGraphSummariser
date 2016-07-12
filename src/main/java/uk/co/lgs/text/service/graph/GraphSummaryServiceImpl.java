@@ -103,7 +103,7 @@ public class GraphSummaryServiceImpl implements GraphSummaryService {
 
     private NLGElement describeStartOfGraph(final GraphModel model) {
         final GraphSegment firstSegment = model.getGraphSegments().get(0);
-        final List<NPPhraseSpec> labels = this.labelService.getLabelsForCommonUse(firstSegment);
+        final List<NPPhraseSpec> labels = this.labelService.getLabelsForCommonUse(model);
         final SeriesSegment higherSeries = firstSegment.getHigherSeriesAtStart();
         final SeriesSegment firstSeriesSegment = firstSegment.getSeriesSegment(0);
 

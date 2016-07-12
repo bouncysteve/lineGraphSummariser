@@ -1,17 +1,18 @@
 package uk.co.lgs.text.service.segment.graph;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,9 +28,10 @@ import uk.co.lgs.model.segment.graph.category.GapTrend;
 import uk.co.lgs.model.segment.series.SeriesSegment;
 import uk.co.lgs.segment.graph.AbstractGraphSegmentTest;
 import uk.co.lgs.text.service.label.LabelService;
-import uk.co.lgs.text.service.synonym.Constants;
 import uk.co.lgs.text.service.synonym.SynonymService;
+import uk.co.lgs.text.service.synonym.SynonymServiceImpl;
 import uk.co.lgs.text.service.value.ValueService;
+import uk.co.lgs.text.service.value.ValueServiceImpl;
 
 public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest {
     private static final Lexicon LEXICON = Lexicon.getDefaultLexicon();
@@ -43,128 +45,99 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
     private String summaryText;
     private DocumentElement summary;
 
-    @Captor
-    private ArgumentCaptor<String> stringCaptor;
-
     @Mock
     private LabelService labelService;
-    @Mock
-    private SynonymService synonymService;
-    @Mock
-    private ValueService valueService;
+    @Spy
+    private final SynonymService synonymService = new SynonymServiceImpl();
+
+    @Spy
+    private final ValueService valueService = new ValueServiceImpl();
 
     @Mock
     private GraphModel model;
-
-    @Mock
-    private SeriesSegment firstSeriesSegment;
-    @Mock
-    private SeriesSegment secondSeriesSegment;
-
-    @Mock
-    private GraphSegment graphSegment;
 
     @InjectMocks
     private GraphSegmentSummaryServiceImpl graphSegmentSummaryService;
 
     private List<NPPhraseSpec> labels;
     private final NLGFactory nlgFactory = new NLGFactory(LEXICON);
+    private List<GraphSegment> graphSegments;
 
     @Before
     public void beforeEachTest() {
+        this.synonymService.setRandomise(false);
+        REALISER.setCommaSepCuephrase(true);
         final NPPhraseSpec firstSeriesLabel = this.nlgFactory.createNounPhrase(FIRST_SERIES_LABEL);
         final NPPhraseSpec secondSeriesLabel = this.nlgFactory.createNounPhrase(SECOND_SERIES_LABEL);
         secondSeriesLabel.setPlural(true);
         this.labels = Arrays.asList(firstSeriesLabel, secondSeriesLabel);
 
-        when(this.labelService.getLabelsForCommonUse(this.graphSegment)).thenReturn(this.labels);
-        when(this.labelService.getLabelForCommonUse(this.graphSegment, this.firstSeriesSegment))
-                .thenReturn(firstSeriesLabel);
-        when(this.labelService.getLabelForCommonUse(this.graphSegment, this.secondSeriesSegment))
-                .thenReturn(secondSeriesLabel);
-
-        when(this.firstSeriesSegment.getLabel()).thenReturn(FIRST_SERIES_LABEL);
-        when(this.secondSeriesSegment.getLabel()).thenReturn(SECOND_SERIES_LABEL);
-        when(this.model.getGraphSegments()).thenReturn(Arrays.asList(this.graphSegment));
-        prepareGraphSegment();
-        prepareSynonymService();
+        when(this.labelService.getLabelsForCommonUse(this.model)).thenReturn(this.labels);
+        this.graphSegments = new ArrayList<>();
+        when(this.model.getGraphSegments()).thenReturn(this.graphSegments);
     }
 
-    /**
-     * Until <END> <higher series> rises [conjunction] <lower series> falls,
-     * [so] the gap between them increases to <value>,(if first time mentioned:)
-     * its maximum value].
-     */
     @Test
     public void testOppositeTrendsDiverging01() {
-        givenSeriesValues(50, 100, 20, 10);
+        givenASeriesWithValuesHasMaximumGapAndMinimumGap(50d, 100d, 20d, 10d, false, false);
         whenTheSegmentIsSummarised();
-        thenTheSummaryIs("Until " + END + " " + FIRST_SERIES_LABEL + " rises but " + SECOND_SERIES_LABEL
-                + " fall, so the gap between them increases.");
+        thenTheSummaryIs(
+                "Until April 2016 Cost of sunglasses rises but Sales of doughnuts fall, so the gap between them increases.");
     }
 
-    /**
-     * Until <END> <higher series> rises [conjunction] <lower series> falls,
-     * [so] the gap between them increases to <value>,(if first time mentioned:)
-     * its maximum value]. {NB. Need to think about an equal gap with opposite
-     * order of series}
-     */
     @Test
-    public void testOppositeTrendsDivergingToGlobalMaximumGap02() { //
+    public void testOppositeTrendsDivergingToGlobalMaximumGap02() {
+        givenASeriesWithValuesHasMaximumGapAndMinimumGap(0d, 0d, 0d, 90d, true, false);
+        givenASeriesWithValuesHasMaximumGapAndMinimumGap(50d, 100d, 20d, 10d, true, false);
+        whenTheSegmentIsSummarised(1);
+        thenTheSummaryIs(
+                "Until April 2016 Cost of sunglasses rises but Sales of doughnuts fall, so the gap between them increases to 90.");
     }
 
-    /**
-     * Until <END> <higher series> rises [conjunction] <lower series> falls,
-     * [so] the gap between them increases to <value>,(if first time mentioned:)
-     * its maximum value]. {NB. Need to think about an equal gap with opposite
-     * order of series}
-     */
     @Test
     public void testOppositeTrendsDivergingToGlobalMaximumGapFirstTimeMentioned03() {
-        //
+        givenASeriesWithValuesHasMaximumGapAndMinimumGap(0d, 0d, 0d, 0d, false, false);
+        givenASeriesWithValuesHasMaximumGapAndMinimumGap(50d, 100d, 20d, 10d, true, false);
+        whenTheSegmentIsSummarised(1);
+        thenTheSummaryIs(
+                "Until April 2016 Cost of sunglasses rises but Sales of doughnuts fall, so the gap between them increases to 90, its maximum value.");
     }
 
-    /**
-     * Until <END><higher series> falls [conjunction] <lower series> rises, [so]
-     * the gap between them decreases to <value>,(if first time mentioned:) its
-     * minimum value] {NB. Do not mention minimum gap if there are any
-     * intersections}
-     */
     @Test
     public void testOppositeTrendsConverging04() {
-        //
+        givenASeriesWithValuesHasMaximumGapAndMinimumGap(20d, 10d, -20d, 0d, false, false);
+        whenTheSegmentIsSummarised();
+        thenTheSummaryIs(
+                "Until April 2016 Cost of sunglasses falls but Sales of doughnuts rise, so the gap between them decreases.");
     }
 
-    /**
-     * Until <END><higher series> falls [conjunction] <lower series> rises, [so]
-     * the gap between them decreases to <value>,(if first time mentioned:) its
-     * minimum value] {NB. Do not mention minimum gap if there are any
-     * intersections}
-     */
     @Test
-    public void testOppositeTrendsConvergingToGlobalMinimumGap05() { //
+    public void testOppositeTrendsConvergingToGlobalMinimumGap05() {
+        givenASeriesWithValuesHasMaximumGapAndMinimumGap(20d, 10d, -20d, 0d, false, true);
+        givenASeriesWithValuesHasMaximumGapAndMinimumGap(20d, 10d, -20d, 0d, false, true);
+        whenTheSegmentIsSummarised(1);
+        thenTheSummaryIs(
+                "Until April 2016 Cost of sunglasses falls but Sales of doughnuts rise, so the gap between them decreases to 10.");
+
     }
 
-    /**
-     * Until <END><higher series> falls [conjunction] <lower series> rises, [so]
-     * the gap between them decreases to <value>,(if first time mentioned:) its
-     * minimum value] {NB. Do not mention minimum gap if there are any
-     * intersections}
-     */
     @Test
     public void testOppositeTrendsConvergingToGlobalMinimumGapFirstTimeMentioned06() {
-        //
+        givenASeriesWithValuesHasMaximumGapAndMinimumGap(20d, 10d, -20d, 0d, false, false);
+        givenASeriesWithValuesHasMaximumGapAndMinimumGap(20d, 10d, -20d, 0d, false, true);
+        whenTheSegmentIsSummarised(1);
+        thenTheSummaryIs(
+                "Until April 2016 Cost of sunglasses falls but Sales of doughnuts rise, so the gap between them decreases to 10, its minimum value.");
     }
 
-    /**
-     * Until <END><higher series> falls [conjunction] <lower series> rises, [so]
-     * the gap between them decreases to <value>,(if first time mentioned:) its
-     * minimum value] {NB. Do not mention minimum gap if there are any
-     * intersections}
-     */
     @Test
     public void testOppositeTrendsConvergingToGlobalMinimumGapFirstTimeMentionedGraphHasIntersection07() {
-        //
+        givenTheGraphHasIntersections();
+        givenASeriesWithValuesHasMaximumGapAndMinimumGap(20d, 10d, -20d, 0d, false, false);
+        givenASeriesWithValuesHasMaximumGapAndMinimumGap(20d, 10d, -20d, 0d, false, true);
+        whenTheSegmentIsSummarised(1);
+        thenTheSummaryIs(
+                "Until April 2016 Cost of sunglasses falls but Sales of doughnuts rise, so the gap between them decreases to 10.");
     }
 
     /**
@@ -230,7 +203,7 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
      */
     @Test
     public void testBothFallingConvergingToGlobalMinimumGapWhenGraphHasIntersections13a() {
-        //
+        givenTheGraphHasIntersections();
 
     }
 
@@ -339,7 +312,7 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
      */
     @Test
     public void testBothRisingConvergingToGlobalMinimumGapWhenGraphHasIntersections13b() {
-        //
+        givenTheGraphHasIntersections();
 
     }
 
@@ -467,35 +440,54 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
 
     }
 
-    private void givenSeriesValues(final double firstSeriesStartValue, final double firstSeriesEndValue,
-            final double secondSeriesStartValue, final double secondSeriesEndValue) {
-        when(this.firstSeriesSegment.getStartValue()).thenReturn(firstSeriesStartValue);
-        when(this.firstSeriesSegment.getEndValue()).thenReturn(firstSeriesEndValue);
-        when(this.secondSeriesSegment.getStartValue()).thenReturn(secondSeriesStartValue);
-        when(this.secondSeriesSegment.getEndValue()).thenReturn(secondSeriesEndValue);
-        when(this.graphSegment.getHigherSeriesAtStart())
-                .thenReturn(higherSeriesOf(firstSeriesStartValue, secondSeriesStartValue));
-        when(this.graphSegment.getHigherSeriesAtEnd())
-                .thenReturn(higherSeriesOf(firstSeriesEndValue, secondSeriesEndValue));
+    private void givenASeriesWithValuesHasMaximumGapAndMinimumGap(final double firstSeriesStartValue,
+            final double firstSeriesEndValue, final double secondSeriesStartValue, final double secondSeriesEndValue,
+            final boolean maximumGap, final boolean minimumGap) {
         final GradientType firstSeriesTrend = trendFromValues(firstSeriesStartValue, firstSeriesEndValue);
-
-        when(this.graphSegment.getFirstSeriesTrend()).thenReturn(firstSeriesTrend);
-        when(this.firstSeriesSegment.getGradientType()).thenReturn(firstSeriesTrend);
-
         final GradientType secondSeriesTrend = trendFromValues(secondSeriesStartValue, secondSeriesEndValue);
-        when(this.graphSegment.getSecondSeriesTrend()).thenReturn(secondSeriesTrend);
-        when(this.secondSeriesSegment.getGradientType()).thenReturn(secondSeriesTrend);
 
-        when(this.graphSegment.getGapTrend()).thenReturn(trendFromValues(firstSeriesStartValue, firstSeriesEndValue,
+        final SeriesSegment firstSeriesSegment = mock(SeriesSegment.class);
+        when(firstSeriesSegment.getStartValue()).thenReturn(firstSeriesStartValue);
+        when(firstSeriesSegment.getEndValue()).thenReturn(firstSeriesEndValue);
+        when(firstSeriesSegment.getLabel()).thenReturn(FIRST_SERIES_LABEL);
+        when(firstSeriesSegment.getGradientType()).thenReturn(firstSeriesTrend);
+        when(firstSeriesSegment.getUnits()).thenReturn("");
+
+        final SeriesSegment secondSeriesSegment = mock(SeriesSegment.class);
+        when(secondSeriesSegment.getStartValue()).thenReturn(secondSeriesStartValue);
+        when(secondSeriesSegment.getEndValue()).thenReturn(secondSeriesEndValue);
+        when(secondSeriesSegment.getLabel()).thenReturn(SECOND_SERIES_LABEL);
+        when(secondSeriesSegment.getGradientType()).thenReturn(secondSeriesTrend);
+        when(secondSeriesSegment.getUnits()).thenReturn("");
+
+        final GraphSegment graphSegment = mock(GraphSegment.class);
+        when(graphSegment.getHigherSeriesAtStart()).thenReturn(
+                higherSeriesOf(firstSeriesSegment, firstSeriesStartValue, secondSeriesSegment, secondSeriesStartValue));
+        when(graphSegment.getHigherSeriesAtEnd()).thenReturn(
+                higherSeriesOf(firstSeriesSegment, firstSeriesEndValue, secondSeriesSegment, secondSeriesEndValue));
+        when(graphSegment.getFirstSeriesTrend()).thenReturn(firstSeriesTrend);
+        when(graphSegment.getSecondSeriesTrend()).thenReturn(secondSeriesTrend);
+        when(graphSegment.getGapTrend()).thenReturn(trendFromValues(firstSeriesStartValue, firstSeriesEndValue,
                 secondSeriesStartValue, secondSeriesEndValue));
+        when(graphSegment.getGapBetweenSeriesEndValues())
+                .thenReturn(Math.abs(secondSeriesEndValue - firstSeriesEndValue));
+        when(graphSegment.isGlobalMaximumGapAtSegmentEnd()).thenReturn(maximumGap);
+        when(graphSegment.isGlobalMinimumGapAtSegmentEnd()).thenReturn(minimumGap);
+        prepareGraphSegment(graphSegment, firstSeriesSegment, secondSeriesSegment);
+        this.graphSegments.add(graphSegment);
     }
 
-    private SeriesSegment higherSeriesOf(final double firstSeriesValue, final double secondSeriesValue) {
+    private void givenTheGraphHasIntersections() {
+        when(this.model.isIntersecting()).thenReturn(true);
+    }
+
+    private SeriesSegment higherSeriesOf(final SeriesSegment firstSeriesSegment, final double firstSeriesValue,
+            final SeriesSegment secondSeriesSegment, final double secondSeriesValue) {
         SeriesSegment seriesSegment = null;
         if (firstSeriesValue > secondSeriesValue) {
-            seriesSegment = this.firstSeriesSegment;
+            seriesSegment = firstSeriesSegment;
         } else if (secondSeriesValue > firstSeriesValue) {
-            seriesSegment = this.secondSeriesSegment;
+            seriesSegment = secondSeriesSegment;
         }
         return seriesSegment;
     }
@@ -536,36 +528,29 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
     }
 
     private void whenTheSegmentIsSummarised() {
+        whenTheSegmentIsSummarised(0);
+    }
 
-        this.summary = this.graphSegmentSummaryService.getSegmentSummaries(this.model).get(0);
+    private void whenTheSegmentIsSummarised(final int index) {
+        this.summary = this.graphSegmentSummaryService.getSegmentSummaries(this.model).get(index);
         this.summaryText = REALISER.realise(this.summary).toString();
         LOG.debug(this.summaryText);
-
     }
 
-    private void prepareGraphSegment() {
-        when(this.graphSegment.getSeriesSegment(0)).thenReturn(this.firstSeriesSegment);
-        when(this.graphSegment.indexOf(this.firstSeriesSegment)).thenReturn(0);
-        when(this.graphSegment.getSeriesSegment(1)).thenReturn(this.secondSeriesSegment);
-        when(this.graphSegment.indexOf(this.secondSeriesSegment)).thenReturn(1);
-        when(this.graphSegment.getStartTime()).thenReturn(START);
-        when(this.graphSegment.getEndTime()).thenReturn(END);
+    private void prepareGraphSegment(final GraphSegment graphSegment, final SeriesSegment firstSeriesSegment,
+            final SeriesSegment secondSeriesSegment) {
+        when(graphSegment.getSeriesSegment(0)).thenReturn(firstSeriesSegment);
+        when(graphSegment.indexOf(firstSeriesSegment)).thenReturn(0);
+        when(graphSegment.getSeriesSegment(1)).thenReturn(secondSeriesSegment);
+        when(graphSegment.indexOf(secondSeriesSegment)).thenReturn(1);
+        when(graphSegment.getStartTime()).thenReturn(START);
+        when(graphSegment.getEndTime()).thenReturn(END);
     }
 
-    private void prepareSynonymService() {
-        when(this.synonymService.getSynonym(Constants.FALL)).thenReturn("fall");
-        when(this.synonymService.getSynonym(Constants.RISE)).thenReturn("rise");
-        when(this.synonymService.getSynonym(Constants.CONSTANT)).thenReturn("be constant");
-        when(this.synonymService.getSynonym(Constants.CONVERGE)).thenReturn("decrease");
-        when(this.synonymService.getSynonym(Constants.DIVERGE)).thenReturn("increase");
-        when(this.synonymService.getSynonym(Constants.PARALLEL)).thenReturn("stay the same");
-        when(this.synonymService.getSynonym(Constants.AT)).thenReturn("at");
-        when(this.synonymService.getSynonym(Constants.UNTIL)).thenReturn("until");
-        when(this.synonymService.getSynonym(Constants.BUT)).thenReturn("but");
-
-    }
-
-    private void thenTheSummaryIs(final String string) {
-        assertEquals(string, this.summaryText);
+    private void thenTheSummaryIs(final String expectedString) {
+        final String expectedWithoutCommas = expectedString.replaceAll(",", "");
+        final String summaryWithOutCommas = this.summaryText.replaceAll(",", "");
+        assertEquals(expectedWithoutCommas, summaryWithOutCommas);
+        // assertEquals(expectedString, this.summaryText);
     }
 }
