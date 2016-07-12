@@ -82,6 +82,16 @@ public class LabelServiceImpl implements LabelService {
         return Arrays.asList(firstSeriesShortLabel, secondSeriesShortLabel);
     }
 
+    @Override
+    public List<NPPhraseSpec> getLabelsForCommonUse(final GraphModel graphModel) {
+        // First label is the time series
+        final List<String> labels = Arrays.asList(graphModel.getLabels().get(1), graphModel.getLabels().get(2));
+        final List<String> shortLabels = shortenLabels(labels);
+        final NPPhraseSpec firstSeriesShortLabel = pluralise(this.nlgFactory.createNounPhrase(shortLabels.get(0)));
+        final NPPhraseSpec secondSeriesShortLabel = pluralise(this.nlgFactory.createNounPhrase(shortLabels.get(1)));
+        return Arrays.asList(firstSeriesShortLabel, secondSeriesShortLabel);
+    }
+
     /**
      * If labels are long, we can remove common elements to use only the unique
      * parts.

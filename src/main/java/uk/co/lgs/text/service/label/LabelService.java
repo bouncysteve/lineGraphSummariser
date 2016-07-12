@@ -48,10 +48,10 @@ public interface LabelService {
      * This method attempts to generate a shorter form. If it is not possible to
      * generate a shorter form then the original label is used instead.
      *
-     * @param graphSegment
+     * @param graphModel
      * @return
      */
-    List<NPPhraseSpec> getLabelsForCommonUse(GraphSegment graphSegment);
+    List<NPPhraseSpec> getLabelsForCommonUse(GraphModel graphModel);
 
     /**
      * Return the label for the given seriesSegment.
@@ -61,4 +61,12 @@ public interface LabelService {
      * @return
      */
     NPPhraseSpec getLabelForCommonUse(GraphSegment graphSegment, SeriesSegment seriesSegment);
+
+    /**
+     * @deprecated To be removed along with OldGraphSegmentSummaryService
+     * @param graphSegment
+     * @return
+     */
+    @Deprecated
+    List<NPPhraseSpec> getLabelsForCommonUse(GraphSegment graphSegment);
 }
