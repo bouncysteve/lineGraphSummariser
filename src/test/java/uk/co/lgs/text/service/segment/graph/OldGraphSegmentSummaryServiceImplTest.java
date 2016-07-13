@@ -90,12 +90,12 @@ public class OldGraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentT
 
         when(this.valueService.formatValueWithUnits(10, null)).thenReturn("10");
 
-        when(this.synonymService.getSynonym(Constants.FALL)).thenReturn("fall");
-        when(this.synonymService.getSynonym(Constants.RISE)).thenReturn("rise");
+        when(this.synonymService.getSynonym(Constants.DECREASE)).thenReturn("fall");
+        when(this.synonymService.getSynonym(Constants.INCREASE)).thenReturn("rise");
         when(this.synonymService.getSynonym(Constants.CONSTANT)).thenReturn("be constant");
-        when(this.synonymService.getSynonym(Constants.CONVERGE)).thenReturn("decrease");
-        when(this.synonymService.getSynonym(Constants.DIVERGE)).thenReturn("increase");
-        when(this.synonymService.getSynonym(Constants.PARALLEL)).thenReturn("stay the same");
+        when(this.synonymService.getSynonym(Constants.DECREASE)).thenReturn("decrease");
+        when(this.synonymService.getSynonym(Constants.INCREASE)).thenReturn("increase");
+        when(this.synonymService.getSynonym(Constants.CONSTANT)).thenReturn("stay the same");
 
     }
 
@@ -237,8 +237,8 @@ public class OldGraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentT
         when(this.graphSegment.getSecondSeriesTrend()).thenReturn(secondSeriesTrend);
         when(this.secondSeriesSegment.getGradientType()).thenReturn(secondSeriesTrend);
 
-        when(this.graphSegment.getGapTrend()).thenReturn(trendFromValues(firstSeriesStartValue,
-                firstSeriesEndValue, secondSeriesStartValue, secondSeriesEndValue));
+        when(this.graphSegment.getGapTrend()).thenReturn(trendFromValues(firstSeriesStartValue, firstSeriesEndValue,
+                secondSeriesStartValue, secondSeriesEndValue));
 
     }
 

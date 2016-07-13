@@ -106,7 +106,8 @@ public class GraphSegmentSummaryServiceImpl implements GraphSegmentSummaryServic
             final NPPhraseSpec object = this.nlgFactory.createNounPhrase(this.valueService
                     .formatValueWithUnits(firstSeriesSegment.getStartValue(), firstSeriesSegment.getUnits()));
             sameStartValuePhrase.setSubject(subject);
-            final PPPhraseSpec preposition = getStartTimePhrase(Constants.AT, graphSegment);
+            final PPPhraseSpec preposition = getStartTimePhrase(this.synonymService.getSynonym(Constants.AT),
+                    graphSegment);
             sameStartValuePhrase.setVerb(verb);
             if (null != object) {
                 sameStartValuePhrase.setObject(object);
@@ -122,35 +123,87 @@ public class GraphSegmentSummaryServiceImpl implements GraphSegmentSummaryServic
 
     private NLGElement getOppositeTrendsSummary(final GraphSegment graphSegment, final boolean intersectingGraph,
             final boolean mentionedMaxGapYet, final boolean mentionedMinGapYet, final List<NPPhraseSpec> labels) {
-        NLGElement oppositeTrendsPhrase = null;
-        switch (graphSegment.getGapTrend()) {
-        case PARALLEL:
-            oppositeTrendsPhrase = getOppositeTrendsConstantGapPhrase(graphSegment, intersectingGraph,
+
+        NLGElement oppositeTrendsPhrase;
+        if (graphSegment.isIntersecting()) {
+            oppositeTrendsPhrase = getOppositeTrendsIntersectingPhrase(graphSegment, labels);
+        } else {
+            oppositeTrendsPhrase = getOppositeTrendsNonIntersectingPhrase(graphSegment, intersectingGraph,
                     mentionedMaxGapYet, mentionedMinGapYet, labels);
-            break;
-        case CONVERGING:
-        case DIVERGING:
-        default:
-            oppositeTrendsPhrase = getOppositeTrendsNonConstantPhrase(graphSegment, intersectingGraph,
-                    mentionedMaxGapYet, mentionedMinGapYet, labels);
-            break;
         }
         LOG.info(REALISER.realiseSentence(oppositeTrendsPhrase));
         return oppositeTrendsPhrase;
     }
 
-    private NLGElement getOppositeTrendsConstantGapPhrase(final GraphSegment graphSegment,
-            final boolean intersectingGraph, final boolean mentionedMaxGapYet, final boolean mentionedMinGapYet,
+    private NLGElement getOppositeTrendsIntersectingPhrase(final GraphSegment graphSegment,
             final List<NPPhraseSpec> labels) {
-        // TODO Auto-generated method stub
-        return null;
+        PPPhraseSpec preposition = null;
+        CoordinatedPhraseElement endValuesPhrase = null;
+        CoordinatedPhraseElement riseAndFallPhrase;
+        if (0 == graphSegment.getGapBetweenSeriesEndValues()) {
+            preposition = getEndTimePhrase(this.synonymService.getSynonym(Constants.BY), graphSegment);
+            final SeriesSegment firstSeriesSegment = graphSegment.getSeriesSegment(0);
+            final String conjunction = "to " + this.valueService.formatValueWithUnits(firstSeriesSegment.getEndValue(),
+                    firstSeriesSegment.getUnits() + "and ");
+            riseAndFallPhrase = getOppositeTrendsPhrase(graphSegment, labels, preposition, conjunction);
+            riseAndFallPhrase.addPostModifier("to the same value");
+        } else {
+            riseAndFallPhrase = getOppositeTrendsPhrase(graphSegment, labels, preposition, null);
+            riseAndFallPhrase.addPostModifier("and they cross");
+            preposition = this.nlgFactory.createPrepositionPhrase(this.synonymService.getSynonym(Constants.NEXT));
+            endValuesPhrase = describeSeriesWithDifferentEndValues(labels, graphSegment);
+
+            endValuesPhrase
+                    .addPreModifier(getEndTimePhrase(this.synonymService.getSynonym(Constants.BY), graphSegment));
+        }
+
+        final CoordinatedPhraseElement parentPhrase = this.nlgFactory.createCoordinatedPhrase();
+        parentPhrase.addCoordinate(riseAndFallPhrase);
+        if (null != endValuesPhrase) {
+            parentPhrase.setConjunction("so that");
+            parentPhrase.addCoordinate(endValuesPhrase);
+            parentPhrase.addPreModifier(preposition);
+        }
+
+        return parentPhrase;
     }
 
-    private NLGElement getOppositeTrendsNonConstantPhrase(final GraphSegment graphSegment,
+    private CoordinatedPhraseElement describeSeriesWithDifferentEndValues(final List<NPPhraseSpec> labels,
+            final GraphSegment segment) {
+        final SeriesSegment higherSeries = segment.getHigherSeriesAtEnd();
+        final NPPhraseSpec higherSeriesNoun = labels.get(segment.indexOf(higherSeries));
+        final VPPhraseSpec higherVerb = this.nlgFactory.createVerbPhrase("is higher");
+        final NPPhraseSpec higherSeriesValue = this.nlgFactory.createNounPhrase(
+                this.valueService.formatValueWithUnits(higherSeries.getEndValue(), higherSeries.getUnits()));
+        higherSeriesValue.addPreModifier("with");
+        final SPhraseSpec higherSeriesPhrase = this.nlgFactory.createClause(higherSeriesNoun, higherVerb,
+                higherSeriesValue);
+
+        final SeriesSegment lowerSeries = segment.getSeriesSegment(1 - segment.indexOf(higherSeries));
+        final NPPhraseSpec lowerSeriesNoun = labels.get(segment.indexOf(lowerSeries));
+        final VPPhraseSpec lowerVerb = this.nlgFactory.createVerbPhrase("have");
+        final NPPhraseSpec lowerSeriesValue = this.nlgFactory.createNounPhrase(
+                this.valueService.formatValueWithUnits(lowerSeries.getEndValue(), lowerSeries.getUnits()));
+        final SPhraseSpec lowerSeriesPhrase = this.nlgFactory.createClause(lowerSeriesNoun, lowerVerb,
+                lowerSeriesValue);
+
+        final CoordinatedPhraseElement differentValuesPhrase = this.nlgFactory.createCoordinatedPhrase();
+        differentValuesPhrase.addCoordinate(higherSeriesPhrase);
+        differentValuesPhrase.addCoordinate(lowerSeriesPhrase);
+        // TODO: introduce a conjunction service.
+        differentValuesPhrase.setConjunction("while");
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Diferent start values phrase: {}", REALISER.realiseSentence(differentValuesPhrase));
+        }
+        return differentValuesPhrase;
+    }
+
+    private NLGElement getOppositeTrendsNonIntersectingPhrase(final GraphSegment graphSegment,
             final boolean intersectingGraph, final boolean mentionedMaxGapYet, final boolean mentionedMinGapYet,
             final List<NPPhraseSpec> labels) {
 
-        final CoordinatedPhraseElement riseAndFallPhrase = getOppositeTrendsPhrase(graphSegment, labels);
+        final CoordinatedPhraseElement riseAndFallPhrase = getOppositeTrendsPhrase(graphSegment, labels,
+                getEndTimePhrase(this.synonymService.getSynonym(Constants.UNTIL), graphSegment), null);
         final CoordinatedPhraseElement parentPhrase = this.nlgFactory.createCoordinatedPhrase();
         parentPhrase.addCoordinate(riseAndFallPhrase);
         parentPhrase.setConjunction(this.synonymService.getSynonym(Constants.SO));
@@ -160,16 +213,20 @@ public class GraphSegmentSummaryServiceImpl implements GraphSegmentSummaryServic
     }
 
     private CoordinatedPhraseElement getOppositeTrendsPhrase(final GraphSegment graphSegment,
-            final List<NPPhraseSpec> labels) {
+            final List<NPPhraseSpec> labels, final PPPhraseSpec endTimePhrase, String conjunction) {
         final CoordinatedPhraseElement riseAndFallPhrase = this.nlgFactory.createCoordinatedPhrase();
         SeriesSegment higherSeriesAtStart = graphSegment.getHigherSeriesAtStart();
         if (null == higherSeriesAtStart) {
             higherSeriesAtStart = graphSegment.getSeriesSegment(0);
         }
         final int higherSeriesIndex = graphSegment.indexOf(higherSeriesAtStart);
-        riseAndFallPhrase.addPreModifier(getEndTimePhrase(Constants.UNTIL, graphSegment));
+        riseAndFallPhrase.addPreModifier(endTimePhrase);
+
         riseAndFallPhrase.addCoordinate(getTrendPhrase(higherSeriesAtStart, labels.get(higherSeriesIndex)));
-        riseAndFallPhrase.setConjunction(this.synonymService.getSynonym(Constants.BUT));
+        if (null == conjunction) {
+            conjunction = this.synonymService.getSynonym(Constants.BUT);
+        }
+        riseAndFallPhrase.setConjunction(conjunction);
         riseAndFallPhrase.addCoordinate(getTrendPhrase(graphSegment.getSeriesSegment(1 - higherSeriesIndex),
                 labels.get(1 - higherSeriesIndex)));
         // This in combination with REALISER.setCommaSepCuephrase(true) above,
@@ -233,10 +290,10 @@ public class GraphSegmentSummaryServiceImpl implements GraphSegmentSummaryServic
         String verbString = null;
         switch (seriesSegment.getGradientType()) {
         case NEGATIVE:
-            verbString = Constants.FALL;
+            verbString = Constants.DECREASE;
             break;
         case POSITIVE:
-            verbString = Constants.RISE;
+            verbString = Constants.INCREASE;
             break;
         case ZERO:
             verbString = Constants.CONSTANT;

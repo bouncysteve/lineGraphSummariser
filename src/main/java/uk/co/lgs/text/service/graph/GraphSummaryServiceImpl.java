@@ -144,8 +144,8 @@ public class GraphSummaryServiceImpl implements GraphSummaryService {
     }
 
     private CoordinatedPhraseElement describeSeriesWithDifferentStartValues(final List<NPPhraseSpec> labels,
-            final GraphSegment firstSegment, final SeriesSegment higherSeries, final PPPhraseSpec preposition) {
-        final NPPhraseSpec higherSeriesNoun = labels.get(firstSegment.indexOf(higherSeries));
+            final GraphSegment segment, final SeriesSegment higherSeries, final PPPhraseSpec preposition) {
+        final NPPhraseSpec higherSeriesNoun = labels.get(segment.indexOf(higherSeries));
         final VPPhraseSpec higherVerb = this.nlgFactory.createVerbPhrase("is higher");
         final NPPhraseSpec higherSeriesValue = this.nlgFactory.createNounPhrase(
                 this.valueService.formatValueWithUnits(higherSeries.getStartValue(), higherSeries.getUnits()));
@@ -157,8 +157,8 @@ public class GraphSummaryServiceImpl implements GraphSummaryService {
         final SPhraseSpec higherSeriesPhrase = this.nlgFactory.createClause(higherSeriesNoun, higherVerb,
                 higherSeriesValue);
 
-        final SeriesSegment lowerSeries = firstSegment.getSeriesSegment(1 - firstSegment.indexOf(higherSeries));
-        final NPPhraseSpec lowerSeriesNoun = labels.get(firstSegment.indexOf(lowerSeries));
+        final SeriesSegment lowerSeries = segment.getSeriesSegment(1 - segment.indexOf(higherSeries));
+        final NPPhraseSpec lowerSeriesNoun = labels.get(segment.indexOf(lowerSeries));
         final VPPhraseSpec lowerVerb = this.nlgFactory.createVerbPhrase("have");
         final NPPhraseSpec lowerSeriesValue = this.nlgFactory.createNounPhrase(
                 this.valueService.formatValueWithUnits(lowerSeries.getStartValue(), lowerSeries.getUnits()));

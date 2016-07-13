@@ -121,13 +121,13 @@ public class OldGraphSegmentSummaryServiceImpl {
         String gapString = null;
         switch (gapTrend) {
         case CONVERGING:
-            gapString = this.synonymService.getSynonym(Constants.CONVERGE);
+            gapString = this.synonymService.getSynonym(Constants.DECREASE);
             break;
         case DIVERGING:
-            gapString = this.synonymService.getSynonym(Constants.DIVERGE);
+            gapString = this.synonymService.getSynonym(Constants.INCREASE);
             break;
         case PARALLEL:
-            gapString = this.synonymService.getSynonym(Constants.PARALLEL);
+            gapString = this.synonymService.getSynonym(Constants.CONSTANT);
             break;
         default:
             break;
@@ -185,10 +185,10 @@ public class OldGraphSegmentSummaryServiceImpl {
         String trendString = "";
         switch (trend) {
         case NEGATIVE:
-            trendString = this.synonymService.getSynonym(Constants.FALL);
+            trendString = this.synonymService.getSynonym(Constants.DECREASE);
             break;
         case POSITIVE:
-            trendString = this.synonymService.getSynonym(Constants.RISE);
+            trendString = this.synonymService.getSynonym(Constants.INCREASE);
             break;
         case ZERO:
             trendString = this.synonymService.getSynonym(Constants.CONSTANT);

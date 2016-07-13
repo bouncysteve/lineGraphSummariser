@@ -16,6 +16,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 
 import simplenlg.framework.NLGFactory;
 import simplenlg.framework.PhraseElement;
@@ -27,8 +28,8 @@ import uk.co.lgs.model.segment.series.SeriesSegment;
 import uk.co.lgs.test.AbstractTest;
 import uk.co.lgs.text.service.label.LabelService;
 import uk.co.lgs.text.service.segment.graph.GraphSegmentSummaryService;
-import uk.co.lgs.text.service.synonym.Constants;
 import uk.co.lgs.text.service.synonym.SynonymService;
+import uk.co.lgs.text.service.synonym.SynonymServiceImpl;
 import uk.co.lgs.text.service.value.ValueService;
 
 public class GraphSummaryServiceImplTest extends AbstractTest {
@@ -58,8 +59,8 @@ public class GraphSummaryServiceImplTest extends AbstractTest {
     @Mock
     private ValueService valueService;
 
-    @Mock
-    private SynonymService synonymService;
+    @Spy
+    private final SynonymService synonymService = new SynonymServiceImpl();
 
     @Mock
     private GraphModel mockGraphModel;
@@ -117,13 +118,6 @@ public class GraphSummaryServiceImplTest extends AbstractTest {
         when(this.graphSegment.getStartTime()).thenReturn(GRAPH_START);
 
         when(this.valueService.formatValueWithUnits(anyDouble(), anyString())).thenReturn("20%");
-
-        when(this.synonymService.getSynonym(Constants.FALL)).thenReturn("fall");
-        when(this.synonymService.getSynonym(Constants.RISE)).thenReturn("rise");
-        when(this.synonymService.getSynonym(Constants.CONSTANT)).thenReturn("be constant");
-        when(this.synonymService.getSynonym(Constants.CONVERGE)).thenReturn("decrease");
-        when(this.synonymService.getSynonym(Constants.DIVERGE)).thenReturn("increase");
-        when(this.synonymService.getSynonym(Constants.PARALLEL)).thenReturn("stay the same");
     }
 
     @Test
