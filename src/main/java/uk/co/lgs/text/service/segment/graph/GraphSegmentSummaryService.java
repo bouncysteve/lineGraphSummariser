@@ -17,7 +17,7 @@ public interface GraphSegmentSummaryService {
 
     /**
      * Return (usually) one sentence describing each segment.
-     * 
+     *
      * @param model
      * @return
      */
