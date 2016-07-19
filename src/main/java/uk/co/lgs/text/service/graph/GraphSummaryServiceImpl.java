@@ -59,7 +59,7 @@ public class GraphSummaryServiceImpl implements GraphSummaryService {
 
     @Override
     public String getSummary(final GraphModel model) {
-        REALISER.setCommaSepCuephrase(true);
+        // REALISER.setCommaSepCuephrase(true);
         final DocumentElement wholeSummary = this.nlgFactory.createDocument();
 
         wholeSummary.addComponent(getIntro(model));

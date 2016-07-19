@@ -92,10 +92,10 @@ public class OldGraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentT
 
         when(this.synonymService.getSynonym(Constants.DECREASE)).thenReturn("fall");
         when(this.synonymService.getSynonym(Constants.INCREASE)).thenReturn("rise");
-        when(this.synonymService.getSynonym(Constants.CONSTANT)).thenReturn("be constant");
+        when(this.synonymService.getSynonym(Constants.REMAIN)).thenReturn("be constant");
         when(this.synonymService.getSynonym(Constants.DECREASE)).thenReturn("decrease");
         when(this.synonymService.getSynonym(Constants.INCREASE)).thenReturn("increase");
-        when(this.synonymService.getSynonym(Constants.CONSTANT)).thenReturn("stay the same");
+        when(this.synonymService.getSynonym(Constants.REMAIN)).thenReturn("stay the same");
 
     }
 

@@ -21,14 +21,14 @@ import org.springframework.stereotype.Component;
 public class SynonymServiceImpl implements SynonymService {
     private static final List<String> AT_SYNONYMS = Arrays.asList("at");
     private static final List<String> BUT_SYNONYMS = Arrays.asList("but", "however");
-    private static final List<String> CONSTANT_SYNONYMS = Arrays.asList("be constant", "stay the same", "continue",
-            "freeze", "persist", "rest", "hold a constant value", "do not change");// ("endure",
+    private static final List<String> CROSS_SYNONYMS = Arrays.asList("cross", "intersect");
+    private static final List<String> REMAIN_AT_SYNONYMS = Arrays.asList("remain", "be constant at", "stay the same at",
+            "continue to be", "freeze at", "persist at", "rest at", "hold the value");// ("endure",
     private static final List<String> DECREASE_SYNONYMS = Arrays.asList("decrease", "fall", "decline", "drop", "shrink",
             "lower", "reduce", "show a downward trend"); // ("weaken","diminish",
     private static final List<String> INCREASE_SYNONYMS = Arrays.asList("increase", "rise", "grow", "improve",
             "progress", "go up", "get larger", "show an upward trend"); // ("ascend","extend","build"
     private static final List<String> SO_SYNONYMS = Arrays.asList("so", "consequently", "as a consequence", "thus");
-    private static final List<String> STAY_SAME_SYNONYMS = Arrays.asList("stay the same");
     private static final List<String> UNTIL_SYNONYMS = Arrays.asList("until", "up to", "in the period leading up to");
     private static final List<String> NEXT_SYNONYMS = Arrays.asList("next", "in the following period", "afterwards",
             "after that", "following that");
@@ -40,12 +40,12 @@ public class SynonymServiceImpl implements SynonymService {
         LOOKUPS = new HashMap<>();
         LOOKUPS.put(Constants.AT, AT_SYNONYMS);
         LOOKUPS.put(Constants.BUT, BUT_SYNONYMS);
-        LOOKUPS.put(Constants.CONSTANT, CONSTANT_SYNONYMS);
+        LOOKUPS.put(Constants.CROSS, CROSS_SYNONYMS);
+        LOOKUPS.put(Constants.REMAIN, REMAIN_AT_SYNONYMS);
         LOOKUPS.put(Constants.DECREASE, DECREASE_SYNONYMS);
         LOOKUPS.put(Constants.INCREASE, INCREASE_SYNONYMS);
         LOOKUPS.put(Constants.NEXT, NEXT_SYNONYMS);
         LOOKUPS.put(Constants.SO, SO_SYNONYMS);
-        LOOKUPS.put(Constants.STAY_SAME, STAY_SAME_SYNONYMS);
         LOOKUPS.put(Constants.UNTIL, UNTIL_SYNONYMS);
     }
 

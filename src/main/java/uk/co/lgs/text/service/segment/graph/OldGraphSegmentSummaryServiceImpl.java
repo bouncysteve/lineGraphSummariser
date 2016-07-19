@@ -127,7 +127,7 @@ public class OldGraphSegmentSummaryServiceImpl {
             gapString = this.synonymService.getSynonym(Constants.INCREASE);
             break;
         case PARALLEL:
-            gapString = this.synonymService.getSynonym(Constants.CONSTANT);
+            gapString = this.synonymService.getSynonym(Constants.REMAIN);
             break;
         default:
             break;
@@ -191,7 +191,7 @@ public class OldGraphSegmentSummaryServiceImpl {
             trendString = this.synonymService.getSynonym(Constants.INCREASE);
             break;
         case ZERO:
-            trendString = this.synonymService.getSynonym(Constants.CONSTANT);
+            trendString = this.synonymService.getSynonym(Constants.REMAIN);
             break;
         default:
             break;

@@ -96,9 +96,8 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
 
     @Test
     public void testOppositeTrendsDivergingToGlobalMaximumGapFirstTimeMentioned03() {
-        givenASeriesWithValuesHasMaximumGapAndMinimumGap(0d, 0d, 0d, 1d, false, false);
         givenASeriesWithValuesHasMaximumGapAndMinimumGap(50d, 100d, 20d, 10d, true, false);
-        whenTheSegmentIsSummarised(1);
+        whenTheSegmentIsSummarised();
         thenTheSummaryIs(
                 "Until April 2016, Cost of sunglasses increases but Sales of doughnuts decrease, so the gap between them increases to 90%, its maximum value.");
     }
@@ -122,9 +121,8 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
 
     @Test
     public void testOppositeTrendsConvergingToGlobalMinimumGapFirstTimeMentioned06() {
-        givenASeriesWithValuesHasMaximumGapAndMinimumGap(20d, 10d, -20d, 0d, false, false);
         givenASeriesWithValuesHasMaximumGapAndMinimumGap(20d, 10d, -20d, 0d, false, true);
-        whenTheSegmentIsSummarised(1);
+        whenTheSegmentIsSummarised();
         thenTheSummaryIs(
                 "Until April 2016, Cost of sunglasses decreases but Sales of doughnuts increase, so the gap between them decreases to 10%, its minimum value.");
     }
@@ -132,9 +130,8 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
     @Test
     public void testOppositeTrendsConvergingToGlobalMinimumGapFirstTimeMentionedGraphHasIntersection07() {
         givenTheGraphHasIntersections();
-        givenASeriesWithValuesHasMaximumGapAndMinimumGap(20d, 10d, -20d, 0d, false, false);
         givenASeriesWithValuesHasMaximumGapAndMinimumGap(20d, 10d, -20d, 0d, false, true);
-        whenTheSegmentIsSummarised(1);
+        whenTheSegmentIsSummarised();
         thenTheSummaryIs(
                 "Until April 2016, Cost of sunglasses decreases but Sales of doughnuts increase, so the gap between them decreases to 10%.");
     }
@@ -159,193 +156,150 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
     /*********************
      * Same trends falling
      *************************************/
-    /**
-     * Until <END> both <higher series> and <lower series> fall. Because <series
-     * with steepest difference> falls more steeply, the gap between them
-     * decreases.
-     */
     @Test
     public void testBothFallingConverging10a() {
         givenASeriesWithValuesHasMaximumGapAndMinimumGap(50d, 30d, 20d, 10d, false, false);
         whenTheSegmentIsSummarised();
         thenTheSummaryIs(
-                "Until April 2016, both decrease, and because Cost of sunglasses decreases more steeply, the gap between them decreases.");
-
+                "Until April 2016, both decrease, Cost of sunglasses decreases more steeply, and so, the gap between them decreases.");
     }
 
-    /**
-     * Until <END> both <higher series> and <lower series> fall. Because <series
-     * with steepest difference> falls more steeply, the gap between them
-     * decreases to <value>
-     */
     @Test
     public void testBothFallingConvergingToGlobalMinimumGap11a() {
-        //
-
+        givenASeriesWithValuesHasMaximumGapAndMinimumGap(50d, 30d, 20d, 10d, false, true);
+        givenASeriesWithValuesHasMaximumGapAndMinimumGap(50d, 30d, 20d, 10d, false, true);
+        whenTheSegmentIsSummarised(1);
+        thenTheSummaryIs(
+                "Until April 2016, both decrease, Cost of sunglasses decreases more steeply and so, the gap between them decreases to 20%.");
     }
 
-    /**
-     * Until <END> both <higher series> and <lower series> fall. Because <series
-     * with steepest difference> falls more steeply, the gap between them
-     * decreases to <value>, its minimum value {NB. Do not mention minimum gap
-     * if there are any intersections in the graph}
-     */
     @Test
     public void testBothFallingConvergingToGlobalMinimumGapFirstTimeMentioned12a() {
-        //
-
+        givenASeriesWithValuesHasMaximumGapAndMinimumGap(50d, 30d, 20d, 10d, false, true);
+        whenTheSegmentIsSummarised();
+        thenTheSummaryIs(
+                "Until April 2016, both decrease, Cost of sunglasses decreases more steeply and so, the gap between them decreases to 20%, its minimum value.");
     }
 
-    /**
-     * Until <END> both <higher series> and <lower series> fall. Because <series
-     * with steepest difference> falls more steeply, the gap between them
-     * decreases to <value>.
-     */
     @Test
     public void testBothFallingConvergingToGlobalMinimumGapWhenGraphHasIntersections13a() {
         givenTheGraphHasIntersections();
-
+        givenASeriesWithValuesHasMaximumGapAndMinimumGap(50d, 30d, 20d, 10d, false, true);
+        whenTheSegmentIsSummarised();
+        thenTheSummaryIs(
+                "Until April 2016, both decrease, Cost of sunglasses decreases more steeply and so, the gap between them decreases to 20%.");
     }
 
-    /**
-     * Until <END> both <higher series> and <lower series> fall. Because <series
-     * with steepest difference> falls more steeply, the gap between them
-     * increases.
-     */
     @Test
     public void testBothFallingDiverging14a() {
-        //
-
+        givenASeriesWithValuesHasMaximumGapAndMinimumGap(50d, -200d, 60d, 40d, false, false);
+        whenTheSegmentIsSummarised();
+        thenTheSummaryIs(
+                "Until April 2016, both decrease, Cost of sunglasses decreases more steeply and so, the gap between them increases.");
     }
 
-    /**
-     * Until <END> both <higher series> and <lower series> fall. Because <series
-     * with steepest difference> falls more steeply, the gap between them
-     * increases to <value>.
-     */
     @Test
     public void testBothFallingDivergingToGlobalMaximumGap15a() {
-
+        givenASeriesWithValuesHasMaximumGapAndMinimumGap(50d, -200d, 60d, 40d, true, false);
+        givenASeriesWithValuesHasMaximumGapAndMinimumGap(50d, -200d, 60d, 40d, true, false);
+        whenTheSegmentIsSummarised(1);
+        thenTheSummaryIs(
+                "Until April 2016, both decrease, Cost of sunglasses decreases more steeply and so, the gap between them increases to 240%.");
     }
 
-    /**
-     * Until <END> both <higher series> and <lower series> fall. Because <series
-     * with steepest difference> falls more steeply, the gap between them
-     * increases to <value>, its maximum value.
-     */
     @Test
     public void testBothFallingDivergingToGlobalMaximumGapFirstTimeMentioned16a() {
-        //
-
+        givenASeriesWithValuesHasMaximumGapAndMinimumGap(50d, -200d, 60d, 40d, true, false);
+        whenTheSegmentIsSummarised();
+        thenTheSummaryIs(
+                "Until April 2016, both decrease, Cost of sunglasses decreases more steeply and so, the gap between them increases to 240%, its maximum value.");
     }
 
-    /**
-     * Until <END> both <higherSeries> and <lowerSeries> fall [at the same
-     * rate], consequently the gap between them remains <value>.
-     */
     @Test
     public void testBothFallingConstant17a() {
-        //
+        givenASeriesWithValuesHasMaximumGapAndMinimumGap(100d, 50d, 200d, 150d, false, false);
+        whenTheSegmentIsSummarised();
+        thenTheSummaryIs(
+                "Until April 2016, both decrease at the same rate, and so, the gap between them remains 100%.");
     }
 
-    /**
-     * Both <seriesA> and <SeriesB> fall to <value> at <END>.
-     */
     @Test
     public void testBothFallingConvergingToIntersectionAtEndOfSection18a() {
-        //
+        givenASeriesWithValuesHasMaximumGapAndMinimumGap(50d, -200d, 60d, -200d, false, false);
+        whenTheSegmentIsSummarised();
+        thenTheSummaryIs("By April 2016, both decrease to -200%.");
     }
 
-    /**
-     * Both <higher series> and <lower series> fall. Because <series with
-     * steepest difference> falls more steeply they cross, so that at END
-     * <higherSeriesAtEnd> is higher with <value>, while <otherSeries> has
-     * <value>
-     */
     @Test
     public void testBothFallingConvergingToIntersectionDuringSection19a() {
-
+        givenASeriesWithValuesHasMaximumGapAndMinimumGap(50d, -100d, 60d, -200d, false, false);
+        whenTheSegmentIsSummarised();
+        thenTheSummaryIs(
+                "Next, both decrease, Sales of doughnuts decrease more steeply, so they cross and by April 2016 Cost of sunglasses is higher with -100%, while Sales of doughnuts have -200%.");
     }
 
     /***************
      * Same trends rising
      ***********************************************************/
 
-    /**
-     * Until <END> both <higher series> and <lower series> rise. Because <series
-     * with steepest difference> rises more steeply, the gap between them
-     * decreases.
-     */
     @Test
     public void testBothRisingConverging10b() {
-        //
-
+        givenASeriesWithValuesHasMaximumGapAndMinimumGap(50d, 60d, 20d, 50d, false, false);
+        whenTheSegmentIsSummarised();
+        thenTheSummaryIs(
+                "Until April 2016, both increase, Sales of doughnuts increase more steeply, and so, the gap between them decreases.");
     }
 
-    /**
-     * Until <END> both <higher series> and <lower series> rise. Because <series
-     * with steepest difference> rises more steeply, the gap between them
-     * decreases to <value>
-     */
     @Test
     public void testBothRisingConvergingToGlobalMinimumGap11b() {
-        //
+        givenASeriesWithValuesHasMaximumGapAndMinimumGap(50d, 130d, 20d, 110d, false, true);
+        givenASeriesWithValuesHasMaximumGapAndMinimumGap(50d, 130d, 20d, 110d, false, true);
+        whenTheSegmentIsSummarised(1);
+        thenTheSummaryIs(
+                "Until April 2016, both increase, Sales of doughnuts increase more steeply, and so, the gap between them decreases to 20%.");
 
     }
 
-    /**
-     * Until <END> both <higher series> and <lower series> rise. Because <series
-     * with steepest difference> rises more steeply, the gap between them
-     * decreases to <value>, its minimum value {NB. Do not mention minimum gap
-     * if there are any intersections in the graph}
-     */
     @Test
     public void testBothRisingConvergingToGlobalMinimumGapFirstTimeMentioned12b() {
-        //
-
+        givenASeriesWithValuesHasMaximumGapAndMinimumGap(50d, 130d, 20d, 110d, false, true);
+        whenTheSegmentIsSummarised();
+        thenTheSummaryIs(
+                "Until April 2016, both increase, Sales of doughnuts increase more steeply, and so, the gap between them decreases to 20%, its minimum value.");
     }
 
-    /**
-     * Until <END> both <higher series> and <lower series> rise. Because <series
-     * with steepest difference> rises more steeply, the gap between them
-     * decreases to <value>.
-     */
     @Test
     public void testBothRisingConvergingToGlobalMinimumGapWhenGraphHasIntersections13b() {
         givenTheGraphHasIntersections();
-
+        givenASeriesWithValuesHasMaximumGapAndMinimumGap(50d, 130d, 20d, 110d, false, true);
+        whenTheSegmentIsSummarised();
+        thenTheSummaryIs(
+                "Until April 2016, both increase, Sales of doughnuts increase more steeply, and so, the gap between them decreases to 20%.");
     }
 
-    /**
-     * Until <END> both <higher series> and <lower series> rise. Because <series
-     * with steepest difference> rises more steeply, the gap between them
-     * increases.
-     */
     @Test
     public void testBothRisingDiverging14b() {
-        //
-
+        givenASeriesWithValuesHasMaximumGapAndMinimumGap(-250d, -200d, 60d, 340d, false, false);
+        whenTheSegmentIsSummarised();
+        thenTheSummaryIs(
+                "Until April 2016, both increase, Sales of doughnuts increase more steeply and so, the gap between them increases.");
     }
 
-    /**
-     * Until <END> both <higher series> and <lower series> rise. Because <series
-     * with steepest difference> rises more steeply, the gap between them
-     * increases to <value>.
-     */
     @Test
     public void testBothRisingDivergingToGlobalMaximumGap15b() {
-
+        givenASeriesWithValuesHasMaximumGapAndMinimumGap(-250d, -200d, 60d, 340d, true, false);
+        givenASeriesWithValuesHasMaximumGapAndMinimumGap(-250d, -200d, 60d, 340d, true, false);
+        whenTheSegmentIsSummarised(1);
+        thenTheSummaryIs(
+                "Until April 2016, both increase, Sales of doughnuts increase more steeply and so, the gap between them increases to 540%.");
     }
 
-    /**
-     * Until <END> both <higher series> and <lower series> rise. Because <series
-     * with steepest difference> rises more steeply, the gap between them
-     * increases to <value>, its maximum value.
-     */
     @Test
     public void testBothRisingDivergingToGlobalMaximumGapFirstTimeMentioned16b() {
-        //
-
+        givenASeriesWithValuesHasMaximumGapAndMinimumGap(-250d, -200d, 60d, 340d, true, false);
+        whenTheSegmentIsSummarised();
+        thenTheSummaryIs(
+                "Until April 2016, both increase, Sales of doughnuts increase more steeply and so, the gap between them increases to 540%, its maximum value.");
     }
 
     /**

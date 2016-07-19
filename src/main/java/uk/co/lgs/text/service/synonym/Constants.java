@@ -14,7 +14,7 @@ public class Constants {
 
     public static final String BY = "by";
 
-    public static final String CONSTANT = "constant";
+    public static final String REMAIN = "remain";
 
     public static final String DECREASE = "decrease";
 
@@ -27,6 +27,10 @@ public class Constants {
     public static final String STAY_SAME = "stay the same";
 
     public static final String UNTIL = "until";
+
+    public static final String TO = "to";
+
+    public static final String CROSS = "cross";
 
     private Constants() {
         // I should not be instantiated.
