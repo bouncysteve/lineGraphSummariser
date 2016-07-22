@@ -51,7 +51,6 @@ public class GraphSegmentSummaryServiceImpl implements GraphSegmentSummaryServic
 
     @Override
     public List<DocumentElement> getSegmentSummaries(final GraphModel model) {
-        // REALISER.setCommaSepCuephrase(true);
         final List<NPPhraseSpec> labels = this.labelService.getLabelsForCommonUse(model);
         final boolean intersectingGraph = model.isIntersecting();
 
@@ -73,10 +72,15 @@ public class GraphSegmentSummaryServiceImpl implements GraphSegmentSummaryServic
 
     private DocumentElement getSummary(final GraphSegment graphSegment, final boolean intersectingGraph,
             final boolean mentionedMaxGapYet, final boolean mentionedMinGapYet, final List<NPPhraseSpec> labels) {
+        LOG.info("******************************************");
         DocumentElement summary;
-
-        if (null == graphSegment.getHigherSeriesAtStart()) {
-            summary = getSameValueAtStartSentence(graphSegment, labels);
+        CoordinatedPhraseElement endValuesPhrase = null;
+        if (null == graphSegment.getHigherSeriesAtStart() && null != graphSegment.getHigherSeriesAtEnd()) {
+            endValuesPhrase = describeSeriesWithDifferentEndValues(labels, graphSegment);
+            LOG.info(REALISER.realiseSentence(endValuesPhrase));
+            endValuesPhrase
+                    .addPreModifier(this.nlgFactory.createPrepositionPhrase(this.synonymService.getSynonym("so that")));
+            LOG.info(REALISER.realiseSentence(endValuesPhrase));
         }
 
         if (isSameTrends(graphSegment)) {
@@ -87,35 +91,10 @@ public class GraphSegmentSummaryServiceImpl implements GraphSegmentSummaryServic
                     labels);
         }
 
-        // TODO: if both end on same value then add extra sentence
-        return summary;
-    }
-
-    private DocumentElement getSameValueAtStartSentence(final GraphSegment graphSegment,
-            final List<NPPhraseSpec> labels) {
-        SPhraseSpec sameStartValuePhrase = null;
-        if (graphSegment.getSeriesSegment(0).getStartValue() == graphSegment.getSeriesSegment(1).getStartValue()) {
-            sameStartValuePhrase = this.nlgFactory.createClause();
-            final CoordinatedPhraseElement subject = this.nlgFactory.createCoordinatedPhrase(labels.get(0),
-                    labels.get(1));
-            // FIXME: use determiner to set subject to "both"
-            final VPPhraseSpec verb = this.nlgFactory.createVerbPhrase("both have value");
-            final SeriesSegment firstSeriesSegment = graphSegment.getSeriesSegment(0);
-
-            final NPPhraseSpec object = this.nlgFactory.createNounPhrase(this.valueService
-                    .formatValueWithUnits(firstSeriesSegment.getStartValue(), firstSeriesSegment.getUnits()));
-            sameStartValuePhrase.setSubject(subject);
-            final PPPhraseSpec preposition = getStartTimePhrase(this.synonymService.getSynonym(Constants.AT),
-                    graphSegment);
-            sameStartValuePhrase.setVerb(verb);
-            if (null != object) {
-                sameStartValuePhrase.setObject(object);
-            }
-            sameStartValuePhrase.addComplement(preposition);
-
-            LOG.info(REALISER.realiseSentence(sameStartValuePhrase));
+        if (null != endValuesPhrase) {
+            summary.addComponent(endValuesPhrase);
         }
-        return this.nlgFactory.createSentence(sameStartValuePhrase);
+        return summary;
     }
 
     private DocumentElement getOppositeTrendsSummary(final GraphSegment graphSegment, final boolean intersectingGraph,

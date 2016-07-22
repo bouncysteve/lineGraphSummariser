@@ -302,96 +302,119 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
                 "Until April 2016, both increase, Sales of doughnuts increase more steeply and so, the gap between them increases to 540%, its maximum value.");
     }
 
-    /**
-     * Until <END> both <higherSeries> and <lowerSeries> rise [at the same
-     * rate], consequently the gap between them remains <value>.
-     */
     @Test
     public void testBothRisingConstant17b() {
-        //
+        givenASeriesWithValuesHasMaximumGapAndMinimumGap(50d, 100d, 150d, 200d, false, false);
+        whenTheSegmentIsSummarised();
+        thenTheSummaryIs(
+                "Until April 2016, both increase at the same rate, and so, the gap between them remains 100%.");
     }
 
-    /**
-     * Both <seriesA> and <SeriesB> rise to <value> at <END>.
-     */
     @Test
     public void testBothRisingConvergingToIntersectionAtEndOfSection18b() {
-        //
+        givenASeriesWithValuesHasMaximumGapAndMinimumGap(-29450d, -200d, -1298721948760d, -200d, false, false);
+        whenTheSegmentIsSummarised();
+        thenTheSummaryIs("By April 2016, both increase to -200%.");
     }
 
-    /**
-     * Both <higher series> and <lower series> rise. Because <series with
-     * steepest difference> rises more steeply they cross, so that at END
-     * <higherSeriesAtEnd> is higher with <value>, while <otherSeries> has
-     * <value>
-     */
     @Test
     public void testBothRisingConvergingToIntersectionDuringSection19b() {
-
+        givenASeriesWithValuesHasMaximumGapAndMinimumGap(-1550d, -100d, -1603660d, -10d, false, false);
+        whenTheSegmentIsSummarised();
+        thenTheSummaryIs(
+                "Next, both increase, Sales of doughnuts increase more steeply, so they cross and by April 2016 Sales of doughnuts are higher with -10%, while Cost of sunglasses has -100%.");
     }
 
-    /**
-     * Following an intersection at the end of the previous segment there should
-     * be an extra sentence: <higherSeriesAtEnd> is higher with <value> at
-     * <END>, while <lowerSeriesAtEnd> has <value>.
-     */
     @Test
     public void testOppositeTrendsDivergingFromSameValue20() {
-
+        givenASeriesWithValuesHasMaximumGapAndMinimumGap(10d, 50d, 10d, 0d, false, false);
+        whenTheSegmentIsSummarised();
+        thenTheSummaryIs(
+                "Until April 2016, Cost of sunglasses increases but Sales of doughnuts decrease, so the gap between them increases, so that Cost of sunglasses is higher with 50%, while Sales of doughnuts have 0%.");
     }
 
     @Test
     public void testOppositeTrendsDivergingFromSameValueToGlobalMaximumGap21() {
-
+        givenASeriesWithValuesHasMaximumGapAndMinimumGap(-1550d, 10d, -1603660d, 10d, true, false);
+        givenASeriesWithValuesHasMaximumGapAndMinimumGap(10d, 50d, 10d, 0d, true, false);
+        whenTheSegmentIsSummarised(1);
+        thenTheSummaryIs(
+                "Until April 2016, Cost of sunglasses increases but Sales of doughnuts decrease, so the gap between them increases to 50%, so that Cost of sunglasses is higher with 50%, while Sales of doughnuts have 0%.");
     }
 
     @Test
     public void testOppositeTrendsDivergingFromSameValueToGlobalMaximumGapFirstTimeMentioned22() {
-
+        givenASeriesWithValuesHasMaximumGapAndMinimumGap(10d, 50d, 10d, 0d, true, false);
+        whenTheSegmentIsSummarised();
+        thenTheSummaryIs(
+                "Until April 2016, Cost of sunglasses increases but Sales of doughnuts decrease, so the gap between them increases to 50%, its maximum value, so that Cost of sunglasses is higher with 50%, while Sales of doughnuts have 0%.");
     }
 
     @Test
     public void testBothFallingDivergingFromSameValue23a() {
-        //
-
+        givenASeriesWithValuesHasMaximumGapAndMinimumGap(60d, -200d, 60d, 40d, false, false);
+        whenTheSegmentIsSummarised();
+        thenTheSummaryIs(
+                "Until April 2016, both decrease, Cost of sunglasses decreases more steeply and so, the gap between them increases, so that Sales of doughnuts are higher with 40%, while Cost of sunglasses has -200%.");
     }
 
     @Test
     public void testBothFallingDivergingToGlobalMaximumGapFromSameValue24a() {
-
+        givenASeriesWithValuesHasMaximumGapAndMinimumGap(-1550d, 10d, -1603660d, 10d, true, false);
+        givenASeriesWithValuesHasMaximumGapAndMinimumGap(60d, -200d, 60d, 40d, true, false);
+        whenTheSegmentIsSummarised(1);
+        thenTheSummaryIs(
+                "Until April 2016, both decrease, Cost of sunglasses decreases more steeply and so, the gap between them increases to 240%, so that Sales of doughnuts are higher with 40%, while Cost of sunglasses has -200%.");
     }
 
     @Test
     public void testBothFallingDivergingToGlobalMaximumGapFromSameValueFirstTimeMentioned25a() {
-        //
-
+        givenASeriesWithValuesHasMaximumGapAndMinimumGap(60d, -200d, 60d, 40d, true, false);
+        whenTheSegmentIsSummarised();
+        thenTheSummaryIs(
+                "Until April 2016, both decrease, Cost of sunglasses decreases more steeply and so, the gap between them increases to 240%, its maximum value, so that Sales of doughnuts are higher with 40%, while Cost of sunglasses has -200%.");
     }
 
+    /**
+     * TODO: Does this need a bit more?
+     */
     @Test
     public void testBothFallingConstantGapFromSameValue26a() {
-
+        givenASeriesWithValuesHasMaximumGapAndMinimumGap(100d, 50d, 100d, 50d, false, false);
+        whenTheSegmentIsSummarised();
+        thenTheSummaryIs("Until April 2016, both decrease at the same rate, and so, the gap between them remains 0%.");
     }
 
     @Test
     public void testBothRisingDivergingFromSameValue23b() {
-        //
-
+        givenASeriesWithValuesHasMaximumGapAndMinimumGap(-250d, -200d, -250d, 340d, false, false);
+        whenTheSegmentIsSummarised();
+        thenTheSummaryIs(
+                "Until April 2016, both increase, Sales of doughnuts increase more steeply and so, the gap between them increases, so that Sales of doughnuts are higher with 340%, while Cost of sunglasses has -200%.");
     }
 
     @Test
     public void testBothRisingDivergingToGlobalMaximumGapFromSameValue24b() {
-
+        givenASeriesWithValuesHasMaximumGapAndMinimumGap(-250d, -200d, -250d, 340d, true, false);
+        givenASeriesWithValuesHasMaximumGapAndMinimumGap(-250d, -200d, -250d, 340d, true, false);
+        whenTheSegmentIsSummarised(1);
+        thenTheSummaryIs(
+                "Until April 2016, both increase, Sales of doughnuts increase more steeply and so, the gap between them increases to 540%, so that Sales of doughnuts are higher with 340%, while Cost of sunglasses has -200%.");
     }
 
     @Test
     public void testBothRisingDivergingToGlobalMaximumGapFromSameValueFirstTimeMentioned25b() {
-        //
-
+        givenASeriesWithValuesHasMaximumGapAndMinimumGap(-250d, -200d, -250d, 340d, true, false);
+        whenTheSegmentIsSummarised();
+        thenTheSummaryIs(
+                "Until April 2016, both increase, Sales of doughnuts increase more steeply and so, the gap between them increases to 540%, its maximum value, so that Sales of doughnuts are higher with 340%, while Cost of sunglasses has -200%.");
     }
 
     @Test
     public void testBothRisingConstantGapFromSameValue26b() {
-
+        givenASeriesWithValuesHasMaximumGapAndMinimumGap(100d, 200d, 100d, 200d, false, false);
+        whenTheSegmentIsSummarised();
+        thenTheSummaryIs("Until April 2016, both increase at the same rate, and so, the gap between them remains 0%.");
     }
 
     private void givenASeriesWithValuesHasMaximumGapAndMinimumGap(final double firstSeriesStartValue,
