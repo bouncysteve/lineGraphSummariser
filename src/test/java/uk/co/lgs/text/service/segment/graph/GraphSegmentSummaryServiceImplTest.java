@@ -82,7 +82,7 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
         givenASeriesWithValuesHasMaximumGapAndMinimumGap(50d, 100d, 20d, 10d, false, false);
         whenTheSegmentIsSummarised();
         thenTheSummaryIs(
-                "Until April 2016, Cost of sunglasses increases but Sales of doughnuts decrease, so the gap between them increases.");
+                "Until April 2016 Cost of sunglasses increases but Sales of doughnuts decrease, so the gap between them increases.");
     }
 
     @Test
@@ -91,7 +91,7 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
         givenASeriesWithValuesHasMaximumGapAndMinimumGap(50d, 100d, 20d, 10d, true, false);
         whenTheSegmentIsSummarised(1);
         thenTheSummaryIs(
-                "Until April 2016, Cost of sunglasses increases but Sales of doughnuts decrease, so the gap between them increases to 90%.");
+                "Until April 2016 Cost of sunglasses increases but Sales of doughnuts decrease, so the gap between them increases to 90%.");
     }
 
     @Test
@@ -99,7 +99,7 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
         givenASeriesWithValuesHasMaximumGapAndMinimumGap(50d, 100d, 20d, 10d, true, false);
         whenTheSegmentIsSummarised();
         thenTheSummaryIs(
-                "Until April 2016, Cost of sunglasses increases but Sales of doughnuts decrease, so the gap between them increases to 90%, its maximum value.");
+                "Until April 2016 Cost of sunglasses increases but Sales of doughnuts decrease, so the gap between them increases to 90%, its maximum value.");
     }
 
     @Test
@@ -107,7 +107,7 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
         givenASeriesWithValuesHasMaximumGapAndMinimumGap(20d, 10d, -20d, 0d, false, false);
         whenTheSegmentIsSummarised();
         thenTheSummaryIs(
-                "Until April 2016, Cost of sunglasses decreases but Sales of doughnuts increase, so the gap between them decreases.");
+                "Until April 2016 Cost of sunglasses decreases but Sales of doughnuts increase, so the gap between them decreases.");
     }
 
     @Test
@@ -116,7 +116,7 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
         givenASeriesWithValuesHasMaximumGapAndMinimumGap(20d, 10d, -20d, 0d, false, true);
         whenTheSegmentIsSummarised(1);
         thenTheSummaryIs(
-                "Until April 2016, Cost of sunglasses decreases but Sales of doughnuts increase, so the gap between them decreases to 10%.");
+                "Until April 2016 Cost of sunglasses decreases but Sales of doughnuts increase, so the gap between them decreases to 10%.");
     }
 
     @Test
@@ -124,7 +124,7 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
         givenASeriesWithValuesHasMaximumGapAndMinimumGap(20d, 10d, -20d, 0d, false, true);
         whenTheSegmentIsSummarised();
         thenTheSummaryIs(
-                "Until April 2016, Cost of sunglasses decreases but Sales of doughnuts increase, so the gap between them decreases to 10%, its minimum value.");
+                "Until April 2016 Cost of sunglasses decreases but Sales of doughnuts increase, so the gap between them decreases to 10%, its minimum value.");
     }
 
     @Test
@@ -133,7 +133,7 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
         givenASeriesWithValuesHasMaximumGapAndMinimumGap(20d, 10d, -20d, 0d, false, true);
         whenTheSegmentIsSummarised();
         thenTheSummaryIs(
-                "Until April 2016, Cost of sunglasses decreases but Sales of doughnuts increase, so the gap between them decreases to 10%.");
+                "Until April 2016 Cost of sunglasses decreases but Sales of doughnuts increase, so the gap between them decreases to 10%.");
     }
 
     @Test
@@ -141,8 +141,7 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
         givenASeriesWithValuesHasMaximumGapAndMinimumGap(20d, 10d, -20d, 15d, false, false);
         whenTheSegmentIsSummarised();
         thenTheSummaryIs(
-                "Next, Cost of sunglasses decreases but Sales of doughnuts increase, and they cross, so that by April 2016 Sales of doughnuts are higher with 15% while Cost of sunglasses has 10%.");
-
+                "Next, Cost of sunglasses decreases but Sales of doughnuts increase; they cross, so that by April 2016 Sales of doughnuts are higher with 15% while Cost of sunglasses has 10%.");
     }
 
     @Test
@@ -150,7 +149,7 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
         givenASeriesWithValuesHasMaximumGapAndMinimumGap(20d, 10d, -20d, 10d, false, false);
         whenTheSegmentIsSummarised();
         thenTheSummaryIs(
-                "By April 2016, Cost of sunglasses decreases to 10% and Sales of doughnuts increase to the same value.");
+                "By April 2016 Cost of sunglasses decreases to 10% and Sales of doughnuts increase to the same value.");
     }
 
     /*********************
@@ -161,7 +160,7 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
         givenASeriesWithValuesHasMaximumGapAndMinimumGap(50d, 30d, 20d, 10d, false, false);
         whenTheSegmentIsSummarised();
         thenTheSummaryIs(
-                "Until April 2016, both decrease, Cost of sunglasses decreases more steeply, and so, the gap between them decreases.");
+                "Until April 2016 both decrease; Cost of sunglasses decreases more steeply, and so the gap between them decreases.");
     }
 
     @Test
@@ -170,7 +169,7 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
         givenASeriesWithValuesHasMaximumGapAndMinimumGap(50d, 30d, 20d, 10d, false, true);
         whenTheSegmentIsSummarised(1);
         thenTheSummaryIs(
-                "Until April 2016, both decrease, Cost of sunglasses decreases more steeply and so, the gap between them decreases to 20%.");
+                "Until April 2016 both decrease; Cost of sunglasses decreases more steeply, and so the gap between them decreases to 20%.");
     }
 
     @Test
@@ -178,7 +177,7 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
         givenASeriesWithValuesHasMaximumGapAndMinimumGap(50d, 30d, 20d, 10d, false, true);
         whenTheSegmentIsSummarised();
         thenTheSummaryIs(
-                "Until April 2016, both decrease, Cost of sunglasses decreases more steeply and so, the gap between them decreases to 20%, its minimum value.");
+                "Until April 2016 both decrease; Cost of sunglasses decreases more steeply, and so the gap between them decreases to 20%, its minimum value.");
     }
 
     @Test
@@ -187,7 +186,7 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
         givenASeriesWithValuesHasMaximumGapAndMinimumGap(50d, 30d, 20d, 10d, false, true);
         whenTheSegmentIsSummarised();
         thenTheSummaryIs(
-                "Until April 2016, both decrease, Cost of sunglasses decreases more steeply and so, the gap between them decreases to 20%.");
+                "Until April 2016 both decrease; Cost of sunglasses decreases more steeply, and so the gap between them decreases to 20%.");
     }
 
     @Test
@@ -195,7 +194,7 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
         givenASeriesWithValuesHasMaximumGapAndMinimumGap(50d, -200d, 60d, 40d, false, false);
         whenTheSegmentIsSummarised();
         thenTheSummaryIs(
-                "Until April 2016, both decrease, Cost of sunglasses decreases more steeply and so, the gap between them increases.");
+                "Until April 2016 both decrease; Cost of sunglasses decreases more steeply, and so the gap between them increases.");
     }
 
     @Test
@@ -204,7 +203,7 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
         givenASeriesWithValuesHasMaximumGapAndMinimumGap(50d, -200d, 60d, 40d, true, false);
         whenTheSegmentIsSummarised(1);
         thenTheSummaryIs(
-                "Until April 2016, both decrease, Cost of sunglasses decreases more steeply and so, the gap between them increases to 240%.");
+                "Until April 2016 both decrease; Cost of sunglasses decreases more steeply, and so the gap between them increases to 240%.");
     }
 
     @Test
@@ -212,22 +211,21 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
         givenASeriesWithValuesHasMaximumGapAndMinimumGap(50d, -200d, 60d, 40d, true, false);
         whenTheSegmentIsSummarised();
         thenTheSummaryIs(
-                "Until April 2016, both decrease, Cost of sunglasses decreases more steeply and so, the gap between them increases to 240%, its maximum value.");
+                "Until April 2016 both decrease; Cost of sunglasses decreases more steeply, and so the gap between them increases to 240%, its maximum value.");
     }
 
     @Test
     public void testBothFallingConstant17a() {
         givenASeriesWithValuesHasMaximumGapAndMinimumGap(100d, 50d, 200d, 150d, false, false);
         whenTheSegmentIsSummarised();
-        thenTheSummaryIs(
-                "Until April 2016, both decrease at the same rate, and so, the gap between them remains 100%.");
+        thenTheSummaryIs("Until April 2016 both decrease at the same rate, and so the gap between them remains 100%.");
     }
 
     @Test
     public void testBothFallingConvergingToIntersectionAtEndOfSection18a() {
         givenASeriesWithValuesHasMaximumGapAndMinimumGap(50d, -200d, 60d, -200d, false, false);
         whenTheSegmentIsSummarised();
-        thenTheSummaryIs("By April 2016, both decrease to -200%.");
+        thenTheSummaryIs("By April 2016 both decrease to -200%.");
     }
 
     @Test
@@ -235,7 +233,7 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
         givenASeriesWithValuesHasMaximumGapAndMinimumGap(50d, -100d, 60d, -200d, false, false);
         whenTheSegmentIsSummarised();
         thenTheSummaryIs(
-                "Next, both decrease, Sales of doughnuts decrease more steeply, so they cross and by April 2016 Cost of sunglasses is higher with -100%, while Sales of doughnuts have -200%.");
+                "Next, both decrease; Sales of doughnuts decrease more steeply, so they cross, and by April 2016 Cost of sunglasses is higher with -100%, while Sales of doughnuts have -200%.");
     }
 
     /***************
@@ -247,7 +245,7 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
         givenASeriesWithValuesHasMaximumGapAndMinimumGap(50d, 60d, 20d, 50d, false, false);
         whenTheSegmentIsSummarised();
         thenTheSummaryIs(
-                "Until April 2016, both increase, Sales of doughnuts increase more steeply, and so, the gap between them decreases.");
+                "Until April 2016 both increase; Sales of doughnuts increase more steeply, and so the gap between them decreases.");
     }
 
     @Test
@@ -256,7 +254,7 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
         givenASeriesWithValuesHasMaximumGapAndMinimumGap(50d, 130d, 20d, 110d, false, true);
         whenTheSegmentIsSummarised(1);
         thenTheSummaryIs(
-                "Until April 2016, both increase, Sales of doughnuts increase more steeply, and so, the gap between them decreases to 20%.");
+                "Until April 2016 both increase; Sales of doughnuts increase more steeply, and so the gap between them decreases to 20%.");
 
     }
 
@@ -265,7 +263,7 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
         givenASeriesWithValuesHasMaximumGapAndMinimumGap(50d, 130d, 20d, 110d, false, true);
         whenTheSegmentIsSummarised();
         thenTheSummaryIs(
-                "Until April 2016, both increase, Sales of doughnuts increase more steeply, and so, the gap between them decreases to 20%, its minimum value.");
+                "Until April 2016 both increase; Sales of doughnuts increase more steeply, and so the gap between them decreases to 20%, its minimum value.");
     }
 
     @Test
@@ -274,7 +272,7 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
         givenASeriesWithValuesHasMaximumGapAndMinimumGap(50d, 130d, 20d, 110d, false, true);
         whenTheSegmentIsSummarised();
         thenTheSummaryIs(
-                "Until April 2016, both increase, Sales of doughnuts increase more steeply, and so, the gap between them decreases to 20%.");
+                "Until April 2016 both increase; Sales of doughnuts increase more steeply, and so the gap between them decreases to 20%.");
     }
 
     @Test
@@ -282,7 +280,7 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
         givenASeriesWithValuesHasMaximumGapAndMinimumGap(-250d, -200d, 60d, 340d, false, false);
         whenTheSegmentIsSummarised();
         thenTheSummaryIs(
-                "Until April 2016, both increase, Sales of doughnuts increase more steeply and so, the gap between them increases.");
+                "Until April 2016 both increase; Sales of doughnuts increase more steeply, and so the gap between them increases.");
     }
 
     @Test
@@ -291,7 +289,7 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
         givenASeriesWithValuesHasMaximumGapAndMinimumGap(-250d, -200d, 60d, 340d, true, false);
         whenTheSegmentIsSummarised(1);
         thenTheSummaryIs(
-                "Until April 2016, both increase, Sales of doughnuts increase more steeply and so, the gap between them increases to 540%.");
+                "Until April 2016 both increase; Sales of doughnuts increase more steeply, and so the gap between them increases to 540%.");
     }
 
     @Test
@@ -299,22 +297,21 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
         givenASeriesWithValuesHasMaximumGapAndMinimumGap(-250d, -200d, 60d, 340d, true, false);
         whenTheSegmentIsSummarised();
         thenTheSummaryIs(
-                "Until April 2016, both increase, Sales of doughnuts increase more steeply and so, the gap between them increases to 540%, its maximum value.");
+                "Until April 2016 both increase; Sales of doughnuts increase more steeply, and so the gap between them increases to 540%, its maximum value.");
     }
 
     @Test
     public void testBothRisingConstant17b() {
         givenASeriesWithValuesHasMaximumGapAndMinimumGap(50d, 100d, 150d, 200d, false, false);
         whenTheSegmentIsSummarised();
-        thenTheSummaryIs(
-                "Until April 2016, both increase at the same rate, and so, the gap between them remains 100%.");
+        thenTheSummaryIs("Until April 2016 both increase at the same rate, and so the gap between them remains 100%.");
     }
 
     @Test
     public void testBothRisingConvergingToIntersectionAtEndOfSection18b() {
         givenASeriesWithValuesHasMaximumGapAndMinimumGap(-29450d, -200d, -1298721948760d, -200d, false, false);
         whenTheSegmentIsSummarised();
-        thenTheSummaryIs("By April 2016, both increase to -200%.");
+        thenTheSummaryIs("By April 2016 both increase to -200%.");
     }
 
     @Test
@@ -322,7 +319,7 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
         givenASeriesWithValuesHasMaximumGapAndMinimumGap(-1550d, -100d, -1603660d, -10d, false, false);
         whenTheSegmentIsSummarised();
         thenTheSummaryIs(
-                "Next, both increase, Sales of doughnuts increase more steeply, so they cross and by April 2016 Sales of doughnuts are higher with -10%, while Cost of sunglasses has -100%.");
+                "Next, both increase; Sales of doughnuts increase more steeply, so they cross, and by April 2016 Sales of doughnuts are higher with -10%, while Cost of sunglasses has -100%.");
     }
 
     @Test
@@ -330,7 +327,7 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
         givenASeriesWithValuesHasMaximumGapAndMinimumGap(10d, 50d, 10d, 0d, false, false);
         whenTheSegmentIsSummarised();
         thenTheSummaryIs(
-                "Until April 2016, Cost of sunglasses increases but Sales of doughnuts decrease, so the gap between them increases, so that Cost of sunglasses is higher with 50%, while Sales of doughnuts have 0%.");
+                "Until April 2016 Cost of sunglasses increases but Sales of doughnuts decrease, so the gap between them increases, so that Cost of sunglasses is higher with 50%, while Sales of doughnuts have 0%.");
     }
 
     @Test
@@ -339,7 +336,7 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
         givenASeriesWithValuesHasMaximumGapAndMinimumGap(10d, 50d, 10d, 0d, true, false);
         whenTheSegmentIsSummarised(1);
         thenTheSummaryIs(
-                "Until April 2016, Cost of sunglasses increases but Sales of doughnuts decrease, so the gap between them increases to 50%, so that Cost of sunglasses is higher with 50%, while Sales of doughnuts have 0%.");
+                "Until April 2016 Cost of sunglasses increases but Sales of doughnuts decrease, so the gap between them increases to 50%, so that Cost of sunglasses is higher with 50%, while Sales of doughnuts have 0%.");
     }
 
     @Test
@@ -347,7 +344,7 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
         givenASeriesWithValuesHasMaximumGapAndMinimumGap(10d, 50d, 10d, 0d, true, false);
         whenTheSegmentIsSummarised();
         thenTheSummaryIs(
-                "Until April 2016, Cost of sunglasses increases but Sales of doughnuts decrease, so the gap between them increases to 50%, its maximum value, so that Cost of sunglasses is higher with 50%, while Sales of doughnuts have 0%.");
+                "Until April 2016 Cost of sunglasses increases but Sales of doughnuts decrease, so the gap between them increases to 50%, its maximum value, so that Cost of sunglasses is higher with 50%, while Sales of doughnuts have 0%.");
     }
 
     @Test
@@ -355,7 +352,7 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
         givenASeriesWithValuesHasMaximumGapAndMinimumGap(60d, -200d, 60d, 40d, false, false);
         whenTheSegmentIsSummarised();
         thenTheSummaryIs(
-                "Until April 2016, both decrease, Cost of sunglasses decreases more steeply and so, the gap between them increases, so that Sales of doughnuts are higher with 40%, while Cost of sunglasses has -200%.");
+                "Until April 2016 both decrease, Cost of sunglasses decreases more steeply and so, the gap between them increases, so that Sales of doughnuts are higher with 40%, while Cost of sunglasses has -200%.");
     }
 
     @Test
@@ -364,7 +361,7 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
         givenASeriesWithValuesHasMaximumGapAndMinimumGap(60d, -200d, 60d, 40d, true, false);
         whenTheSegmentIsSummarised(1);
         thenTheSummaryIs(
-                "Until April 2016, both decrease, Cost of sunglasses decreases more steeply and so, the gap between them increases to 240%, so that Sales of doughnuts are higher with 40%, while Cost of sunglasses has -200%.");
+                "Until April 2016 both decrease, Cost of sunglasses decreases more steeply and so, the gap between them increases to 240%, so that Sales of doughnuts are higher with 40%, while Cost of sunglasses has -200%.");
     }
 
     @Test
@@ -372,7 +369,7 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
         givenASeriesWithValuesHasMaximumGapAndMinimumGap(60d, -200d, 60d, 40d, true, false);
         whenTheSegmentIsSummarised();
         thenTheSummaryIs(
-                "Until April 2016, both decrease, Cost of sunglasses decreases more steeply and so, the gap between them increases to 240%, its maximum value, so that Sales of doughnuts are higher with 40%, while Cost of sunglasses has -200%.");
+                "Until April 2016 both decrease, Cost of sunglasses decreases more steeply and so the gap between them increases to 240%, its maximum value, so that Sales of doughnuts are higher with 40%, while Cost of sunglasses has -200%.");
     }
 
     /**
@@ -382,7 +379,7 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
     public void testBothFallingConstantGapFromSameValue26a() {
         givenASeriesWithValuesHasMaximumGapAndMinimumGap(100d, 50d, 100d, 50d, false, false);
         whenTheSegmentIsSummarised();
-        thenTheSummaryIs("Until April 2016, both decrease at the same rate, and so, the gap between them remains 0%.");
+        thenTheSummaryIs("Until April 2016 both decrease at the same rate, and so the gap between them remains 0%.");
     }
 
     @Test
@@ -390,7 +387,7 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
         givenASeriesWithValuesHasMaximumGapAndMinimumGap(-250d, -200d, -250d, 340d, false, false);
         whenTheSegmentIsSummarised();
         thenTheSummaryIs(
-                "Until April 2016, both increase, Sales of doughnuts increase more steeply and so, the gap between them increases, so that Sales of doughnuts are higher with 340%, while Cost of sunglasses has -200%.");
+                "Until April 2016 both increase; Sales of doughnuts increase more steeply and so the gap between them increases, so that Sales of doughnuts are higher with 340%, while Cost of sunglasses has -200%.");
     }
 
     @Test
@@ -399,7 +396,7 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
         givenASeriesWithValuesHasMaximumGapAndMinimumGap(-250d, -200d, -250d, 340d, true, false);
         whenTheSegmentIsSummarised(1);
         thenTheSummaryIs(
-                "Until April 2016, both increase, Sales of doughnuts increase more steeply and so, the gap between them increases to 540%, so that Sales of doughnuts are higher with 340%, while Cost of sunglasses has -200%.");
+                "Until April 2016 both increase; Sales of doughnuts increase more steeply and so the gap between them increases to 540%, so that Sales of doughnuts are higher with 340%, while Cost of sunglasses has -200%.");
     }
 
     @Test
@@ -407,14 +404,14 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
         givenASeriesWithValuesHasMaximumGapAndMinimumGap(-250d, -200d, -250d, 340d, true, false);
         whenTheSegmentIsSummarised();
         thenTheSummaryIs(
-                "Until April 2016, both increase, Sales of doughnuts increase more steeply and so, the gap between them increases to 540%, its maximum value, so that Sales of doughnuts are higher with 340%, while Cost of sunglasses has -200%.");
+                "Until April 2016 both increase; Sales of doughnuts increase more steeply and so the gap between them increases to 540%, its maximum value, so that Sales of doughnuts are higher with 340%, while Cost of sunglasses has -200%.");
     }
 
     @Test
     public void testBothRisingConstantGapFromSameValue26b() {
         givenASeriesWithValuesHasMaximumGapAndMinimumGap(100d, 200d, 100d, 200d, false, false);
         whenTheSegmentIsSummarised();
-        thenTheSummaryIs("Until April 2016, both increase at the same rate, and so, the gap between them remains 0%.");
+        thenTheSummaryIs("Until April 2016 both increase at the same rate, and so the gap between them remains 0%.");
     }
 
     private void givenASeriesWithValuesHasMaximumGapAndMinimumGap(final double firstSeriesStartValue,
@@ -531,9 +528,9 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
     }
 
     private void thenTheSummaryIs(final String expectedString) {
-        final String expectedWithoutCommas = expectedString.replaceAll(",", "");
-        final String summaryWithOutCommas = this.summaryText.replaceAll(",", "");
-        assertEquals(expectedWithoutCommas, summaryWithOutCommas);
+        final String expectedWithoutCommasAndSemicolons = expectedString.replaceAll(",", "").replaceAll(";", "");
+        final String summaryWithOutCommas = this.summaryText.replaceAll(",", "").replaceAll(";", "");
+        assertEquals(expectedWithoutCommasAndSemicolons, summaryWithOutCommas);
         // assertEquals(expectedString, this.summaryText);
     }
 }

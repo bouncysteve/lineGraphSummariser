@@ -19,19 +19,42 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class SynonymServiceImpl implements SynonymService {
-    private static final List<String> AT_SYNONYMS = Arrays.asList("at");
-    private static final List<String> BUT_SYNONYMS = Arrays.asList("but", "however");
-    private static final List<String> CROSS_SYNONYMS = Arrays.asList("cross", "intersect");
-    private static final List<String> REMAIN_AT_SYNONYMS = Arrays.asList("remain", "be constant at", "stay the same at",
-            "continue to be", "freeze at", "persist at", "rest at", "hold the value");// ("endure",
-    private static final List<String> DECREASE_SYNONYMS = Arrays.asList("decrease", "fall", "decline", "drop", "shrink",
-            "lower", "reduce", "show a downward trend"); // ("weaken","diminish",
-    private static final List<String> INCREASE_SYNONYMS = Arrays.asList("increase", "rise", "grow", "improve",
+    private static final List<String> AT_SYNONYMS = Arrays.asList(Constants.AT);
+    private static final List<String> AT_THE_SAME_RATE_SYNONYMS = Arrays.asList(Constants.AT_THE_SAME_RATE, "together",
+            "equally");
+    private static final List<String> BE_HIGHER_SYNONYMS = Arrays.asList(Constants.BE_HIGHER);
+    private static final List<String> BOTH_SYNONYMS = Arrays.asList(Constants.BOTH, "the two lines");
+    private static final List<String> BUT_SYNONYMS = Arrays.asList(Constants.BUT, "however", "nevertheless",
+            "despite this");
+    private static final List<String> BY_SYNONYMS = Arrays.asList(Constants.BY);
+    private static final List<String> CROSS_SYNONYMS = Arrays.asList(Constants.CROSS, "intersect");
+    private static final List<String> DECREASE_SYNONYMS = Arrays.asList(Constants.DECREASE, "fall", "decline", "drop",
+            "shrink", "lower", "reduce", "show a downward trend"); // ("weaken","diminish",
+    private static final List<String> HAS_SYNONYMS = Arrays.asList(Constants.HAS, "has value");
+    private static final List<String> INCREASE_SYNONYMS = Arrays.asList(Constants.INCREASE, "rise", "grow", "improve",
             "progress", "go up", "get larger", "show an upward trend"); // ("ascend","extend","build"
-    private static final List<String> SO_SYNONYMS = Arrays.asList("so", "consequently", "as a consequence", "thus");
-    private static final List<String> UNTIL_SYNONYMS = Arrays.asList("until", "up to", "in the period leading up to");
-    private static final List<String> NEXT_SYNONYMS = Arrays.asList("next", "in the following period", "afterwards",
-            "after that", "following that");
+    private static final List<String> MORE_STEEPLY_SYNONYMS = Arrays.asList(Constants.MORE_STEEPLY, "more rapidly",
+            "at a greater rate");
+    private static final List<String> NEXT_SYNONYMS = Arrays.asList(Constants.NEXT, "in the following period",
+            "afterwards", "after that", "following that");
+    private static final List<String> REMAIN_SYNONYMS = Arrays.asList(Constants.REMAIN, "be constant at",
+            "stay the same at", "continue to be", "freeze at", "persist at", "rest at", "hold the value");// ("endure",
+    private static final List<String> SO_SYNONYMS = Arrays.asList(Constants.SO, "consequently", "as a consequence",
+            "thus");
+    private static final List<String> SO_THAT_SYNONYMS = Arrays.asList(Constants.SO_THAT, Constants.SO, "consequently",
+            "as a consequence", "thus");
+    private static final List<String> STAY_SAME_SYNONYMS = Arrays.asList(Constants.STAY_SAME, "do not change",
+            "is constant");
+
+    private static final List<String> THE_GAP_BETWEEN_THEM_SYNONYMS = Arrays.asList(Constants.THE_GAP_BETWEEN_THEM,
+            "the difference between them", "their difference", "their gap");
+    private static final List<String> THEY_SYNONYMS = Arrays.asList(Constants.THEY, "the series", "the lines");
+    private static final List<String> TO_SYNONYMS = Arrays.asList(Constants.TO);
+    private static final List<String> TO_THE_SAME_VALUE_SYNONYMS = Arrays.asList(Constants.TO_THE_SAME_VALUE);
+    private static final List<String> UNTIL_SYNONYMS = Arrays.asList(Constants.UNTIL, "up to",
+            "in the period leading up to", "leading up to");
+    private static final List<String> WHILE_SYNONYMS = Arrays.asList(Constants.WHILE, "and");
+    private static final List<String> WITH_SYNONYMS = Arrays.asList(Constants.WITH);
     private static final Random random = new Random();
 
     private static final Map<String, List<String>> LOOKUPS;
@@ -39,14 +62,29 @@ public class SynonymServiceImpl implements SynonymService {
     static {
         LOOKUPS = new HashMap<>();
         LOOKUPS.put(Constants.AT, AT_SYNONYMS);
+        LOOKUPS.put(Constants.AT_THE_SAME_RATE, AT_THE_SAME_RATE_SYNONYMS);
+        LOOKUPS.put(Constants.BE_HIGHER, BE_HIGHER_SYNONYMS);
+        LOOKUPS.put(Constants.BOTH, BOTH_SYNONYMS);
         LOOKUPS.put(Constants.BUT, BUT_SYNONYMS);
+        LOOKUPS.put(Constants.BY, BY_SYNONYMS);
         LOOKUPS.put(Constants.CROSS, CROSS_SYNONYMS);
-        LOOKUPS.put(Constants.REMAIN, REMAIN_AT_SYNONYMS);
         LOOKUPS.put(Constants.DECREASE, DECREASE_SYNONYMS);
+        LOOKUPS.put(Constants.HAS, HAS_SYNONYMS);
         LOOKUPS.put(Constants.INCREASE, INCREASE_SYNONYMS);
+
+        LOOKUPS.put(Constants.MORE_STEEPLY, MORE_STEEPLY_SYNONYMS);
         LOOKUPS.put(Constants.NEXT, NEXT_SYNONYMS);
+        LOOKUPS.put(Constants.REMAIN, REMAIN_SYNONYMS);
         LOOKUPS.put(Constants.SO, SO_SYNONYMS);
+        LOOKUPS.put(Constants.SO_THAT, SO_THAT_SYNONYMS);
+        LOOKUPS.put(Constants.STAY_SAME, STAY_SAME_SYNONYMS);
+        LOOKUPS.put(Constants.THE_GAP_BETWEEN_THEM, THE_GAP_BETWEEN_THEM_SYNONYMS);
+        LOOKUPS.put(Constants.THEY, THEY_SYNONYMS);
+        LOOKUPS.put(Constants.TO, TO_SYNONYMS);
+        LOOKUPS.put(Constants.TO_THE_SAME_VALUE, TO_THE_SAME_VALUE_SYNONYMS);
         LOOKUPS.put(Constants.UNTIL, UNTIL_SYNONYMS);
+        LOOKUPS.put(Constants.WHILE, WHILE_SYNONYMS);
+        LOOKUPS.put(Constants.WITH, WITH_SYNONYMS);
     }
 
     private boolean randomise = true;
