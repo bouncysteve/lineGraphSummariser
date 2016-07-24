@@ -3,6 +3,13 @@ package uk.co.lgs.model.segment.series;
 import uk.co.lgs.model.gradient.GradientType;
 import uk.co.lgs.model.point.Point;
 
+/**
+ * I encapsulate a short section of the graph in terms of one of the data
+ * series.
+ *
+ * @author bouncysteve
+ *
+ */
 public class SeriesSegmentImpl implements SeriesSegment {
 
     GradientType gradientType;
@@ -14,37 +21,52 @@ public class SeriesSegmentImpl implements SeriesSegment {
      */
     private int segmentLength;
 
-    private double startValue;
+    private final double startValue;
 
     private double endValue;
 
-    private String startTime;
+    private final String startTime;
 
     private String endTime;
 
     private String label;
 
-    private String units;
+    private String description;
 
-    public SeriesSegmentImpl(Point startPoint, Point endPoint, String label, String units) {
-        this(startPoint, endPoint, label, units, 1);
+    private final String units;
+
+    /**
+     * @param startPoint
+     * @param endPoint
+     * @param label
+     * @param description
+     * @param units
+     */
+    public SeriesSegmentImpl(final Point startPoint, final Point endPoint, final String label, final String description,
+            final String units) {
+        this(startPoint, endPoint, label, description, units, 1);
     }
 
     /**
      * For collated segments, the segment length will be a multiple of the base
      * segment length, 1.
-     * 
-     * @param startTimeAndValue
-     * @param endTimeAndValue
+     *
+     * @param startPoint
+     * @param endPoint
+     * @param label
+     * @param description
+     * @param units
      * @param segmentLength
      */
-    public SeriesSegmentImpl(Point startPoint, Point endPoint, String label, String units, int segmentLength) {
+    public SeriesSegmentImpl(final Point startPoint, final Point endPoint, final String label, final String description,
+            final String units, final int segmentLength) {
         this.startTime = startPoint.getTime();
         this.startValue = startPoint.getValue();
         this.endTime = endPoint.getTime();
         this.endValue = endPoint.getValue();
         this.segmentLength = segmentLength;
         this.label = label;
+        this.description = description;
         this.units = units;
         this.gradientType = determineGradientType();
     }
@@ -80,7 +102,7 @@ public class SeriesSegmentImpl implements SeriesSegment {
     }
 
     @Override
-    public SeriesSegment append(SeriesSegment newSegment) {
+    public SeriesSegment append(final SeriesSegment newSegment) {
         this.endTime = newSegment.getEndTime();
         this.endValue = newSegment.getEndValue();
         this.segmentLength = this.segmentLength + newSegment.getSegmentLength();
@@ -89,7 +111,7 @@ public class SeriesSegmentImpl implements SeriesSegment {
     }
 
     private GradientType determineGradientType() {
-        double numericGradient = (this.getEndValue() - this.getStartValue()) / this.segmentLength;
+        final double numericGradient = (this.getEndValue() - this.getStartValue()) / this.segmentLength;
         GradientType localGradientType;
         if (0 == numericGradient) {
             localGradientType = GradientType.ZERO;
@@ -111,13 +133,22 @@ public class SeriesSegmentImpl implements SeriesSegment {
         return this.label;
     }
 
-    public void setLabel(String label) {
+    public void setLabel(final String label) {
         this.label = label;
     }
 
     @Override
     public String getUnits() {
         return this.units;
+    }
+
+    public void setDescription(final String description) {
+        this.description = description;
+    }
+
+    @Override
+    public String getDescription() {
+        return this.description;
     }
 
 }

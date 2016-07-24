@@ -16,7 +16,7 @@ import uk.co.lgs.model.segment.series.SeriesSegmentImpl;
 
 /**
  * I am responsible for converting graph data into segments.
- * 
+ *
  * @author bouncysteve
  *
  */
@@ -27,7 +27,8 @@ public class SegmentationServiceImpl implements SegmentationService {
     public List<GraphSegment> segment(final GraphData graphData) throws SegmentCategoryNotFoundException {
         final List<Record> records = graphData.getRecords();
         final List<GraphSegment> segments = new ArrayList<>();
-        final List<String> labels = graphData.getHeader();
+        final List<String> labels = graphData.getLabels();
+        final List<String> descriptions = graphData.getDescriptions();
         final List<String> units = graphData.getUnits();
         Record segmentStartRecord = null;
         Record segmentEndRecord;
@@ -36,7 +37,8 @@ public class SegmentationServiceImpl implements SegmentationService {
                 segmentStartRecord = record;
             } else {
                 segmentEndRecord = record;
-                segments.add(convertRecordsToSegment(segmentStartRecord, segmentEndRecord, labels, units));
+                segments.add(
+                        convertRecordsToSegment(segmentStartRecord, segmentEndRecord, labels, descriptions, units));
                 segmentStartRecord = record;
             }
         }
@@ -44,7 +46,8 @@ public class SegmentationServiceImpl implements SegmentationService {
     }
 
     private GraphSegment convertRecordsToSegment(final Record segmentStartRecord, final Record segmentEndRecord,
-            final List<String> labels, final List<String> units) throws SegmentCategoryNotFoundException {
+            final List<String> labels, final List<String> descriptions, final List<String> units)
+                    throws SegmentCategoryNotFoundException {
         final String startTimePoint = segmentStartRecord.getPointInTime();
         final Double firstSeriesStartValue = segmentStartRecord.getValues().get(0);
         final Double firstSeriesEndValue = segmentEndRecord.getValues().get(0);
@@ -56,10 +59,10 @@ public class SegmentationServiceImpl implements SegmentationService {
 
         final SeriesSegment firstSeriesSegment = new SeriesSegmentImpl(
                 new PointImpl(startTimePoint, firstSeriesStartValue), new PointImpl(endTimePoint, firstSeriesEndValue),
-                labels.get(1), units.get(1));
+                labels.get(1), descriptions.get(1), units.get(1));
         final SeriesSegment secondSeriesSegment = new SeriesSegmentImpl(
                 new PointImpl(startTimePoint, secondSeriesStartValue),
-                new PointImpl(endTimePoint, secondSeriesEndValue), labels.get(2), units.get(2));
+                new PointImpl(endTimePoint, secondSeriesEndValue), labels.get(2), descriptions.get(2), units.get(2));
 
         return new GraphSegmentImpl(firstSeriesSegment, secondSeriesSegment);
     }

@@ -20,11 +20,13 @@ public class GraphDataImpl implements GraphData {
 
     private static final String MISSING_RECORDS_MESSAGE = "Graph must contain at least two data records";
 
-    private final List<String> header;
+    private List<String> labels;
+
+    private List<String> descriptions;
 
     private final List<Record> records;
 
-    private final List<String> units;
+    private List<String> units;
 
     private final IScatterSchema iScatterSchema;
 
@@ -50,9 +52,9 @@ public class GraphDataImpl implements GraphData {
     public GraphDataImpl(final IScatterSchema iScatterSchema, final List<String> header, final List<Record> records)
             throws DomainException {
         this.iScatterSchema = iScatterSchema;
-        this.header = parseLabels(header, iScatterSchema);
+        parseLabels(header, iScatterSchema);
         this.records = records;
-        this.units = parseUnits(iScatterSchema);
+        parseUnits(iScatterSchema);
 
         if (null == records || records.size() < 2) {
             throw new DomainException(MISSING_RECORDS_MESSAGE);
@@ -81,7 +83,7 @@ public class GraphDataImpl implements GraphData {
         this.title = title;
     }
 
-    private List<String> parseUnits(final IScatterSchema iScatterSchema) {
+    private void parseUnits(final IScatterSchema iScatterSchema) {
         final List<String> localUnits = new ArrayList<>();
         for (final IScatterAttribute attribute : iScatterSchema.getAttributes()) {
             final String unit = attribute.getUnit();
@@ -91,7 +93,7 @@ public class GraphDataImpl implements GraphData {
                 localUnits.add("");
             }
         }
-        return localUnits;
+        this.units = localUnits;
     }
 
     @Override
@@ -100,8 +102,8 @@ public class GraphDataImpl implements GraphData {
     }
 
     @Override
-    public List<String> getHeader() {
-        return this.header;
+    public List<String> getLabels() {
+        return this.labels;
     }
 
     @Override
@@ -121,7 +123,7 @@ public class GraphDataImpl implements GraphData {
 
     @Override
     public int getSeriesCount() {
-        return this.header.size() - 1;
+        return this.labels.size() - 1;
     }
 
     @Override
@@ -136,7 +138,8 @@ public class GraphDataImpl implements GraphData {
         builder.append("***************GRAPH DOMAIN OBJECT (RAW DATA)***************").append("\n");
         builder.append("Title: ").append(this.getTitle()).append("\n");
         builder.append("Series Count: ").append(this.getSeriesCount()).append("\n");
-        builder.append("Header: ").append(this.getHeader()).append("\n");
+        builder.append("Labels: ").append(this.getLabels()).append("\n");
+        builder.append("Descriptions: ").append(this.getDescriptions()).append("\n");
         builder.append("Units ").append(this.getUnits()).append("\n");
         builder.append("Records: ").append("\n");
         for (final Record record : this.records) {
@@ -147,26 +150,28 @@ public class GraphDataImpl implements GraphData {
         return builder.toString();
     }
 
-    private List<String> parseLabels(final List<String> header, final IScatterSchema iScatterSchema) {
-        final List<String> labels = new ArrayList<>();
+    private void parseLabels(final List<String> header, final IScatterSchema iScatterSchema) {
+        final List<String> localLabels = new ArrayList<>();
+        final List<String> localDescriptions = new ArrayList<>();
         if (null != header) {
-            for (final String seriesId : header) {
-                String description = "";
+            for (final String name : header) {
                 if (null != iScatterSchema) {
-                    description = iScatterSchema.getDescription(seriesId);
-                }
-                if (StringUtils.isNotEmpty(description)) {
-                    labels.add(description);
-                } else {
-                    labels.add(seriesId);
+                    localDescriptions.add(iScatterSchema.getDescription(name));
+                    localLabels.add(name);
                 }
             }
         }
-        return labels;
+        this.labels = localLabels;
+        this.descriptions = localDescriptions;
     }
 
     @Override
     public List<String> getUnits() {
         return this.units;
+    }
+
+    @Override
+    public List<String> getDescriptions() {
+        return this.descriptions;
     }
 }

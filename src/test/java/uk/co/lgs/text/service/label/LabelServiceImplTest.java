@@ -34,10 +34,10 @@ public class LabelServiceImplTest extends AbstractTest {
     private static final String SHORT_FIRST_LABEL = "Short label";
     private static final String SALES_OF_FISH = "Sales of fish and chips";
     private static final String PRICE_OF_PYJAMAS = "Price of pyjamas in the Isle of Man";
-    private static final String LIVERPOOLS_TOTAL_NUMBER_OF_MAJOR_TROPHY_WINS = "Liverpool's total number of major trophy wins";
-    private static final String MANCHESTER_UNITEDS_TOTAL_NUMBER_OF_MAJOR_TROPHY_WINS = "Manchester United's total number of major trophy wins";
-    private static final String LIVERPOOL = "Liverpool";
-    private static final String MANCHESTER_UNITED = "Manchester United";
+    private static final String MEN = "Men";
+    private static final String WOMEN = "Women";
+    private static final String MAN = "Man";
+    private static final String WOMAN = "Woman";
 
     @Mock
     private GraphModel graphModel;
@@ -69,8 +69,9 @@ public class LabelServiceImplTest extends AbstractTest {
     }
 
     @Test
-    public void testRemoveCommonPrefix() {
-        givenSeriesLabels(CASH_SAVING_NET, CASH_SAVING_GROSS);
+    public void testUseDescriptionAndLabelsAppropriately() {
+        givenSeriesDescriptions(CASH_SAVING_NET, CASH_SAVING_GROSS);
+        givenSeriesLabels(NET, GROSS);
         whenIGetLabelsForInitialUse();
         thenTheLabelsArePlural(false, false);
         thenTheLabelsAre(CASH_SAVING_NET + " (" + NET + ")", CASH_SAVING_GROSS + " (" + GROSS + ")");
@@ -80,20 +81,8 @@ public class LabelServiceImplTest extends AbstractTest {
     }
 
     @Test
-    public void testRemoveCommonPostfix() {
-        givenSeriesLabels(LIVERPOOLS_TOTAL_NUMBER_OF_MAJOR_TROPHY_WINS,
-                MANCHESTER_UNITEDS_TOTAL_NUMBER_OF_MAJOR_TROPHY_WINS);
-        whenIGetLabelsForInitialUse();
-        thenTheLabelsArePlural(false, false);
-        thenTheLabelsAre(LIVERPOOLS_TOTAL_NUMBER_OF_MAJOR_TROPHY_WINS + " (" + LIVERPOOL + ")",
-                MANCHESTER_UNITEDS_TOTAL_NUMBER_OF_MAJOR_TROPHY_WINS + " (" + MANCHESTER_UNITED + ")");
-        whenIGetLabelsForCommonUse();
-        thenTheLabelsArePlural(false, false);
-        thenTheLabelsAre(LIVERPOOL, MANCHESTER_UNITED);
-    }
-
-    @Test
     public void testNotReplacingShortLabel() {
+        givenSeriesDescriptions("", "");
         givenSeriesLabels(SHORT_FIRST_LABEL, CASH_SAVING_GROSS);
         whenIGetLabelsForInitialUse();
         thenTheLabelsArePlural(false, false);
@@ -105,6 +94,7 @@ public class LabelServiceImplTest extends AbstractTest {
 
     @Test
     public void testPluraliseSales() {
+        givenSeriesDescriptions("", "");
         givenSeriesLabels(SALES_OF_FISH, PRICE_OF_PYJAMAS);
         whenIGetLabelsForInitialUse();
         thenTheLabelsArePlural(true, false);
@@ -112,6 +102,30 @@ public class LabelServiceImplTest extends AbstractTest {
         whenIGetLabelsForCommonUse();
         thenTheLabelsArePlural(true, false);
         thenTheLabelsAre(SALES_OF_FISH, PRICE_OF_PYJAMAS);
+    }
+
+    @Test
+    public void testPluraliseManAndWoman() {
+        givenSeriesDescriptions("", "");
+        givenSeriesLabels(MAN, WOMAN);
+        whenIGetLabelsForInitialUse();
+        thenTheLabelsArePlural(false, false);
+        thenTheLabelsAre(MAN, WOMAN);
+        whenIGetLabelsForCommonUse();
+        thenTheLabelsArePlural(false, false);
+        thenTheLabelsAre(MAN, WOMAN);
+    }
+
+    @Test
+    public void testPluraliseMenAndWomen() {
+        givenSeriesDescriptions("", "");
+        givenSeriesLabels(MEN, WOMEN);
+        whenIGetLabelsForInitialUse();
+        thenTheLabelsArePlural(true, true);
+        thenTheLabelsAre(MEN, WOMEN);
+        whenIGetLabelsForCommonUse();
+        thenTheLabelsArePlural(true, true);
+        thenTheLabelsAre(MEN, WOMEN);
     }
 
     private void thenTheLabelsArePlural(final boolean firstSeriesPlural, final boolean secondSeriesPlural) {
@@ -140,6 +154,11 @@ public class LabelServiceImplTest extends AbstractTest {
     private void whenIGetLabelsForInitialUse() {
         this.labelNouns = this.underTest.getLabelsForInitialUse(this.graphModel);
         this.labelStrings = realiseNouns(this.labelNouns);
+    }
+
+    private void givenSeriesDescriptions(final String firstSeriesDescription, final String secondSeriesDescription) {
+        when(this.firstSeriesSegment.getDescription()).thenReturn(firstSeriesDescription);
+        when(this.secondSeriesSegment.getDescription()).thenReturn(secondSeriesDescription);
     }
 
     private void givenSeriesLabels(final String firstSeriesLabel, final String secondSeriesLabel) {

@@ -28,8 +28,8 @@ public class SynonymServiceImpl implements SynonymService {
             "despite this");
     private static final List<String> BY_SYNONYMS = Arrays.asList(Constants.BY);
     private static final List<String> CROSS_SYNONYMS = Arrays.asList(Constants.CROSS, "intersect");
-    private static final List<String> DECREASE_SYNONYMS = Arrays.asList(Constants.DECREASE, "fall", "decline", "drop",
-            "shrink", "lower", "reduce", "show a downward trend"); // ("weaken","diminish",
+    private static final List<String> DECREASE_SYNONYMS = Arrays.asList(Constants.DECREASE, "fall", "decline",
+            "descend", "drop", "shrink", "reduce", "show a downward trend"); // ("weaken","diminish",
     private static final List<String> HAS_SYNONYMS = Arrays.asList(Constants.HAS, "has value");
     private static final List<String> INCREASE_SYNONYMS = Arrays.asList(Constants.INCREASE, "rise", "grow", "improve",
             "progress", "go up", "get larger", "show an upward trend"); // ("ascend","extend","build"
@@ -37,15 +37,12 @@ public class SynonymServiceImpl implements SynonymService {
             "at a greater rate");
     private static final List<String> NEXT_SYNONYMS = Arrays.asList(Constants.NEXT, "in the following period",
             "afterwards", "after that", "following that");
-    private static final List<String> REMAIN_SYNONYMS = Arrays.asList(Constants.REMAIN, "be constant at",
-            "stay the same at", "continue to be", "freeze at", "persist at", "rest at", "hold the value");// ("endure",
+    private static final List<String> REMAIN_SYNONYMS = Arrays.asList(Constants.REMAIN, "be constant", "stay the same",
+            "continue to be", "freeze", "persist", "rest", "hold", "do not change");// ("endure",
     private static final List<String> SO_SYNONYMS = Arrays.asList(Constants.SO, "consequently", "as a consequence",
             "thus");
     private static final List<String> SO_THAT_SYNONYMS = Arrays.asList(Constants.SO_THAT, Constants.SO, "consequently",
             "as a consequence", "thus");
-    private static final List<String> STAY_SAME_SYNONYMS = Arrays.asList(Constants.STAY_SAME, "do not change",
-            "is constant");
-
     private static final List<String> THE_GAP_BETWEEN_THEM_SYNONYMS = Arrays.asList(Constants.THE_GAP_BETWEEN_THEM,
             "the difference between them", "their difference", "their gap");
     private static final List<String> THEY_SYNONYMS = Arrays.asList(Constants.THEY, "the series", "the lines");
@@ -77,7 +74,6 @@ public class SynonymServiceImpl implements SynonymService {
         LOOKUPS.put(Constants.REMAIN, REMAIN_SYNONYMS);
         LOOKUPS.put(Constants.SO, SO_SYNONYMS);
         LOOKUPS.put(Constants.SO_THAT, SO_THAT_SYNONYMS);
-        LOOKUPS.put(Constants.STAY_SAME, STAY_SAME_SYNONYMS);
         LOOKUPS.put(Constants.THE_GAP_BETWEEN_THEM, THE_GAP_BETWEEN_THEM_SYNONYMS);
         LOOKUPS.put(Constants.THEY, THEY_SYNONYMS);
         LOOKUPS.put(Constants.TO, TO_SYNONYMS);

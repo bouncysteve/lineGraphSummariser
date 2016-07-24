@@ -137,7 +137,7 @@ public class SeriesSegmentSummaryServiceImplTest {
 
     private void givenASeriesSegment(double startValue, double endValue, String seriesLabel) {
         this.seriesSegment = new SeriesSegmentImpl(new PointImpl(START_TIME, startValue),
-                new PointImpl(END_TIME, endValue), seriesLabel, "");
+                new PointImpl(END_TIME, endValue), seriesLabel, "", "");
     }
 
     private void whenTheSeriesSegmentIsSummarised() {

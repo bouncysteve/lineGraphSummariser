@@ -39,9 +39,12 @@ public interface LabelService {
      *
      * @param labels
      *            a list of labels, the first one is the time series label.
+     * @param descriptions
+     *            labels a list of descriptions, the first one is the time
+     *            series description.
      * @return
      */
-    List<NPPhraseSpec> getLabelsForInitialUse(List<String> labels);
+    List<NPPhraseSpec> getLabelsForInitialUse(List<String> descriptions, List<String> labels);
 
     /**
      * In the main body of the text a series' label may be too long to repeat.
@@ -62,11 +65,6 @@ public interface LabelService {
      */
     NPPhraseSpec getLabelForCommonUse(GraphSegment graphSegment, SeriesSegment seriesSegment);
 
-    /**
-     * @deprecated To be removed along with OldGraphSegmentSummaryService
-     * @param graphSegment
-     * @return
-     */
-    @Deprecated
     List<NPPhraseSpec> getLabelsForCommonUse(GraphSegment graphSegment);
+
 }

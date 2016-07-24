@@ -2,7 +2,6 @@ package uk.co.lgs.text.service.graph;
 
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyDouble;
-import static org.mockito.Matchers.anyListOf;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -123,7 +122,7 @@ public class GraphSummaryServiceImplTest extends AbstractTest {
     @Test
     public void testGetSummaryTitleAndLabelsWhenTitleEndsWithFullStop() {
         givenAGraphWithTitle(GRAPH_TITLE + ".");
-        givenAGraphWithSeries(SERIES1_LABEL, SERIES2_LABEL);
+        givenAGraphWithSeriesAndDescriptions(SERIES1_LABEL, SERIES2_LABEL);
         givenAGraphStartingAndEndingAt(GRAPH_START, GRAPH_END);
         whenTheGraphIsSummarised();
         // FIXME: this should have a comma after GRAPH_TITLE, but this doesn't
@@ -136,7 +135,7 @@ public class GraphSummaryServiceImplTest extends AbstractTest {
     @Test
     public void testFirstSeriesInitiallyHigher() {
         givenAGraphWithTitle(GRAPH_TITLE);
-        givenAGraphWithSeries(SERIES1_LABEL, SERIES2_LABEL);
+        givenAGraphWithSeriesAndDescriptions(SERIES1_LABEL, SERIES2_LABEL);
         givenTheInitialValuesOfTheSeriesAre(120d, -50d);
         givenAGraphStartingAndEndingAt(GRAPH_START, GRAPH_END);
         whenTheGraphIsSummarised();
@@ -152,7 +151,7 @@ public class GraphSummaryServiceImplTest extends AbstractTest {
     @Test
     public void testSecondSeriesInitiallyHigher() {
         givenAGraphWithTitle(GRAPH_TITLE);
-        givenAGraphWithSeries(SERIES1_LABEL, SERIES2_LABEL);
+        givenAGraphWithSeriesAndDescriptions(SERIES1_LABEL, SERIES2_LABEL);
         givenTheInitialValuesOfTheSeriesAre(-120d, -76.4d);
         givenAGraphStartingAndEndingAt(GRAPH_START, GRAPH_END);
         whenTheGraphIsSummarised();
@@ -167,7 +166,7 @@ public class GraphSummaryServiceImplTest extends AbstractTest {
     @Test
     public void testBothSeriesInitiallyHaveTheSameValue() {
         givenAGraphWithTitle(GRAPH_TITLE);
-        givenAGraphWithSeries(SERIES1_LABEL, SERIES2_LABEL);
+        givenAGraphWithSeriesAndDescriptions(SERIES1_LABEL, SERIES2_LABEL);
         givenTheInitialValuesOfTheSeriesAre(-3.14d, -3.14d);
         givenAGraphStartingAndEndingAt(GRAPH_START, GRAPH_END);
         whenTheGraphIsSummarised();
@@ -183,12 +182,12 @@ public class GraphSummaryServiceImplTest extends AbstractTest {
         return higherSeriesLabel + " is higher with 20% at " + GRAPH_START + " while " + lowerSeriesLabel + " has 20%.";
     }
 
-    private void givenAGraphWithSeries(final String series1Label, final String series2Label) {
+    private void givenAGraphWithSeriesAndDescriptions(final String series1Label, final String series2Label) {
         when(this.mockGraphModel.getLabels()).thenReturn(new ArrayList<String>());
         this.modelLabelList = new ArrayList<>();
         this.modelLabelList.add(this.nlgFactory.createNounPhrase(series1Label));
         this.modelLabelList.add(this.nlgFactory.createNounPhrase(series2Label));
-        when(this.labelService.getLabelsForInitialUse(anyListOf(String.class))).thenReturn(this.modelLabelList);
+        when(this.labelService.getLabelsForInitialUse(this.mockGraphModel)).thenReturn(this.modelLabelList);
     }
 
     private void givenTheInitialValuesOfTheSeriesAre(final double firstSeriesStartValue,

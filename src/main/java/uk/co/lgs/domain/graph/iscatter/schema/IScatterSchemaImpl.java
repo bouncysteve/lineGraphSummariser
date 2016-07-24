@@ -10,9 +10,9 @@ import uk.co.lgs.domain.graph.iscatter.schema.exception.IScatterSchemaException;
 
 public class IScatterSchemaImpl implements IScatterSchema {
 
-    private List<IScatterAttribute> attributes;
-    private List<String> expectedHeaders;
-    private List<String> mandatoryAttributeValues;
+    private final List<IScatterAttribute> attributes;
+    private final List<String> expectedHeaders;
+    private final List<String> mandatoryAttributeValues;
 
     private static final String ID = "id";
     private static final String NAME = "name";
@@ -21,7 +21,7 @@ public class IScatterSchemaImpl implements IScatterSchema {
     private static final String TYPE = "type";
     private static final String LEVEL = "level";
 
-    public IScatterSchemaImpl(List<List<String>> schemaRows) throws IScatterSchemaException {
+    public IScatterSchemaImpl(final List<List<String>> schemaRows) throws IScatterSchemaException {
         this.attributes = new ArrayList<>();
         this.expectedHeaders = Arrays.asList(ID, NAME, DESCRIPTION, UNIT, TYPE, LEVEL);
         this.mandatoryAttributeValues = Arrays.asList(ID, NAME, TYPE, LEVEL);
@@ -29,7 +29,7 @@ public class IScatterSchemaImpl implements IScatterSchema {
         processAndValidate(schemaRows);
     }
 
-    private void validateHeader(List<String> inputRow) throws IScatterSchemaException {
+    private void validateHeader(final List<String> inputRow) throws IScatterSchemaException {
         for (int i = 0; i < this.expectedHeaders.size(); i++) {
             if (!this.expectedHeaders.get(i).equalsIgnoreCase(inputRow.get(i))) {
                 throw new IScatterSchemaException(
@@ -38,13 +38,14 @@ public class IScatterSchemaImpl implements IScatterSchema {
         }
     }
 
-    private void processAndValidate(List<List<String>> inputRecords) throws IScatterSchemaException {
-        for (List<String> inputRecord : inputRecords) {
+    private void processAndValidate(final List<List<String>> inputRecords) throws IScatterSchemaException {
+        for (final List<String> inputRecord : inputRecords) {
             checkRecordSize(inputRecord);
-            for (String mandatoryAttributeValue : this.mandatoryAttributeValues) {
-                String value = inputRecord.get(this.expectedHeaders.indexOf(mandatoryAttributeValue));
+            for (final String mandatoryAttributeValue : this.mandatoryAttributeValues) {
+                final String value = inputRecord.get(this.expectedHeaders.indexOf(mandatoryAttributeValue));
                 if (StringUtils.isEmpty(value)) {
-                    throw new IScatterSchemaException("Invalid attribute, missing mandatory value: " + mandatoryAttributeValue);
+                    throw new IScatterSchemaException(
+                            "Invalid attribute, missing mandatory value: " + mandatoryAttributeValue);
                 }
                 if (TYPE.equals(mandatoryAttributeValue)) {
                     IScatterType.get(value);
@@ -58,7 +59,7 @@ public class IScatterSchemaImpl implements IScatterSchema {
         }
     }
 
-    private void checkRecordSize(List<String> inputRecord) throws IScatterSchemaException {
+    private void checkRecordSize(final List<String> inputRecord) throws IScatterSchemaException {
         if (inputRecord.size() > this.expectedHeaders.size()) {
             throw new IScatterSchemaException("Attribute has too many columns");
         }
@@ -70,7 +71,7 @@ public class IScatterSchemaImpl implements IScatterSchema {
     }
 
     @Override
-    public IScatterAttribute getAttribute(int position) {
+    public IScatterAttribute getAttribute(final int position) {
         return this.attributes.get(position);
     }
 
@@ -80,10 +81,10 @@ public class IScatterSchemaImpl implements IScatterSchema {
     }
 
     @Override
-    public String getDescription(String id) {
-        if (null != id) {
-            for (IScatterAttribute attribute : this.attributes) {
-                if (id.equalsIgnoreCase(attribute.getId())) {
+    public String getDescription(final String name) {
+        if (null != name) {
+            for (final IScatterAttribute attribute : this.attributes) {
+                if (name.equalsIgnoreCase(attribute.getName())) {
                     return attribute.getDescription();
                 }
             }
@@ -92,10 +93,10 @@ public class IScatterSchemaImpl implements IScatterSchema {
     }
 
     @Override
-    public String getUnit(String id) {
-        if (null != id) {
-            for (IScatterAttribute attribute : this.attributes) {
-                if (id.equalsIgnoreCase(attribute.getId())) {
+    public String getUnit(final String name) {
+        if (null != name) {
+            for (final IScatterAttribute attribute : this.attributes) {
+                if (name.equalsIgnoreCase(attribute.getName())) {
                     return attribute.getUnit();
                 }
             }

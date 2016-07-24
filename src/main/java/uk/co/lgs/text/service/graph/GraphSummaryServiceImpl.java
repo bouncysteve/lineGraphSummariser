@@ -187,7 +187,7 @@ public class GraphSummaryServiceImpl implements GraphSummaryService {
 
     private SPhraseSpec getLabelsAndTimeScale(final GraphModel model, final NPPhraseSpec graph) {
         final CoordinatedPhraseElement series = this.nlgFactory.createCoordinatedPhrase();
-        for (final PhraseElement label : this.labelService.getLabelsForInitialUse(model.getLabels())) {
+        for (final PhraseElement label : this.labelService.getLabelsForInitialUse(model)) {
             series.addCoordinate(label);
         }
         final SPhraseSpec graphShowsSeries = this.nlgFactory.createClause(graph, "show", series);

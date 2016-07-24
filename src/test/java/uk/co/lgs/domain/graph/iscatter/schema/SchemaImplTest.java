@@ -44,11 +44,11 @@ public class SchemaImplTest extends AbstractTest {
         this.expectedEx.expectMessage("Couldn't match type:");
     }
 
-    private void givenAHeaderWithValues(List<String> values) {
+    private void givenAHeaderWithValues(final List<String> values) {
         givenARecordWithValues(values);
     }
 
-    private void givenARecordWithValues(List<String> values) {
+    private void givenARecordWithValues(final List<String> values) {
         this.inputRecords.add(values);
     }
 
@@ -155,21 +155,21 @@ public class SchemaImplTest extends AbstractTest {
         whenICreateASchema();
     }
 
-    private void thenARecordIsCreatedAtPositionWithValues(int position, String id, String name, String description,
-            String unit, IScatterType type, IScatterLevel level) {
-        IScatterAttribute attribute = this.underTest.getAttribute(position);
+    private void thenARecordIsCreatedAtPositionWithValues(final int position, final String id, final String name,
+            final String description, final String unit, final IScatterType type, final IScatterLevel level) {
+        final IScatterAttribute attribute = this.underTest.getAttribute(position);
         assertEquals(id, attribute.getId());
         assertEquals(name, attribute.getName());
         assertEquals(description, attribute.getDescription());
         assertEquals(unit, attribute.getUnit());
         assertEquals(type, attribute.getType());
         assertEquals(level, attribute.getLevel());
-        assertEquals(description, this.underTest.getDescription(id));
+        assertEquals(description, this.underTest.getDescription(name));
         assertNull(this.underTest.getDescription(unit));
         assertNull(this.underTest.getDescription(null));
     }
 
-    private void thenTheSchemaContainsThisManyAttributes(int i) {
+    private void thenTheSchemaContainsThisManyAttributes(final int i) {
         assertEquals(i, this.underTest.getAttributesCount());
     }
 

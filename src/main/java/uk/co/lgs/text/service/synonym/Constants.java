@@ -23,7 +23,6 @@ public class Constants {
     public static final String REMAIN = "remain";
     public static final String SO = "so";
     public static final String SO_THAT = "so that";
-    public static final String STAY_SAME = "stay the same";
     public static final String THE_GAP_BETWEEN_THEM = "the gap between them";
     public static final String THEY = "they";
     public static final String TO = "to";

@@ -97,4 +97,8 @@ public interface GraphModel {
      */
     void setIntersecting(boolean intersecting);
 
+    List<String> getDescriptions();
+
+    void setDescriptions(List<String> descriptions);
+
 }

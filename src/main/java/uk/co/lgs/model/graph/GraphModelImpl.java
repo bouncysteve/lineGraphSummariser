@@ -31,6 +31,8 @@ public class GraphModelImpl implements GraphModel {
 
     private boolean intersects;
 
+    private List<String> descriptions;
+
     /**
      * Converts graphData into a graphModel, by splitting the data into
      * segments, and decorating the segments with gap information.
@@ -40,7 +42,8 @@ public class GraphModelImpl implements GraphModel {
      */
     public GraphModelImpl(final GraphData graphData) throws SegmentCategoryNotFoundException {
         this.graphSegments = new GapServiceImpl().addGapInfo(new SegmentationServiceImpl().segment(graphData));
-        this.labels = graphData.getHeader();
+        this.labels = graphData.getLabels();
+        this.descriptions = graphData.getDescriptions();
         this.title = graphData.getTitle();
         this.units = graphData.getUnits();
     }
@@ -73,6 +76,16 @@ public class GraphModelImpl implements GraphModel {
     }
 
     @Override
+    public List<String> getDescriptions() {
+        return this.descriptions;
+    }
+
+    @Override
+    public void setDescriptions(final List<String> descriptions) {
+        this.descriptions = descriptions;
+    }
+
+    @Override
     public String toString() {
         final StringBuilder builder = new StringBuilder();
         builder.append("\n");
@@ -85,6 +98,7 @@ public class GraphModelImpl implements GraphModel {
             builder.append("Title: ").append(this.getTitle()).append("\n");
         }
         builder.append("Labels: ").append(this.getLabels()).append("\n");
+        builder.append("Descriptions: ").append(this.getDescriptions()).append("\n");
         builder.append("Units: ").append(this.getUnits()).append("\n");
         boolean doneSegmentHeader = false;
         GraphSegmentGradient previousSegmentCategory = null;
@@ -144,52 +158,6 @@ public class GraphModelImpl implements GraphModel {
     }
 
     @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + (this.graphSegments == null ? 0 : this.graphSegments.hashCode());
-        result = prime * result + (this.labels == null ? 0 : this.labels.hashCode());
-        result = prime * result + (this.title == null ? 0 : this.title.hashCode());
-        return result;
-    }
-
-    @Override
-    public boolean equals(final Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final GraphModelImpl other = (GraphModelImpl) obj;
-        if (this.graphSegments == null) {
-            if (other.graphSegments != null) {
-                return false;
-            }
-        } else if (!this.graphSegments.equals(other.graphSegments)) {
-            return false;
-        }
-        if (this.labels == null) {
-            if (other.labels != null) {
-                return false;
-            }
-        } else if (!this.labels.equals(other.labels)) {
-            return false;
-        }
-        if (this.title == null) {
-            if (other.title != null) {
-                return false;
-            }
-        } else if (!this.title.equals(other.title)) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
     public List<String> getUnits() {
         return this.units;
     }
@@ -208,4 +176,75 @@ public class GraphModelImpl implements GraphModel {
     public void setIntersecting(final boolean intersecting) {
         this.intersects = intersecting;
     }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + (this.collated ? 1231 : 1237);
+        result = prime * result + (this.descriptions == null ? 0 : this.descriptions.hashCode());
+        result = prime * result + (this.graphSegments == null ? 0 : this.graphSegments.hashCode());
+        result = prime * result + (this.intersects ? 1231 : 1237);
+        result = prime * result + (this.labels == null ? 0 : this.labels.hashCode());
+        result = prime * result + (this.title == null ? 0 : this.title.hashCode());
+        result = prime * result + (this.units == null ? 0 : this.units.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final GraphModelImpl other = (GraphModelImpl) obj;
+        if (this.collated != other.collated) {
+            return false;
+        }
+        if (this.descriptions == null) {
+            if (other.descriptions != null) {
+                return false;
+            }
+        } else if (!this.descriptions.equals(other.descriptions)) {
+            return false;
+        }
+        if (this.graphSegments == null) {
+            if (other.graphSegments != null) {
+                return false;
+            }
+        } else if (!this.graphSegments.equals(other.graphSegments)) {
+            return false;
+        }
+        if (this.intersects != other.intersects) {
+            return false;
+        }
+        if (this.labels == null) {
+            if (other.labels != null) {
+                return false;
+            }
+        } else if (!this.labels.equals(other.labels)) {
+            return false;
+        }
+        if (this.title == null) {
+            if (other.title != null) {
+                return false;
+            }
+        } else if (!this.title.equals(other.title)) {
+            return false;
+        }
+        if (this.units == null) {
+            if (other.units != null) {
+                return false;
+            }
+        } else if (!this.units.equals(other.units)) {
+            return false;
+        }
+        return true;
+    }
+
 }

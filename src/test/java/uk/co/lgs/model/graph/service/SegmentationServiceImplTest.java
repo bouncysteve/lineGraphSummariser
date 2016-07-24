@@ -34,7 +34,9 @@ public class SegmentationServiceImplTest extends AbstractTest {
     public void setup() {
         this.underTest = new SegmentationServiceImpl();
         this.records = new ArrayList<Record>();
-        when(this.mockGraphData.getHeader()).thenReturn(Arrays.asList(new String[] { "time", "series1", "series2" }));
+        when(this.mockGraphData.getLabels()).thenReturn(Arrays.asList(new String[] { "time", "series1", "series2" }));
+        when(this.mockGraphData.getDescriptions())
+                .thenReturn(Arrays.asList(new String[] { "timeDesc", "series1Desc", "series2Desc" }));
     }
 
     @Test
@@ -45,7 +47,7 @@ public class SegmentationServiceImplTest extends AbstractTest {
         ThenTheNumberOfSegmentsIs(1);
     }
 
-    private void ThenTheNumberOfSegmentsIs(int i) {
+    private void ThenTheNumberOfSegmentsIs(final int i) {
         assertEquals(i, this.returnedSegments.size());
     }
 
@@ -56,7 +58,8 @@ public class SegmentationServiceImplTest extends AbstractTest {
 
     }
 
-    private void givenARecordWithTimeAndValues(String string, double d, double e) throws DomainException {
+    private void givenARecordWithTimeAndValues(final String string, final double d, final double e)
+            throws DomainException {
         this.records.add(new RecordImpl(string, Arrays.asList(d, e)));
 
     }
