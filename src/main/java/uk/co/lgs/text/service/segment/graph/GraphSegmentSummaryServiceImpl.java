@@ -311,13 +311,13 @@ public class GraphSegmentSummaryServiceImpl implements GraphSegmentSummaryServic
         String preposition = Constants.TO;
         switch (graphSegment.getGapTrend()) {
         case CONVERGING:
-            verbString = Constants.DECREASE;
+            verbString = Constants.DECREASE_GAP;
             break;
         case DIVERGING:
-            verbString = Constants.INCREASE;
+            verbString = Constants.INCREASE_GAP;
             break;
         case PARALLEL:
-            verbString = Constants.REMAIN;
+            verbString = Constants.REMAIN_GAP;
             preposition = null;
             break;
         default:
@@ -365,13 +365,13 @@ public class GraphSegmentSummaryServiceImpl implements GraphSegmentSummaryServic
         String verbString = null;
         switch (seriesSegment.getGradientType()) {
         case NEGATIVE:
-            verbString = Constants.DECREASE;
+            verbString = Constants.DECREASE_GAP;
             break;
         case POSITIVE:
-            verbString = Constants.INCREASE;
+            verbString = Constants.INCREASE_GAP;
             break;
         case ZERO:
-            verbString = Constants.REMAIN;
+            verbString = Constants.REMAIN_GAP;
             break;
         default:
             break;

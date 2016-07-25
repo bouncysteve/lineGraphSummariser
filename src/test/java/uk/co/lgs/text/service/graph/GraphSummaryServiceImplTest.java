@@ -93,6 +93,7 @@ public class GraphSummaryServiceImplTest extends AbstractTest {
 
     @Before
     public void beforeEachTest() {
+        this.synonymService.setRandomise(false);
         this.graphSegments = new ArrayList<GraphSegment>();
         this.graphSegments.add(this.graphSegment);
         when(this.mockGraphModel.getGraphSegments()).thenReturn(this.graphSegments);

@@ -25,6 +25,8 @@ import uk.co.lgs.model.segment.graph.GraphSegment;
 import uk.co.lgs.model.segment.series.SeriesSegment;
 import uk.co.lgs.text.service.label.LabelService;
 import uk.co.lgs.text.service.segment.graph.GraphSegmentSummaryService;
+import uk.co.lgs.text.service.synonym.Constants;
+import uk.co.lgs.text.service.synonym.SynonymService;
 import uk.co.lgs.text.service.value.ValueService;
 
 /**
@@ -51,14 +53,21 @@ public class GraphSummaryServiceImpl implements GraphSummaryService {
     @Autowired
     private ValueService valueService;
 
+    @Autowired
+    private SynonymService synonymService;
+
     private final NLGFactory nlgFactory = new NLGFactory(LEXICON);
 
-    private final NPPhraseSpec thisGraph = this.nlgFactory.createNounPhrase("this graph");
-    private final NPPhraseSpec it = this.nlgFactory.createNounPhrase("it");
-    private final VPPhraseSpec isCalled = this.nlgFactory.createVerbPhrase("is called");
+    private NPPhraseSpec thisGraph;
+    private NPPhraseSpec it;
+    private VPPhraseSpec isCalled;
 
     @Override
     public String getSummary(final GraphModel model) {
+        this.thisGraph = this.nlgFactory.createNounPhrase(this.synonymService.getSynonym(Constants.THIS_GRAPH));
+        this.it = this.nlgFactory.createNounPhrase(this.synonymService.getSynonym(Constants.IT));
+        this.isCalled = this.nlgFactory.createVerbPhrase(this.synonymService.getSynonym(Constants.BE_CALLED));
+
         // REALISER.setCommaSepCuephrase(true);
         final DocumentElement wholeSummary = this.nlgFactory.createDocument();
 
@@ -109,7 +118,7 @@ public class GraphSummaryServiceImpl implements GraphSummaryService {
 
         final String startTime = firstSegment.getStartTime();
         final NLGElement higherSeriesAtStartPhrase;
-        final PPPhraseSpec preposition = this.nlgFactory.createPrepositionPhrase("at", startTime);
+        final PPPhraseSpec preposition = this.nlgFactory.createPrepositionPhrase(Constants.AT, startTime);
 
         if (null == higherSeries) {
             higherSeriesAtStartPhrase = describeSeriesWithSameStartValue(labels, firstSeriesSegment, preposition);
@@ -132,9 +141,9 @@ public class GraphSummaryServiceImpl implements GraphSummaryService {
         final CoordinatedPhraseElement subject = this.nlgFactory.createCoordinatedPhrase(labels.get(0), labels.get(1));
 
         sameStartPhrase.addPreModifier(preposition);
-        subject.addPreModifier("both");
+        subject.addPreModifier(this.synonymService.getSynonym(Constants.BOTH));
         sameStartPhrase.setSubject(subject);
-        sameStartPhrase.setVerb(this.nlgFactory.createVerbPhrase("have"));
+        sameStartPhrase.setVerb(this.nlgFactory.createVerbPhrase(this.synonymService.getSynonym(Constants.HAS)));
         sameStartPhrase.setObject(this.nlgFactory.createNounPhrase(this.valueService
                 .formatValueWithUnits(firstSeriesSegment.getStartValue(), firstSeriesSegment.getUnits())));
         if (LOG.isDebugEnabled()) {
@@ -146,7 +155,8 @@ public class GraphSummaryServiceImpl implements GraphSummaryService {
     private CoordinatedPhraseElement describeSeriesWithDifferentStartValues(final List<NPPhraseSpec> labels,
             final GraphSegment segment, final SeriesSegment higherSeries, final PPPhraseSpec preposition) {
         final NPPhraseSpec higherSeriesNoun = labels.get(segment.indexOf(higherSeries));
-        final VPPhraseSpec higherVerb = this.nlgFactory.createVerbPhrase("is higher");
+        final VPPhraseSpec higherVerb = this.nlgFactory
+                .createVerbPhrase(this.synonymService.getSynonym(Constants.BE_HIGHER));
         final NPPhraseSpec higherSeriesValue = this.nlgFactory.createNounPhrase(
                 this.valueService.formatValueWithUnits(higherSeries.getStartValue(), higherSeries.getUnits()));
         higherSeriesValue.addPreModifier("with");
@@ -159,7 +169,7 @@ public class GraphSummaryServiceImpl implements GraphSummaryService {
 
         final SeriesSegment lowerSeries = segment.getSeriesSegment(1 - segment.indexOf(higherSeries));
         final NPPhraseSpec lowerSeriesNoun = labels.get(segment.indexOf(lowerSeries));
-        final VPPhraseSpec lowerVerb = this.nlgFactory.createVerbPhrase("have");
+        final VPPhraseSpec lowerVerb = this.nlgFactory.createVerbPhrase(this.synonymService.getSynonym(Constants.HAS));
         final NPPhraseSpec lowerSeriesValue = this.nlgFactory.createNounPhrase(
                 this.valueService.formatValueWithUnits(lowerSeries.getStartValue(), lowerSeries.getUnits()));
         final SPhraseSpec lowerSeriesPhrase = this.nlgFactory.createClause(lowerSeriesNoun, lowerVerb,
@@ -169,7 +179,7 @@ public class GraphSummaryServiceImpl implements GraphSummaryService {
         differentValuesPhrase.addCoordinate(higherSeriesPhrase);
         differentValuesPhrase.addCoordinate(lowerSeriesPhrase);
         // TODO: introduce a conjunction service.
-        differentValuesPhrase.setConjunction("while");
+        differentValuesPhrase.setConjunction(this.synonymService.getSynonym(Constants.WHILE));
         if (LOG.isDebugEnabled()) {
             LOG.debug("Diiferent start values phrase: {}", REALISER.realiseSentence(differentValuesPhrase));
         }
@@ -190,10 +200,11 @@ public class GraphSummaryServiceImpl implements GraphSummaryService {
         for (final PhraseElement label : this.labelService.getLabelsForInitialUse(model)) {
             series.addCoordinate(label);
         }
-        final SPhraseSpec graphShowsSeries = this.nlgFactory.createClause(graph, "show", series);
+        final SPhraseSpec graphShowsSeries = this.nlgFactory.createClause(graph,
+                this.synonymService.getSynonym(Constants.SHOW), series);
         final PPPhraseSpec timeRage = this.nlgFactory.createPrepositionPhrase();
         // TODO: vary the preposition (from/to, until, etc...)
-        timeRage.setPreposition("between");
+        timeRage.setPreposition(this.synonymService.getSynonym(Constants.BETWEEN));
         final List<GraphSegment> graphSegments = model.getGraphSegments();
         if (!graphSegments.isEmpty()) {
             timeRage.addComplement(graphSegments.get(0).getStartTime());
