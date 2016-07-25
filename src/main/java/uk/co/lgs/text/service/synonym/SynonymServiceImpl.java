@@ -47,7 +47,7 @@ public class SynonymServiceImpl implements SynonymService {
             "be steady", "stay the same", "continue to be", "do not change");
     private static final List<String> REMAIN_SERIES_SYNONYMS = Arrays.asList(Constants.REMAIN_SERIES, "be constant",
             "stay the same", "continue to be", "freeze", "persist", "rest", "hold", "do not change");
-    private static final List<String> SHOW_SYNONYMS = Arrays.asList(Constants.SHOW, "display", "demonstrate", "detail");
+    private static final List<String> SHOW_SYNONYMS = Arrays.asList(Constants.SHOW, "display", "illustrate", "detail");
     private static final List<String> SO_SYNONYMS = Arrays.asList(Constants.SO, "consequently", "as a consequence",
             "thus");
     private static final List<String> SO_THAT_SYNONYMS = Arrays.asList(Constants.SO_THAT, Constants.SO, "consequently",
