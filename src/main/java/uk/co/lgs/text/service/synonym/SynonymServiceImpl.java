@@ -20,8 +20,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class SynonymServiceImpl implements SynonymService {
     private static final List<String> AT_SYNONYMS = Arrays.asList(Constants.AT);
-    private static final List<String> AT_THE_SAME_RATE_SYNONYMS = Arrays.asList(Constants.AT_THE_SAME_RATE, "together",
-            "equally");
+    private static final List<String> AT_THE_SAME_RATE_SYNONYMS = Arrays.asList(Constants.AT_THE_SAME_RATE, "equally");
     private static final List<String> BE_CALLED_SYNONYMS = Arrays.asList(Constants.BE_CALLED, "be named",
             "has the title");
     private static final List<String> BE_HIGHER_SYNONYMS = Arrays.asList(Constants.BE_HIGHER);
@@ -30,24 +29,25 @@ public class SynonymServiceImpl implements SynonymService {
             "despite this");
     private static final List<String> BY_SYNONYMS = Arrays.asList(Constants.BY);
     private static final List<String> CROSS_SYNONYMS = Arrays.asList(Constants.CROSS, "intersect");
-    private static final List<String> DECREASE_GAP_SYNONYMS = Arrays.asList(Constants.DECREASE_GAP, "drop", "shrink",
-            "reduce", "diminish", "get smaller", "go down");
+    private static final List<String> DECREASE_GAP_SYNONYMS = Arrays.asList(Constants.DECREASE_GAP, "shrink",
+            "decrease", "diminish", "get smaller", "go down", "become smaller");
     private static final List<String> DECREASE_SERIES_SYNONYMS = Arrays.asList(Constants.DECREASE_SERIES, "fall",
-            "decline", "descend", "drop", "shrink", "reduce", "show a downward trend"); // ("weaken","diminish",
+            "decline", "descend", "drop", "shrink", "reduce");
     private static final List<String> HAS_SYNONYMS = Arrays.asList(Constants.HAS, "has the value");
-    private static final List<String> INCREASE_GAP_SYNONYMS = Arrays.asList(Constants.INCREASE_GAP, "grow", "go up",
-            "get larger", "extend");
+    private static final List<String> INCREASE_GAP_SYNONYMS = Arrays.asList(Constants.INCREASE_GAP, "increase", "go up",
+            "get larger", "extend", "become larger");
     private static final List<String> INCREASE_SERIES_SYNONYMS = Arrays.asList(Constants.INCREASE_SERIES, "rise",
-            "grow", "improve", "progress", "go up", "get larger", "show an upward trend"); // ("ascend","extend","build"
+            "grow", "go up", "get larger");
     private static final List<String> MORE_STEEPLY_SYNONYMS = Arrays.asList(Constants.MORE_STEEPLY, "more rapidly",
             "at a greater rate");
     private static final List<String> NEXT_SYNONYMS = Arrays.asList(Constants.NEXT, "in the following period",
             "afterwards", "after that", "following that");
-    private static final List<String> REMAIN_GAP_SYNONYMS = Arrays.asList(Constants.REMAIN_GAP, "be constant",
-            "be steady", "stay the same", "continue to be", "do not change");
-    private static final List<String> REMAIN_SERIES_SYNONYMS = Arrays.asList(Constants.REMAIN_SERIES, "be constant",
-            "stay the same", "continue to be", "freeze", "persist", "rest", "hold", "do not change");
-    private static final List<String> SHOW_SYNONYMS = Arrays.asList(Constants.SHOW, "display", "illustrate", "detail");
+    private static final List<String> REMAIN_GAP_SYNONYMS = Arrays.asList(Constants.REMAIN_GAP, "be constant at",
+            "be steady at", "stay the same at", "continue to be", "do not change from", "keep the value");
+    private static final List<String> REMAIN_SERIES_SYNONYMS = Arrays.asList(Constants.REMAIN_SERIES,
+            "have a constant value", "continue with the same value", "rest at the same value", "hold the same value",
+            "keep the same value");
+    private static final List<String> SHOW_SYNONYMS = Arrays.asList(Constants.SHOW, "display", "illustrate");
     private static final List<String> SO_SYNONYMS = Arrays.asList(Constants.SO, "consequently", "as a consequence",
             "thus");
     private static final List<String> SO_THAT_SYNONYMS = Arrays.asList(Constants.SO_THAT, Constants.SO, "consequently",

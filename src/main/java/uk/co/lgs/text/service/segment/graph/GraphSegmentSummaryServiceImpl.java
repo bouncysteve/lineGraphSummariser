@@ -75,7 +75,11 @@ public class GraphSegmentSummaryServiceImpl implements GraphSegmentSummaryServic
         LOG.info("******************************************");
         DocumentElement summary;
         CoordinatedPhraseElement endValuesPhrase = null;
-        if (null == graphSegment.getHigherSeriesAtStart() && null != graphSegment.getHigherSeriesAtEnd()) {
+        // TODO: Hack! It doesn't make sense to talk about converging if the
+        // series start on the same value. There may be something else wrong
+        // here.
+        if (null == graphSegment.getHigherSeriesAtStart() && null != graphSegment.getHigherSeriesAtEnd()
+                && !GapTrend.CONVERGING.equals(graphSegment.getGapTrend())) {
             endValuesPhrase = describeSeriesWithDifferentEndValues(labels, graphSegment);
             LOG.info(REALISER.realiseSentence(endValuesPhrase));
             endValuesPhrase.addPreModifier(
@@ -163,8 +167,12 @@ public class GraphSegmentSummaryServiceImpl implements GraphSegmentSummaryServic
             trendsPhrase = getSameTrends(graphSegment,
                     getEndTime(this.synonymService.getSynonym(Constants.BY), graphSegment));
             final SeriesSegment firstSeriesSegment = graphSegment.getSeriesSegment(0);
-            final String complement = "to " + this.valueService.formatValueWithUnits(firstSeriesSegment.getEndValue(),
-                    firstSeriesSegment.getUnits());
+            String conjunction = "to ";
+            if (GradientType.ZERO.equals(graphSegment.getFirstSeriesTrend())) {
+                conjunction = "of ";
+            }
+            final String complement = conjunction + this.valueService
+                    .formatValueWithUnits(firstSeriesSegment.getEndValue(), firstSeriesSegment.getUnits());
             trendsPhrase.addComplement(complement);
         } else {
             trendsPhrase = getSameTrends(graphSegment, null);
@@ -221,8 +229,7 @@ public class GraphSegmentSummaryServiceImpl implements GraphSegmentSummaryServic
             final NPPhraseSpec subject = labels.get(indexOfSteeperSeries);
 
             steepnessPreposition.setSubject(subject);
-            final VPPhraseSpec verb = this.nlgFactory
-                    .createVerbPhrase(getTrendString(graphSegment.getSeriesSegment(indexOfSteeperSeries)));
+            final VPPhraseSpec verb = this.nlgFactory.createVerbPhrase();
             verb.addPostModifier(this.synonymService.getSynonym(Constants.MORE_STEEPLY));
             steepnessPreposition.setVerb(verb);
             parentPhrase.addCoordinate(steepnessPreposition);
@@ -284,7 +291,8 @@ public class GraphSegmentSummaryServiceImpl implements GraphSegmentSummaryServic
         final SeriesSegment firstSeriesSegment = graphSegment.getSeriesSegment(0);
         final VPPhraseSpec verb = this.nlgFactory.createVerbPhrase(getTrendString(firstSeriesSegment));
         final SPhraseSpec trendPhrase = this.nlgFactory.createClause();
-        if (graphSegment.getSeriesSegment(0).getGradient() == graphSegment.getSeriesSegment(1).getGradient()) {
+        if (graphSegment.getSeriesSegment(0).getGradient() == graphSegment.getSeriesSegment(1).getGradient()
+                && 0 != graphSegment.getSeriesSegment(0).getGradient()) {
             verb.addPostModifier(this.synonymService.getSynonym(Constants.AT_THE_SAME_RATE));
         }
         trendPhrase.setSubject(noun);
