@@ -22,11 +22,23 @@ public class GapServiceImpl implements GapService {
         Double minimumGap = Double.MAX_VALUE;
         Double maximumGap = 0D;
         boolean graphContainsIntersection = false;
+        boolean firstSegment = true;
         for (final GraphSegment graphSegment : graphSegments) {
-            final double gap = graphSegment.getGapBetweenSeriesEndValues();
             if (!graphContainsIntersection && graphSegment.isIntersecting()) {
                 graphContainsIntersection = true;
             }
+            if (firstSegment) {
+                firstSegment = false;
+                final double gapAtStartOfGraph = graphSegment.getGapBetweenSeriesStartValues();
+                if (gapAtStartOfGraph > maximumGap) {
+                    maximumGap = gapAtStartOfGraph;
+                }
+                if (!graphContainsIntersection && gapAtStartOfGraph < minimumGap) {
+                    minimumGap = gapAtStartOfGraph;
+                }
+            }
+
+            final double gap = graphSegment.getGapBetweenSeriesEndValues();
             if (!graphContainsIntersection && gap < minimumGap) {
                 minimumGap = gap;
             }
@@ -51,5 +63,54 @@ public class GapServiceImpl implements GapService {
             }
         }
         return graphSegmentsWithGapInfo;
+    }
+
+    @Override
+    public boolean isGlobalMaximumAtGraphStart(final List<GraphSegment> graphSegments) {
+        Double maximumGap = 0D;
+        boolean maximumGapAtStartOfGraph = true;
+        boolean firstSegment = true;
+        for (final GraphSegment graphSegment : graphSegments) {
+            if (firstSegment) {
+                firstSegment = false;
+                final double gapAtStartOfGraph = graphSegment.getGapBetweenSeriesStartValues();
+                if (gapAtStartOfGraph > maximumGap) {
+                    maximumGap = gapAtStartOfGraph;
+                }
+            }
+
+            final double gap = graphSegment.getGapBetweenSeriesEndValues();
+            if (gap > maximumGap) {
+                maximumGap = gap;
+                maximumGapAtStartOfGraph = false;
+            }
+        }
+        return maximumGapAtStartOfGraph;
+    }
+
+    @Override
+    public boolean isGlobalMinimumAtGraphStart(final List<GraphSegment> graphSegments) {
+        Double minimumGap = Double.MAX_VALUE;
+        final boolean minimumGapAtStartOfGraph = true;
+        boolean graphContainsIntersection = false;
+        boolean firstSegment = true;
+        for (final GraphSegment graphSegment : graphSegments) {
+            if (!graphContainsIntersection && graphSegment.isIntersecting()) {
+                graphContainsIntersection = true;
+            }
+            if (firstSegment) {
+                firstSegment = false;
+                final double gapAtStartOfGraph = graphSegment.getGapBetweenSeriesStartValues();
+                if (!graphContainsIntersection && gapAtStartOfGraph < minimumGap) {
+                    minimumGap = gapAtStartOfGraph;
+                }
+            }
+
+            final double gap = graphSegment.getGapBetweenSeriesEndValues();
+            if (!graphContainsIntersection && gap < minimumGap) {
+                minimumGap = gap;
+            }
+        }
+        return minimumGapAtStartOfGraph;
     }
 }

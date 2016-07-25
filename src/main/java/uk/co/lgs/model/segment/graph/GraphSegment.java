@@ -153,4 +153,10 @@ public interface GraphSegment {
      *         end of the segment.
      */
     double getGapBetweenSeriesEndValues();
+
+    /**
+     * @return the modulus of the difference between the series' values at the
+     *         start of the segment.
+     */
+    double getGapBetweenSeriesStartValues();
 }

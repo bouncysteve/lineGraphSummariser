@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import uk.co.lgs.domain.graph.GraphData;
+import uk.co.lgs.model.graph.service.GapService;
 import uk.co.lgs.model.graph.service.GapServiceImpl;
 import uk.co.lgs.model.graph.service.SegmentationServiceImpl;
 import uk.co.lgs.model.segment.exception.SegmentCategoryNotFoundException;
@@ -33,6 +34,10 @@ public class GraphModelImpl implements GraphModel {
 
     private List<String> descriptions;
 
+    private boolean globalMaximumAtGraphStart;
+
+    private boolean globalMinimumAtGraphStart;
+
     /**
      * Converts graphData into a graphModel, by splitting the data into
      * segments, and decorating the segments with gap information.
@@ -41,11 +46,14 @@ public class GraphModelImpl implements GraphModel {
      * @throws SegmentCategoryNotFoundException
      */
     public GraphModelImpl(final GraphData graphData) throws SegmentCategoryNotFoundException {
-        this.graphSegments = new GapServiceImpl().addGapInfo(new SegmentationServiceImpl().segment(graphData));
+        final GapService gapService = new GapServiceImpl();
+        this.graphSegments = gapService.addGapInfo(new SegmentationServiceImpl().segment(graphData));
         this.labels = graphData.getLabels();
         this.descriptions = graphData.getDescriptions();
         this.title = graphData.getTitle();
         this.units = graphData.getUnits();
+        this.setGlobalMaximumAtGraphStart(gapService.isGlobalMaximumAtGraphStart(this.graphSegments));
+        this.setGlobalMinimumAtGraphStart(gapService.isGlobalMinimumAtGraphStart(this.graphSegments));
     }
 
     /**
@@ -245,6 +253,22 @@ public class GraphModelImpl implements GraphModel {
             return false;
         }
         return true;
+    }
+
+    public boolean isGlobalMaximumAtGraphStart() {
+        return globalMaximumAtGraphStart;
+    }
+
+    public void setGlobalMaximumAtGraphStart(boolean globalMaximumAtGraphStart) {
+        this.globalMaximumAtGraphStart = globalMaximumAtGraphStart;
+    }
+
+    public boolean isGlobalMinimumAtGraphStart() {
+        return globalMinimumAtGraphStart;
+    }
+
+    public void setGlobalMinimumAtGraphStart(boolean globalMinimumAtGraphStart) {
+        this.globalMinimumAtGraphStart = globalMinimumAtGraphStart;
     }
 
 }

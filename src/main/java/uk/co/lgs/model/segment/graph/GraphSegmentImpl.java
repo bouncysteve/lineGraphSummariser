@@ -334,4 +334,9 @@ public class GraphSegmentImpl implements GraphSegment {
     public double getGapBetweenSeriesEndValues() {
         return Math.abs(this.getSeriesSegment(0).getEndValue() - this.getSeriesSegment(1).getEndValue());
     }
+
+    @Override
+    public double getGapBetweenSeriesStartValues() {
+        return Math.abs(this.getSeriesSegment(0).getStartValue() - this.getSeriesSegment(1).getStartValue());
+    }
 }

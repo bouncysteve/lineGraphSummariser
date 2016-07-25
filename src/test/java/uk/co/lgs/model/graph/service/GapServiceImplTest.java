@@ -1,5 +1,6 @@
 package uk.co.lgs.model.graph.service;
 
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -26,7 +27,7 @@ public class GapServiceImplTest {
     }
 
     @Test
-    public void testMaximGapInFirstSegment() {
+    public void testMaximumGapAtEndOfFirstSegment() {
         givenASegmentWithEndValues(10, 20);
         givenASegmentWithEndValues(-5, -5);
         whenIcallAddGapInfo();
@@ -35,7 +36,17 @@ public class GapServiceImplTest {
     }
 
     @Test
-    public void testMaximGapMultipleTimes() {
+    public void testMaximumGapAtStartOfFirstSegment() {
+        givenASegmentWithStartAndEndValues(10, 1000, 20, 50);
+        givenASegmentWithEndValues(0, 300);
+        whenIcallAddGapInfo();
+        thenTheSegmentsEndWithTheMaximumGap(Arrays.asList(false, false));
+        thenTheSegmentsEndWithTheMinimumGap(Arrays.asList(false, false));
+        andTheGraphHasMaximumGapAtTheStartOfTheGraph();
+    }
+
+    @Test
+    public void testMaximumGapMultipleTimes() {
         givenASegmentWithEndValues(30, 25);
         givenASegmentWithEndValues(-10, -50);
         givenASegmentWithEndValues(500, 500);
@@ -46,8 +57,8 @@ public class GapServiceImplTest {
     }
 
     @Test
-    public void testMinimumGapInFirstSegment() {
-        givenASegmentWithEndValues(5, 10);
+    public void testMinimumGapAtEndOfFirstSegment() {
+        givenASegmentWithStartAndEndValues(10, 80, 5, 10);
         givenASegmentWithEndValues(-10, -20);
         givenASegmentWithEndValues(100, 20);
         whenIcallAddGapInfo();
@@ -56,8 +67,18 @@ public class GapServiceImplTest {
     }
 
     @Test
+    public void testMinimumGapAtStartOfFirstSegment() {
+        givenASegmentWithStartAndEndValues(10, 8, 20, 50);
+        givenASegmentWithEndValues(0, 5);
+        whenIcallAddGapInfo();
+        thenTheSegmentsEndWithTheMaximumGap(Arrays.asList(false, false));
+        thenTheSegmentsEndWithTheMinimumGap(Arrays.asList(false, false));
+        andTheGraphHasMinimumGapAtTheStartOfTheGraph();
+    }
+
+    @Test
     public void testMinimumGapMultipleTimes() {
-        givenASegmentWithEndValues(-5, -10);
+        givenASegmentWithStartAndEndValues(10, 50, -5, -10);
         givenASegmentWithEndValues(10, 20);
         givenASegmentWithEndValues(100, 20);
         givenASegmentWithEndValues(200, 205);
@@ -68,7 +89,7 @@ public class GapServiceImplTest {
 
     @Test
     public void testConstantNonZeroGap() {
-        givenASegmentWithEndValues(-50, -10);
+        givenASegmentWithStartAndEndValues(-50, -10, -50, -10);
         givenASegmentWithEndValues(20, 60);
         givenASegmentWithEndValues(30, 70);
         givenASegmentWithEndValues(40, 80);
@@ -80,7 +101,7 @@ public class GapServiceImplTest {
 
     @Test
     public void testConstantZeroGap() {
-        givenASegmentWithEndValues(-90, -90);
+        givenASegmentWithStartAndEndValues(-90, -90, -90, -90);
         givenASegmentWithEndValues(50, 50);
         givenASegmentWithEndValues(60, 60);
         givenASegmentWithEndValues(70, 70);
@@ -98,7 +119,6 @@ public class GapServiceImplTest {
                 verify(graphSegment).setGlobalMinimumGapAtSegmentEnd(true);
             }
         }
-
     }
 
     private void thenTheSegmentsEndWithTheMaximumGap(final List<Boolean> segmentHasMaximum) {
@@ -117,8 +137,25 @@ public class GapServiceImplTest {
         this.graphSegmentsIn.add(mockSegment);
     }
 
+    private void givenASegmentWithStartAndEndValues(final int firstSeriesStartValue, final int secondSeriesStartValue,
+            final int firstSeriesEndValue, final int secondSeriesEndValue) {
+        final GraphSegment mockSegment = mock(GraphSegment.class);
+        when(mockSegment.getGapBetweenSeriesEndValues())
+                .thenReturn((double) Math.abs(firstSeriesEndValue - secondSeriesEndValue));
+        when(mockSegment.getGapBetweenSeriesStartValues())
+                .thenReturn((double) Math.abs(firstSeriesStartValue - secondSeriesStartValue));
+        this.graphSegmentsIn.add(mockSegment);
+    }
+
     private void whenIcallAddGapInfo() {
         this.gapService.addGapInfo(this.graphSegmentsIn);
     }
 
+    private void andTheGraphHasMinimumGapAtTheStartOfTheGraph() {
+        assertTrue(this.gapService.isGlobalMinimumAtGraphStart(this.graphSegmentsIn));
+    }
+
+    private void andTheGraphHasMaximumGapAtTheStartOfTheGraph() {
+        assertTrue(this.gapService.isGlobalMaximumAtGraphStart(this.graphSegmentsIn));
+    }
 }
