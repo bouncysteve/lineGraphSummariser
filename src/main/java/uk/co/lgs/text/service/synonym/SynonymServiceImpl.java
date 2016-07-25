@@ -30,13 +30,13 @@ public class SynonymServiceImpl implements SynonymService {
             "despite this");
     private static final List<String> BY_SYNONYMS = Arrays.asList(Constants.BY);
     private static final List<String> CROSS_SYNONYMS = Arrays.asList(Constants.CROSS, "intersect");
-    private static final List<String> DECREASE_GAP_SYNONYMS = Arrays.asList(Constants.DECREASE_GAP, "fall", "decline",
-            "descend", "drop", "shrink", "reduce", "show a downward trend"); // ("weaken","diminish",
+    private static final List<String> DECREASE_GAP_SYNONYMS = Arrays.asList(Constants.DECREASE_GAP, "drop", "shrink",
+            "reduce", "diminish", "get smaller", "go down");
     private static final List<String> DECREASE_SERIES_SYNONYMS = Arrays.asList(Constants.DECREASE_SERIES, "fall",
             "decline", "descend", "drop", "shrink", "reduce", "show a downward trend"); // ("weaken","diminish",
     private static final List<String> HAS_SYNONYMS = Arrays.asList(Constants.HAS, "has the value");
-    private static final List<String> INCREASE_GAP_SYNONYMS = Arrays.asList(Constants.INCREASE_GAP, "rise", "grow",
-            "improve", "progress", "go up", "get larger", "show an upward trend"); // ("ascend","extend","build"
+    private static final List<String> INCREASE_GAP_SYNONYMS = Arrays.asList(Constants.INCREASE_GAP, "grow", "go up",
+            "get larger", "extend");
     private static final List<String> INCREASE_SERIES_SYNONYMS = Arrays.asList(Constants.INCREASE_SERIES, "rise",
             "grow", "improve", "progress", "go up", "get larger", "show an upward trend"); // ("ascend","extend","build"
     private static final List<String> MORE_STEEPLY_SYNONYMS = Arrays.asList(Constants.MORE_STEEPLY, "more rapidly",
@@ -44,9 +44,9 @@ public class SynonymServiceImpl implements SynonymService {
     private static final List<String> NEXT_SYNONYMS = Arrays.asList(Constants.NEXT, "in the following period",
             "afterwards", "after that", "following that");
     private static final List<String> REMAIN_GAP_SYNONYMS = Arrays.asList(Constants.REMAIN_GAP, "be constant",
-            "stay the same", "continue to be", "freeze", "persist", "rest", "hold", "do not change");// ("endure",
+            "be steady", "stay the same", "continue to be", "do not change");
     private static final List<String> REMAIN_SERIES_SYNONYMS = Arrays.asList(Constants.REMAIN_SERIES, "be constant",
-            "stay the same", "continue to be", "freeze", "persist", "rest", "hold", "do not change");// ("endure",
+            "stay the same", "continue to be", "freeze", "persist", "rest", "hold", "do not change");
     private static final List<String> SHOW_SYNONYMS = Arrays.asList(Constants.SHOW, "display", "demonstrate", "detail");
     private static final List<String> SO_SYNONYMS = Arrays.asList(Constants.SO, "consequently", "as a consequence",
             "thus");

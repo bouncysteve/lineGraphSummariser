@@ -129,8 +129,7 @@ public class GraphSegmentSummaryServiceImpl implements GraphSegmentSummaryServic
             trendsPhrase.addPostModifier(getAndTheyCross());
             preposition = this.nlgFactory.createPrepositionPhrase(this.synonymService.getSynonym(Constants.NEXT));
             endValuesPhrase = describeSeriesWithDifferentEndValues(labels, graphSegment);
-            endValuesPhrase
-                    .addPreModifier(getEndTime(this.synonymService.getSynonym(Constants.BY), graphSegment));
+            endValuesPhrase.addPreModifier(getEndTime(this.synonymService.getSynonym(Constants.BY), graphSegment));
         }
 
         final CoordinatedPhraseElement parentPhrase = this.nlgFactory.createCoordinatedPhrase();
@@ -174,8 +173,7 @@ public class GraphSegmentSummaryServiceImpl implements GraphSegmentSummaryServic
             LOG.info(REALISER.realiseSentence(steepnessPhrase));
             endValuesPhrase = describeSeriesWithDifferentEndValues(labels, graphSegment);
             LOG.info(REALISER.realiseSentence(endValuesPhrase));
-            endValuesPhrase
-                    .addPreModifier(getEndTime(this.synonymService.getSynonym(Constants.BY), graphSegment));
+            endValuesPhrase.addPreModifier(getEndTime(this.synonymService.getSynonym(Constants.BY), graphSegment));
             LOG.info(REALISER.realiseSentence(endValuesPhrase));
         }
         parentPhrase.addCoordinate(trendsPhrase);
@@ -194,8 +192,7 @@ public class GraphSegmentSummaryServiceImpl implements GraphSegmentSummaryServic
         final CoordinatedPhraseElement parentPhrase = this.nlgFactory.createCoordinatedPhrase();
         parentPhrase.addCoordinate(childPhrase);
         parentPhrase.setConjunction(this.synonymService.getSynonym(Constants.SO));
-        parentPhrase
-                .addCoordinate(getGap(graphSegment, intersectingGraph, mentionedMaxGapYet, mentionedMinGapYet));
+        parentPhrase.addCoordinate(getGap(graphSegment, intersectingGraph, mentionedMaxGapYet, mentionedMinGapYet));
         return this.nlgFactory.createSentence(parentPhrase);
     }
 
@@ -203,11 +200,10 @@ public class GraphSegmentSummaryServiceImpl implements GraphSegmentSummaryServic
             final boolean intersectingGraph, final boolean mentionedMaxGapYet, final boolean mentionedMinGapYet,
             final List<NPPhraseSpec> labels) {
         final CoordinatedPhraseElement parentPhrase = this.nlgFactory.createCoordinatedPhrase();
-        parentPhrase.addCoordinate(getSameTrends(graphSegment,
-                getEndTime(this.synonymService.getSynonym(Constants.UNTIL), graphSegment)));
+        parentPhrase.addCoordinate(
+                getSameTrends(graphSegment, getEndTime(this.synonymService.getSynonym(Constants.UNTIL), graphSegment)));
 
-        final SPhraseSpec gapPhrase = getGap(graphSegment, intersectingGraph, mentionedMaxGapYet,
-                mentionedMinGapYet);
+        final SPhraseSpec gapPhrase = getGap(graphSegment, intersectingGraph, mentionedMaxGapYet, mentionedMinGapYet);
         parentPhrase.addCoordinate(getSteepness(graphSegment, labels));
         gapPhrase.addFrontModifier(Constants.SO);
         parentPhrase.addCoordinate(gapPhrase);
@@ -216,8 +212,7 @@ public class GraphSegmentSummaryServiceImpl implements GraphSegmentSummaryServic
     }
 
     /** Because <series> [increases/decreases] more steeply (they cross) */
-    private CoordinatedPhraseElement getSteepness(final GraphSegment graphSegment,
-            final List<NPPhraseSpec> labels) {
+    private CoordinatedPhraseElement getSteepness(final GraphSegment graphSegment, final List<NPPhraseSpec> labels) {
         final CoordinatedPhraseElement parentPhrase = this.nlgFactory.createCoordinatedPhrase();
         final SPhraseSpec steepnessPreposition = this.nlgFactory.createClause();
         final SPhraseSpec crossPhrase = this.nlgFactory.createClause();
@@ -258,8 +253,8 @@ public class GraphSegmentSummaryServiceImpl implements GraphSegmentSummaryServic
         return index;
     }
 
-    private CoordinatedPhraseElement getOppositeTrends(final GraphSegment graphSegment,
-            final List<NPPhraseSpec> labels, final PPPhraseSpec endTimePhrase, final String conjunction) {
+    private CoordinatedPhraseElement getOppositeTrends(final GraphSegment graphSegment, final List<NPPhraseSpec> labels,
+            final PPPhraseSpec endTimePhrase, final String conjunction) {
         String localConjunction = conjunction;
         final CoordinatedPhraseElement trendsPhrase = this.nlgFactory.createCoordinatedPhrase();
         SeriesSegment higherSeriesAtStart = graphSegment.getHigherSeriesAtStart();
@@ -274,8 +269,8 @@ public class GraphSegmentSummaryServiceImpl implements GraphSegmentSummaryServic
             localConjunction = this.synonymService.getSynonym(Constants.BUT);
         }
         trendsPhrase.setConjunction(localConjunction);
-        trendsPhrase.addCoordinate(getTrend(graphSegment.getSeriesSegment(1 - higherSeriesIndex),
-                labels.get(1 - higherSeriesIndex)));
+        trendsPhrase.addCoordinate(
+                getTrend(graphSegment.getSeriesSegment(1 - higherSeriesIndex), labels.get(1 - higherSeriesIndex)));
         // This in combination with REALISER.setCommaSepCuephrase(true) above,
         // should add a comma here, but doesn't seem to.
         trendsPhrase.setFeature(Feature.CUE_PHRASE, true);
@@ -365,13 +360,13 @@ public class GraphSegmentSummaryServiceImpl implements GraphSegmentSummaryServic
         String verbString = null;
         switch (seriesSegment.getGradientType()) {
         case NEGATIVE:
-            verbString = Constants.DECREASE_GAP;
+            verbString = Constants.DECREASE_SERIES;
             break;
         case POSITIVE:
-            verbString = Constants.INCREASE_GAP;
+            verbString = Constants.INCREASE_SERIES;
             break;
         case ZERO:
-            verbString = Constants.REMAIN_GAP;
+            verbString = Constants.REMAIN_SERIES;
             break;
         default:
             break;

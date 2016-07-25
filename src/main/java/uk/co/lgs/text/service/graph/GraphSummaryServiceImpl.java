@@ -118,7 +118,7 @@ public class GraphSummaryServiceImpl implements GraphSummaryService {
 
         final String startTime = firstSegment.getStartTime();
         final NLGElement higherSeriesAtStartPhrase;
-        final PPPhraseSpec preposition = this.nlgFactory.createPrepositionPhrase(Constants.AT, startTime);
+        final PPPhraseSpec preposition = this.nlgFactory.createPrepositionPhrase(Constants.IN, startTime);
 
         if (null == higherSeries) {
             higherSeriesAtStartPhrase = describeSeriesWithSameStartValue(labels, firstSeriesSegment, preposition);

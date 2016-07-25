@@ -35,17 +35,6 @@ public class GraphSummaryServiceImplTest extends AbstractTest {
 
     private static final Lexicon LEXICON = Lexicon.getDefaultLexicon();
 
-    private static final String GRAPH_TITLE = "I am an important graph";
-    private static final String THIS_GRAPH_IS_CALLED = "This graph is called ";
-    private static final String BETWEEN = " between ";
-    private static final String AND = " and ";
-    private static final String GRAPH_START = "August 2012";
-    private static final String GRAPH_END = "July 2013";
-    private static final String SERIES1_LABEL = "Sales of frogs";
-    private static final String SERIES2_LABEL = "Average global temperature";
-
-    private static final String IT_SHOWS = "It shows ";
-
     private List<GraphSegment> graphSegments;
     private final NLGFactory nlgFactory = new NLGFactory(LEXICON);
 
@@ -99,8 +88,8 @@ public class GraphSummaryServiceImplTest extends AbstractTest {
         when(this.mockGraphModel.getGraphSegments()).thenReturn(this.graphSegments);
         this.modelLabelList = new ArrayList<>();
 
-        final NPPhraseSpec firstSeriesLabel = this.nlgFactory.createNounPhrase(SERIES1_LABEL);
-        final NPPhraseSpec secondSeriesLabel = this.nlgFactory.createNounPhrase(SERIES2_LABEL);
+        final NPPhraseSpec firstSeriesLabel = this.nlgFactory.createNounPhrase("Sales of frogs");
+        final NPPhraseSpec secondSeriesLabel = this.nlgFactory.createNounPhrase("Average global temperature");
         this.labels = Arrays.asList(firstSeriesLabel, secondSeriesLabel);
         when(this.labelService.getLabelsForCommonUse(this.mockGraphModel)).thenReturn(this.labels);
         when(this.labelService.getLabelForCommonUse(this.graphSegment, this.firstSeriesSegment))
@@ -108,79 +97,83 @@ public class GraphSummaryServiceImplTest extends AbstractTest {
         when(this.labelService.getLabelForCommonUse(this.graphSegment, this.secondSeriesSegment))
                 .thenReturn(secondSeriesLabel);
 
-        when(this.firstSeriesSegment.getLabel()).thenReturn(SERIES1_LABEL);
-        when(this.secondSeriesSegment.getLabel()).thenReturn(SERIES2_LABEL);
+        when(this.firstSeriesSegment.getLabel()).thenReturn("Sales of frogs");
+        when(this.secondSeriesSegment.getLabel()).thenReturn("Average global temperature");
 
         when(this.graphSegment.getSeriesSegment(0)).thenReturn(this.firstSeriesSegment);
         when(this.graphSegment.indexOf(this.firstSeriesSegment)).thenReturn(0);
         when(this.graphSegment.getSeriesSegment(1)).thenReturn(this.secondSeriesSegment);
         when(this.graphSegment.indexOf(this.secondSeriesSegment)).thenReturn(1);
-        when(this.graphSegment.getStartTime()).thenReturn(GRAPH_START);
+        when(this.graphSegment.getStartTime()).thenReturn("August 2012");
 
         when(this.valueService.formatValueWithUnits(anyDouble(), anyString())).thenReturn("20%");
     }
 
     @Test
     public void testGetSummaryTitleAndLabelsWhenTitleEndsWithFullStop() {
-        givenAGraphWithTitle(GRAPH_TITLE + ".");
-        givenAGraphWithSeriesAndDescriptions(SERIES1_LABEL, SERIES2_LABEL);
-        givenAGraphStartingAndEndingAt(GRAPH_START, GRAPH_END);
+        givenAGraphWithTitle("I am an important graph.");
+        givenAGraphWithSeriesAndDescriptions("Sales of frogs", "Average global temperature");
+        givenAGraphStartingAndEndingAt("August 2012", "July 2013");
         whenTheGraphIsSummarised();
-        // FIXME: this should have a comma after GRAPH_TITLE, but this doesn't
+        // FIXME: this should have a comma after "I am an important graph", but
+        // this doesn't
         // seem to work (@see
         // https://groups.google.com/forum/#!topic/simplenlg/S5lhANTBo70)
-        thenTheSummaryStartsWith(THIS_GRAPH_IS_CALLED + "\"" + GRAPH_TITLE + "\". " + IT_SHOWS + SERIES1_LABEL + AND
-                + SERIES2_LABEL + BETWEEN + GRAPH_START + AND + GRAPH_END + ".");
+        thenTheSummaryStartsWith("This graph is called \"I am an important graph\". It shows "
+                + "Sales of frogs and Average global temperature between August 2012 and July 2013.");
     }
 
     @Test
     public void testFirstSeriesInitiallyHigher() {
-        givenAGraphWithTitle(GRAPH_TITLE);
-        givenAGraphWithSeriesAndDescriptions(SERIES1_LABEL, SERIES2_LABEL);
+        givenAGraphWithTitle("I am an important graph");
+        givenAGraphWithSeriesAndDescriptions("Sales of frogs", "Average global temperature");
         givenTheInitialValuesOfTheSeriesAre(120d, -50d);
-        givenAGraphStartingAndEndingAt(GRAPH_START, GRAPH_END);
+        givenAGraphStartingAndEndingAt("August 2012", "July 2013");
         whenTheGraphIsSummarised();
-        // FIXME: this should have a comma after GRAPH_TITLE, but this doesn't
+        // FIXME: this should have a comma after "I am an important graph", but
+        // this doesn't
         // seem to work (@see
         // https://groups.google.com/forum/#!topic/simplenlg/S5lhANTBo70)
-        thenTheSummaryStartsWith(THIS_GRAPH_IS_CALLED + "\"" + GRAPH_TITLE + "\". " + IT_SHOWS + SERIES1_LABEL + AND
-                + SERIES2_LABEL + BETWEEN + GRAPH_START + AND + GRAPH_END + ".");
-        thenTheSummaryContains(getHigherPhrase(SERIES1_LABEL, SERIES2_LABEL));
+        thenTheSummaryStartsWith("This graph is called \"I am an important graph\". It shows "
+                + "Sales of frogs and Average global temperature between August 2012 and July 2013.");
+        thenTheSummaryContains(getHigherPhrase("Sales of frogs", "Average global temperature"));
 
     }
 
     @Test
     public void testSecondSeriesInitiallyHigher() {
-        givenAGraphWithTitle(GRAPH_TITLE);
-        givenAGraphWithSeriesAndDescriptions(SERIES1_LABEL, SERIES2_LABEL);
+        givenAGraphWithTitle("I am an important graph");
+        givenAGraphWithSeriesAndDescriptions("Sales of frogs", "Average global temperature");
         givenTheInitialValuesOfTheSeriesAre(-120d, -76.4d);
-        givenAGraphStartingAndEndingAt(GRAPH_START, GRAPH_END);
+        givenAGraphStartingAndEndingAt("August 2012", "July 2013");
         whenTheGraphIsSummarised();
-        // FIXME: this should have a comma after GRAPH_TITLE, but this doesn't
+        // FIXME: this should have a comma after "I am an important graph", but
+        // this doesn't
         // seem to work (@see
         // https://groups.google.com/forum/#!topic/simplenlg/S5lhANTBo70)
-        thenTheSummaryStartsWith(THIS_GRAPH_IS_CALLED + "\"" + GRAPH_TITLE + "\". " + IT_SHOWS + SERIES1_LABEL + AND
-                + SERIES2_LABEL + BETWEEN + GRAPH_START + AND + GRAPH_END + ".");
-        thenTheSummaryContains(getHigherPhrase(SERIES2_LABEL, SERIES1_LABEL));
+        thenTheSummaryStartsWith("This graph is called \"I am an important graph\". It shows "
+                + "Sales of frogs and Average global temperature between August 2012 and July 2013.");
+        thenTheSummaryContains(getHigherPhrase("Average global temperature", "Sales of frogs"));
     }
 
     @Test
     public void testBothSeriesInitiallyHaveTheSameValue() {
-        givenAGraphWithTitle(GRAPH_TITLE);
-        givenAGraphWithSeriesAndDescriptions(SERIES1_LABEL, SERIES2_LABEL);
+        givenAGraphWithTitle("I am an important graph");
+        givenAGraphWithSeriesAndDescriptions("Sales of frogs", "Average global temperature");
         givenTheInitialValuesOfTheSeriesAre(-3.14d, -3.14d);
-        givenAGraphStartingAndEndingAt(GRAPH_START, GRAPH_END);
+        givenAGraphStartingAndEndingAt("August 2012", "July 2013");
         whenTheGraphIsSummarised();
-        // FIXME: this should have a comma after GRAPH_TITLE, but this doesn't
+        // FIXME: this should have a comma after "I am an important graph", but
+        // this doesn't
         // seem to work (@see
         // https://groups.google.com/forum/#!topic/simplenlg/S5lhANTBo70)
-        thenTheSummaryStartsWith(THIS_GRAPH_IS_CALLED + "\"" + GRAPH_TITLE + "\". " + IT_SHOWS + SERIES1_LABEL + AND
-                + SERIES2_LABEL + BETWEEN + GRAPH_START + AND + GRAPH_END + ".");
-        thenTheSummaryContains("Both " + SERIES1_LABEL + " and " + SERIES2_LABEL + " at " + GRAPH_START + " have 20%.");
+        thenTheSummaryStartsWith(
+                "This graph is called \"I am an important graph\". It shows Sales of frogs and Average global temperature between August 2012 and July 2013.");
+        thenTheSummaryContains("Both Sales of frogs and Average global temperature in August 2012 have 20%.");
     }
 
     private String getHigherPhrase(final String higherSeriesLabel, final String lowerSeriesLabel) {
-        return higherSeriesLabel + " is higher with 20% at " + GRAPH_START + " while " + lowerSeriesLabel + " has 20%.";
+        return higherSeriesLabel + " is higher with 20% in August 2012 while " + lowerSeriesLabel + " has 20%.";
     }
 
     private void givenAGraphWithSeriesAndDescriptions(final String series1Label, final String series2Label) {

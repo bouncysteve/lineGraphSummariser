@@ -22,6 +22,7 @@ public class Constants {
     public static final String HAS = "has";
     public static final String INCREASE_GAP = "increase";
     public static final String INCREASE_SERIES = "increase";
+    public static final String IN = "in";
     public static final String IT = "it";
     public static final String MORE_STEEPLY = "more steeply";
     public static final String NEXT = "next";
