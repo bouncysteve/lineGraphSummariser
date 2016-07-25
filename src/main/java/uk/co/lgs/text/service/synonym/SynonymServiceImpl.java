@@ -25,8 +25,7 @@ public class SynonymServiceImpl implements SynonymService {
             "has the title");
     private static final List<String> BE_HIGHER_SYNONYMS = Arrays.asList(Constants.BE_HIGHER);
     private static final List<String> BOTH_SYNONYMS = Arrays.asList(Constants.BOTH, "the two lines");
-    private static final List<String> BUT_SYNONYMS = Arrays.asList(Constants.BUT, "however", "nevertheless",
-            "despite this");
+    private static final List<String> BUT_SYNONYMS = Arrays.asList(Constants.BUT, "however");
     private static final List<String> BY_SYNONYMS = Arrays.asList(Constants.BY);
     private static final List<String> CROSS_SYNONYMS = Arrays.asList(Constants.CROSS, "intersect");
     private static final List<String> DECREASE_GAP_SYNONYMS = Arrays.asList(Constants.DECREASE_GAP, "shrink",
@@ -48,10 +47,9 @@ public class SynonymServiceImpl implements SynonymService {
             "have a constant value", "continue with the same value", "rest at the same value", "hold the same value",
             "keep the same value");
     private static final List<String> SHOW_SYNONYMS = Arrays.asList(Constants.SHOW, "display", "illustrate");
-    private static final List<String> SO_SYNONYMS = Arrays.asList(Constants.SO, "consequently", "as a consequence",
-            "thus");
+    private static final List<String> SO_SYNONYMS = Arrays.asList(Constants.SO, "consequently", "as a consequence");
     private static final List<String> SO_THAT_SYNONYMS = Arrays.asList(Constants.SO_THAT, Constants.SO, "consequently",
-            "as a consequence", "thus");
+            "as a consequence");
     private static final List<String> THE_GAP_BETWEEN_THEM_SYNONYMS = Arrays.asList(Constants.THE_GAP_BETWEEN_THEM,
             "the difference between them", "their difference", "their gap");
     private static final List<String> THEY_SYNONYMS = Arrays.asList(Constants.THEY, "the series", "the lines");
