@@ -31,6 +31,16 @@ import uk.co.lgs.text.service.synonym.SynonymService;
 import uk.co.lgs.text.service.synonym.SynonymServiceImpl;
 import uk.co.lgs.text.service.value.ValueService;
 
+/**
+ * FIXME: Although the actual values of the series are mentioned at the start of
+ * the graph, if these constitute a global minimum or maximum this is not
+ * explicitly mentioned in the summary. This requires many of the features of
+ * the GraphSegmentSummaryService, which may be possible once that service is
+ * broken up into multiple classes.
+ * 
+ * @author bouncysteve
+ *
+ */
 public class GraphSummaryServiceImplTest extends AbstractTest {
 
     private static final Lexicon LEXICON = Lexicon.getDefaultLexicon();
