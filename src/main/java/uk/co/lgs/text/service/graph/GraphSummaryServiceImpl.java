@@ -73,10 +73,14 @@ public class GraphSummaryServiceImpl implements GraphSummaryService {
 
         wholeSummary.addComponent(getIntro(model));
         wholeSummary.addComponent(getBody(model));
-
-        return REALISER.realise(wholeSummary).getRealisation().trim();
+        // TODO: Find a less hacky way of ensuring commas before these phrases
+        return REALISER.realise(wholeSummary).getRealisation().trim()
+                .replaceAll(" " + Constants.ITS_MAXIMUM_VALUE, ", " + Constants.ITS_MAXIMUM_VALUE)
+                .replaceAll(" " + Constants.ITS_MINIMUM_VALUE, ", " + Constants.ITS_MINIMUM_VALUE);
     }
 
+    // TODO: Don't want this to be a separate paragraph, but there may be
+    // multiple sentences...
     private DocumentElement getIntro(final GraphModel model) {
         final DocumentElement intro = this.nlgFactory.createParagraph();
         final SPhraseSpec title = getTitle(model);
@@ -110,6 +114,8 @@ public class GraphSummaryServiceImpl implements GraphSummaryService {
         return body;
     }
 
+    // FIXME: If start of graph has global maximum or minimum value or gap then
+    // say so here!!!!
     private NLGElement describeStartOfGraph(final GraphModel model) {
         final GraphSegment firstSegment = model.getGraphSegments().get(0);
         final List<NPPhraseSpec> labels = this.labelService.getLabelsForCommonUse(model);

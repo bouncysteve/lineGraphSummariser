@@ -20,7 +20,7 @@ import uk.co.lgs.model.segment.graph.category.GraphSegmentGradient;
  */
 public class GraphModelImpl implements GraphModel {
 
-    private final List<GraphSegment> graphSegments;
+    private List<GraphSegment> graphSegments;
 
     private List<String> labels;
 
@@ -256,19 +256,24 @@ public class GraphModelImpl implements GraphModel {
     }
 
     public boolean isGlobalMaximumAtGraphStart() {
-        return globalMaximumAtGraphStart;
+        return this.globalMaximumAtGraphStart;
     }
 
-    public void setGlobalMaximumAtGraphStart(boolean globalMaximumAtGraphStart) {
+    public void setGlobalMaximumAtGraphStart(final boolean globalMaximumAtGraphStart) {
         this.globalMaximumAtGraphStart = globalMaximumAtGraphStart;
     }
 
     public boolean isGlobalMinimumAtGraphStart() {
-        return globalMinimumAtGraphStart;
+        return this.globalMinimumAtGraphStart;
     }
 
-    public void setGlobalMinimumAtGraphStart(boolean globalMinimumAtGraphStart) {
+    public void setGlobalMinimumAtGraphStart(final boolean globalMinimumAtGraphStart) {
         this.globalMinimumAtGraphStart = globalMinimumAtGraphStart;
+    }
+
+    @Override
+    public void setGraphSegments(final List<GraphSegment> segments) {
+        this.graphSegments = segments;
     }
 
 }

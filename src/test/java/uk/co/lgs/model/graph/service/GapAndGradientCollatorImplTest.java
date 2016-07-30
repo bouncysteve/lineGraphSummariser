@@ -2,20 +2,19 @@ package uk.co.lgs.model.graph.service;
 
 import java.util.Arrays;
 
-import org.junit.Before;
 import org.junit.Test;
+import org.mockito.InjectMocks;
 
 import uk.co.lgs.model.graph.collator.exception.CollatorException;
 import uk.co.lgs.model.segment.exception.SegmentAppendException;
+import uk.co.lgs.model.segment.exception.SegmentCategoryNotFoundException;
 import uk.co.lgs.model.segment.graph.category.GapTrend;
 import uk.co.lgs.model.segment.graph.category.GraphSegmentGradient;
 
 public class GapAndGradientCollatorImplTest extends AbstractModelCollatorTest {
 
-    @Before
-    public void beforeEachTest() {
-        this.underTest = new GapAndGradientCollatorImpl();
-    }
+    @InjectMocks
+    private final GapAndGradientCollatorImpl underTest = new GapAndGradientCollatorImpl();
 
     @Test
     public void testGraphSegmentTrendsNotEqual() throws SegmentAppendException, CollatorException {
@@ -67,6 +66,11 @@ public class GapAndGradientCollatorImplTest extends AbstractModelCollatorTest {
         thenTheModelHasSegments(Arrays.asList(GraphSegmentGradient.NEGATIVE_NEGATIVE));
         thenTheModelHasGaps(Arrays.asList(GapTrend.DIVERGING));
         thenTheModelHasLengths(Arrays.asList(2));
+    }
+
+    @Override
+    protected void whenTheModelIsCollated() throws SegmentCategoryNotFoundException, CollatorException {
+        this.outputGraphModel = this.underTest.collate(this.inputGraphModel);
     }
 
 }

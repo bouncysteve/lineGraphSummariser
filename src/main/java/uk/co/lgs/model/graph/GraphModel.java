@@ -97,8 +97,21 @@ public interface GraphModel {
      */
     void setIntersecting(boolean intersecting);
 
+    /**
+     * @return the descriptions of each series
+     */
     List<String> getDescriptions();
 
+    /**
+     * @param descriptions
+     *            the descriptions of each series
+     */
     void setDescriptions(List<String> descriptions);
+
+    /**
+     * @param segments
+     *            the graphSegments
+     */
+    void setGraphSegments(List<GraphSegment> segments);
 
 }

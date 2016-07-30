@@ -79,7 +79,8 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
 
     @Test
     public void testOppositeTrendsDiverging01() {
-        givenASeriesWithValuesHasMaximumGapAndMinimumGap(50d, 100d, 20d, 10d, false, false);
+        givenASegmentWithValuesHasMaximumGapAndMinimumGap(50d, 100d, 20d, 10d, false, false);
+        givenAnotherSegmentWhichWeAreNotInterestedIn(50d, 100d, 20d, 10d, false, false);
         whenTheSegmentIsSummarised();
         thenTheSummaryIs(
                 "Until April 2016 Cost of sunglasses increases but Sales of doughnuts decrease, so the gap between them grows.");
@@ -87,8 +88,9 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
 
     @Test
     public void testOppositeTrendsDivergingToGlobalMaximumGap02() {
-        givenASeriesWithValuesHasMaximumGapAndMinimumGap(0d, 0d, 0d, 90d, true, false);
-        givenASeriesWithValuesHasMaximumGapAndMinimumGap(50d, 100d, 20d, 10d, true, false);
+        givenASegmentWithValuesHasMaximumGapAndMinimumGap(0d, 0d, 0d, 90d, true, false);
+        givenASegmentWithValuesHasMaximumGapAndMinimumGap(50d, 100d, 20d, 10d, true, false);
+        givenAnotherSegmentWhichWeAreNotInterestedIn(50d, 100d, 20d, 10d, false, false);
         whenTheSegmentIsSummarised(1);
         thenTheSummaryIs(
                 "Until April 2016 Cost of sunglasses increases but Sales of doughnuts decrease, so the gap between them grows to 90%.");
@@ -96,7 +98,8 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
 
     @Test
     public void testOppositeTrendsDivergingToGlobalMaximumGapFirstTimeMentioned03() {
-        givenASeriesWithValuesHasMaximumGapAndMinimumGap(50d, 100d, 20d, 10d, true, false);
+        givenASegmentWithValuesHasMaximumGapAndMinimumGap(50d, 100d, 20d, 10d, true, false);
+        givenAnotherSegmentWhichWeAreNotInterestedIn(50d, 100d, 20d, 10d, true, false);
         whenTheSegmentIsSummarised();
         thenTheSummaryIs(
                 "Until April 2016 Cost of sunglasses increases but Sales of doughnuts decrease, so the gap between them grows to 90%, its maximum value.");
@@ -104,7 +107,8 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
 
     @Test
     public void testOppositeTrendsConverging04() {
-        givenASeriesWithValuesHasMaximumGapAndMinimumGap(20d, 10d, -20d, 0d, false, false);
+        givenASegmentWithValuesHasMaximumGapAndMinimumGap(20d, 10d, -20d, 0d, false, false);
+        givenAnotherSegmentWhichWeAreNotInterestedIn(20d, 10d, -20d, 0d, false, false);
         whenTheSegmentIsSummarised();
         thenTheSummaryIs(
                 "Until April 2016 Cost of sunglasses decreases but Sales of doughnuts increase, so the gap between them reduces.");
@@ -112,8 +116,9 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
 
     @Test
     public void testOppositeTrendsConvergingToGlobalMinimumGap05() {
-        givenASeriesWithValuesHasMaximumGapAndMinimumGap(20d, 10d, -20d, 0d, false, true);
-        givenASeriesWithValuesHasMaximumGapAndMinimumGap(20d, 10d, -20d, 0d, false, true);
+        givenASegmentWithValuesHasMaximumGapAndMinimumGap(20d, 10d, -20d, 0d, false, true);
+        givenASegmentWithValuesHasMaximumGapAndMinimumGap(20d, 10d, -20d, 0d, false, true);
+        givenAnotherSegmentWhichWeAreNotInterestedIn(20d, 10d, -20d, 0d, false, true);
         whenTheSegmentIsSummarised(1);
         thenTheSummaryIs(
                 "Until April 2016 Cost of sunglasses decreases but Sales of doughnuts increase, so the gap between them reduces to 10%.");
@@ -121,7 +126,8 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
 
     @Test
     public void testOppositeTrendsConvergingToGlobalMinimumGapFirstTimeMentioned06() {
-        givenASeriesWithValuesHasMaximumGapAndMinimumGap(20d, 10d, -20d, 0d, false, true);
+        givenASegmentWithValuesHasMaximumGapAndMinimumGap(20d, 10d, -20d, 0d, false, true);
+        givenAnotherSegmentWhichWeAreNotInterestedIn(20d, 10d, -20d, 0d, false, true);
         whenTheSegmentIsSummarised();
         thenTheSummaryIs(
                 "Until April 2016 Cost of sunglasses decreases but Sales of doughnuts increase, so the gap between them reduces to 10%, its minimum value.");
@@ -130,7 +136,8 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
     @Test
     public void testOppositeTrendsConvergingToGlobalMinimumGapFirstTimeMentionedGraphHasIntersection07() {
         givenTheGraphHasIntersections();
-        givenASeriesWithValuesHasMaximumGapAndMinimumGap(20d, 10d, -20d, 0d, false, true);
+        givenASegmentWithValuesHasMaximumGapAndMinimumGap(20d, 10d, -20d, 0d, false, true);
+        givenAnotherSegmentWhichWeAreNotInterestedIn(20d, 10d, -20d, 0d, false, true);
         whenTheSegmentIsSummarised();
         thenTheSummaryIs(
                 "Until April 2016 Cost of sunglasses decreases but Sales of doughnuts increase, so the gap between them reduces to 10%.");
@@ -138,7 +145,8 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
 
     @Test
     public void testOppositeTrendsConvergingToIntersectionDuringSection08() {
-        givenASeriesWithValuesHasMaximumGapAndMinimumGap(20d, 10d, -20d, 15d, false, false);
+        givenASegmentWithValuesHasMaximumGapAndMinimumGap(20d, 10d, -20d, 15d, false, false);
+        givenAnotherSegmentWhichWeAreNotInterestedIn(20d, 10d, -20d, 15d, false, false);
         whenTheSegmentIsSummarised();
         thenTheSummaryIs(
                 "Next, Cost of sunglasses decreases but Sales of doughnuts increase; they cross, so that by April 2016 Sales of doughnuts are higher with 15% while Cost of sunglasses has 10%.");
@@ -146,7 +154,8 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
 
     @Test
     public void testOppositeTrendsConvergingToIntersectionAtEndOfSection09() {
-        givenASeriesWithValuesHasMaximumGapAndMinimumGap(20d, 10d, -20d, 10d, false, false);
+        givenASegmentWithValuesHasMaximumGapAndMinimumGap(20d, 10d, -20d, 10d, false, false);
+        givenAnotherSegmentWhichWeAreNotInterestedIn(20d, 10d, -20d, 10d, false, false);
         whenTheSegmentIsSummarised();
         thenTheSummaryIs(
                 "By April 2016 Cost of sunglasses decreases to 10% and Sales of doughnuts increase to the same value.");
@@ -157,7 +166,8 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
      *************************************/
     @Test
     public void testBothFallingConverging10a() {
-        givenASeriesWithValuesHasMaximumGapAndMinimumGap(50d, 30d, 20d, 10d, false, false);
+        givenASegmentWithValuesHasMaximumGapAndMinimumGap(50d, 30d, 20d, 10d, false, false);
+        givenAnotherSegmentWhichWeAreNotInterestedIn(50d, 30d, 20d, 10d, false, false);
         whenTheSegmentIsSummarised();
         thenTheSummaryIs(
                 "Until April 2016 both decrease; Cost of sunglasses more steeply, and so the gap between them reduces.");
@@ -165,8 +175,9 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
 
     @Test
     public void testBothFallingConvergingToGlobalMinimumGap11a() {
-        givenASeriesWithValuesHasMaximumGapAndMinimumGap(50d, 30d, 20d, 10d, false, true);
-        givenASeriesWithValuesHasMaximumGapAndMinimumGap(50d, 30d, 20d, 10d, false, true);
+        givenASegmentWithValuesHasMaximumGapAndMinimumGap(50d, 30d, 20d, 10d, false, true);
+        givenASegmentWithValuesHasMaximumGapAndMinimumGap(50d, 30d, 20d, 10d, false, true);
+        givenAnotherSegmentWhichWeAreNotInterestedIn(50d, 30d, 20d, 10d, false, true);
         whenTheSegmentIsSummarised(1);
         thenTheSummaryIs(
                 "Until April 2016 both decrease; Cost of sunglasses more steeply, and so the gap between them reduces to 20%.");
@@ -174,7 +185,8 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
 
     @Test
     public void testBothFallingConvergingToGlobalMinimumGapFirstTimeMentioned12a() {
-        givenASeriesWithValuesHasMaximumGapAndMinimumGap(50d, 30d, 20d, 10d, false, true);
+        givenASegmentWithValuesHasMaximumGapAndMinimumGap(50d, 30d, 20d, 10d, false, true);
+        givenAnotherSegmentWhichWeAreNotInterestedIn(50d, 30d, 20d, 10d, false, true);
         whenTheSegmentIsSummarised();
         thenTheSummaryIs(
                 "Until April 2016 both decrease; Cost of sunglasses more steeply, and so the gap between them reduces to 20%, its minimum value.");
@@ -183,7 +195,8 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
     @Test
     public void testBothFallingConvergingToGlobalMinimumGapWhenGraphHasIntersections13a() {
         givenTheGraphHasIntersections();
-        givenASeriesWithValuesHasMaximumGapAndMinimumGap(50d, 30d, 20d, 10d, false, true);
+        givenASegmentWithValuesHasMaximumGapAndMinimumGap(50d, 30d, 20d, 10d, false, true);
+        givenAnotherSegmentWhichWeAreNotInterestedIn(50d, 30d, 20d, 10d, false, true);
         whenTheSegmentIsSummarised();
         thenTheSummaryIs(
                 "Until April 2016 both decrease; Cost of sunglasses more steeply, and so the gap between them reduces to 20%.");
@@ -191,7 +204,8 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
 
     @Test
     public void testBothFallingDiverging14a() {
-        givenASeriesWithValuesHasMaximumGapAndMinimumGap(50d, -200d, 60d, 40d, false, false);
+        givenASegmentWithValuesHasMaximumGapAndMinimumGap(50d, -200d, 60d, 40d, false, false);
+        givenAnotherSegmentWhichWeAreNotInterestedIn(50d, -200d, 60d, 40d, false, false);
         whenTheSegmentIsSummarised();
         thenTheSummaryIs(
                 "Until April 2016 both decrease; Cost of sunglasses more steeply, and so the gap between them grows.");
@@ -199,8 +213,9 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
 
     @Test
     public void testBothFallingDivergingToGlobalMaximumGap15a() {
-        givenASeriesWithValuesHasMaximumGapAndMinimumGap(50d, -200d, 60d, 40d, true, false);
-        givenASeriesWithValuesHasMaximumGapAndMinimumGap(50d, -200d, 60d, 40d, true, false);
+        givenASegmentWithValuesHasMaximumGapAndMinimumGap(50d, -200d, 60d, 40d, true, false);
+        givenASegmentWithValuesHasMaximumGapAndMinimumGap(50d, -200d, 60d, 40d, true, false);
+        givenAnotherSegmentWhichWeAreNotInterestedIn(50d, -200d, 60d, 40d, true, false);
         whenTheSegmentIsSummarised(1);
         thenTheSummaryIs(
                 "Until April 2016 both decrease; Cost of sunglasses more steeply, and so the gap between them grows to 240%.");
@@ -208,7 +223,8 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
 
     @Test
     public void testBothFallingDivergingToGlobalMaximumGapFirstTimeMentioned16a() {
-        givenASeriesWithValuesHasMaximumGapAndMinimumGap(50d, -200d, 60d, 40d, true, false);
+        givenASegmentWithValuesHasMaximumGapAndMinimumGap(50d, -200d, 60d, 40d, true, false);
+        givenAnotherSegmentWhichWeAreNotInterestedIn(50d, -200d, 60d, 40d, true, false);
         whenTheSegmentIsSummarised();
         thenTheSummaryIs(
                 "Until April 2016 both decrease; Cost of sunglasses more steeply, and so the gap between them grows to 240%, its maximum value.");
@@ -216,28 +232,32 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
 
     @Test
     public void testBothFallingConstant17a() {
-        givenASeriesWithValuesHasMaximumGapAndMinimumGap(100d, 50d, 200d, 150d, false, false);
+        givenASegmentWithValuesHasMaximumGapAndMinimumGap(100d, 50d, 200d, 150d, false, false);
+        givenAnotherSegmentWhichWeAreNotInterestedIn(100d, 50d, 200d, 150d, false, false);
         whenTheSegmentIsSummarised();
         thenTheSummaryIs("Until April 2016 both decrease at the same rate, and so the gap between them remains 100%.");
     }
 
     @Test
     public void testBothFlatConstantGap() {
-        givenASeriesWithValuesHasMaximumGapAndMinimumGap(100d, 100d, 50d, 50d, false, false);
+        givenASegmentWithValuesHasMaximumGapAndMinimumGap(100d, 100d, 50d, 50d, false, false);
+        givenAnotherSegmentWhichWeAreNotInterestedIn(100d, 100d, 50d, 50d, false, false);
         whenTheSegmentIsSummarised();
         thenTheSummaryIs("Until April 2016 both are constant, and so the gap between them remains 50%.");
     }
 
     @Test
     public void testBothFlatWithSameValue() {
-        givenASeriesWithValuesHasMaximumGapAndMinimumGap(100d, 100d, 100d, 100d, false, false);
+        givenASegmentWithValuesHasMaximumGapAndMinimumGap(100d, 100d, 100d, 100d, false, false);
+        givenAnotherSegmentWhichWeAreNotInterestedIn(100d, 100d, 100d, 100d, false, false);
         whenTheSegmentIsSummarised();
         thenTheSummaryIs("Until April 2016 both are constant and so the gap between them remains 0%.");
     }
 
     @Test
     public void testBothFlatConstantMaximumGapFirstTimeMentioned() {
-        givenASeriesWithValuesHasMaximumGapAndMinimumGap(100d, 100d, 50d, 50d, true, false);
+        givenASegmentWithValuesHasMaximumGapAndMinimumGap(100d, 100d, 50d, 50d, true, false);
+        givenAnotherSegmentWhichWeAreNotInterestedIn(100d, 100d, 50d, 50d, true, false);
         whenTheSegmentIsSummarised();
         thenTheSummaryIs(
                 "Until April 2016 both are constant, and so the gap between them remains 50%, its maximum value.");
@@ -245,7 +265,8 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
 
     @Test
     public void testBothFlatWithSameValueMinimumGapFirstTimeMentioned() {
-        givenASeriesWithValuesHasMaximumGapAndMinimumGap(100d, 100d, 100d, 100d, false, true);
+        givenASegmentWithValuesHasMaximumGapAndMinimumGap(100d, 100d, 100d, 100d, false, true);
+        givenAnotherSegmentWhichWeAreNotInterestedIn(100d, 100d, 100d, 100d, false, true);
         whenTheSegmentIsSummarised();
         thenTheSummaryIs(
                 "Until April 2016 both are constant and so the gap between them remains 0%, its minimum value.");
@@ -253,30 +274,32 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
 
     @Test
     public void testBothFlatConstantGapAgain() {
-        givenASeriesWithValuesHasMaximumGapAndMinimumGap(100d, 100d, 50d, 50d, true, false);
-        givenASeriesWithValuesHasMaximumGapAndMinimumGap(100d, 100d, 50d, 50d, true, false);
+        givenASegmentWithValuesHasMaximumGapAndMinimumGap(100d, 100d, 50d, 50d, true, false);
+        givenASegmentWithValuesHasMaximumGapAndMinimumGap(100d, 100d, 50d, 50d, true, false);
         whenTheSegmentIsSummarised(1);
         thenTheSummaryIs("Until April 2016 both are constant, and so the gap between them remains 50%.");
     }
 
     @Test
     public void testBothFlatWithSameValueAgain() {
-        givenASeriesWithValuesHasMaximumGapAndMinimumGap(100d, 100d, 100d, 100d, false, true);
-        givenASeriesWithValuesHasMaximumGapAndMinimumGap(100d, 100d, 100d, 100d, false, true);
+        givenASegmentWithValuesHasMaximumGapAndMinimumGap(100d, 100d, 100d, 100d, false, true);
+        givenASegmentWithValuesHasMaximumGapAndMinimumGap(100d, 100d, 100d, 100d, false, true);
         whenTheSegmentIsSummarised(1);
         thenTheSummaryIs("Until April 2016 both are constant and so the gap between them remains 0%.");
     }
 
     @Test
     public void testBothFallingConvergingToIntersectionAtEndOfSection18a() {
-        givenASeriesWithValuesHasMaximumGapAndMinimumGap(50d, -200d, 60d, -200d, false, false);
+        givenASegmentWithValuesHasMaximumGapAndMinimumGap(50d, -200d, 60d, -200d, false, false);
+        givenAnotherSegmentWhichWeAreNotInterestedIn(50d, -200d, 60d, -200d, false, false);
         whenTheSegmentIsSummarised();
         thenTheSummaryIs("By April 2016 both decrease to -200%.");
     }
 
     @Test
     public void testBothFallingConvergingToIntersectionDuringSection19a() {
-        givenASeriesWithValuesHasMaximumGapAndMinimumGap(50d, -100d, 60d, -200d, false, false);
+        givenASegmentWithValuesHasMaximumGapAndMinimumGap(50d, -100d, 60d, -200d, false, false);
+        givenAnotherSegmentWhichWeAreNotInterestedIn(50d, -200d, 60d, -200d, false, false);
         whenTheSegmentIsSummarised();
         thenTheSummaryIs(
                 "Next, both decrease; Sales of doughnuts more steeply, so they cross, and by April 2016 Cost of sunglasses is higher with -100%, while Sales of doughnuts have -200%.");
@@ -288,7 +311,8 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
 
     @Test
     public void testBothRisingConverging10b() {
-        givenASeriesWithValuesHasMaximumGapAndMinimumGap(50d, 60d, 20d, 50d, false, false);
+        givenASegmentWithValuesHasMaximumGapAndMinimumGap(50d, 60d, 20d, 50d, false, false);
+        givenAnotherSegmentWhichWeAreNotInterestedIn(50d, 60d, 20d, 50d, false, false);
         whenTheSegmentIsSummarised();
         thenTheSummaryIs(
                 "Until April 2016 both increase; Sales of doughnuts more steeply, and so the gap between them reduces.");
@@ -296,8 +320,8 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
 
     @Test
     public void testBothRisingConvergingToGlobalMinimumGap11b() {
-        givenASeriesWithValuesHasMaximumGapAndMinimumGap(50d, 130d, 20d, 110d, false, true);
-        givenASeriesWithValuesHasMaximumGapAndMinimumGap(50d, 130d, 20d, 110d, false, true);
+        givenASegmentWithValuesHasMaximumGapAndMinimumGap(50d, 130d, 20d, 110d, false, true);
+        givenASegmentWithValuesHasMaximumGapAndMinimumGap(50d, 130d, 20d, 110d, false, true);
         whenTheSegmentIsSummarised(1);
         thenTheSummaryIs(
                 "Until April 2016 both increase; Sales of doughnuts more steeply, and so the gap between them reduces to 20%.");
@@ -306,7 +330,8 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
 
     @Test
     public void testBothRisingConvergingToGlobalMinimumGapFirstTimeMentioned12b() {
-        givenASeriesWithValuesHasMaximumGapAndMinimumGap(50d, 130d, 20d, 110d, false, true);
+        givenASegmentWithValuesHasMaximumGapAndMinimumGap(50d, 130d, 20d, 110d, false, true);
+        givenAnotherSegmentWhichWeAreNotInterestedIn(50d, 130d, 20d, 110d, false, true);
         whenTheSegmentIsSummarised();
         thenTheSummaryIs(
                 "Until April 2016 both increase; Sales of doughnuts more steeply, and so the gap between them reduces to 20%, its minimum value.");
@@ -315,7 +340,8 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
     @Test
     public void testBothRisingConvergingToGlobalMinimumGapWhenGraphHasIntersections13b() {
         givenTheGraphHasIntersections();
-        givenASeriesWithValuesHasMaximumGapAndMinimumGap(50d, 130d, 20d, 110d, false, true);
+        givenASegmentWithValuesHasMaximumGapAndMinimumGap(50d, 130d, 20d, 110d, false, true);
+        givenAnotherSegmentWhichWeAreNotInterestedIn(50d, 130d, 20d, 110d, false, true);
         whenTheSegmentIsSummarised();
         thenTheSummaryIs(
                 "Until April 2016 both increase; Sales of doughnuts more steeply, and so the gap between them reduces to 20%.");
@@ -323,7 +349,8 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
 
     @Test
     public void testBothRisingDiverging14b() {
-        givenASeriesWithValuesHasMaximumGapAndMinimumGap(-250d, -200d, 60d, 340d, false, false);
+        givenASegmentWithValuesHasMaximumGapAndMinimumGap(-250d, -200d, 60d, 340d, false, false);
+        givenAnotherSegmentWhichWeAreNotInterestedIn(-250d, -200d, 60d, 340d, false, false);
         whenTheSegmentIsSummarised();
         thenTheSummaryIs(
                 "Until April 2016 both increase; Sales of doughnuts more steeply, and so the gap between them grows.");
@@ -331,8 +358,8 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
 
     @Test
     public void testBothRisingDivergingToGlobalMaximumGap15b() {
-        givenASeriesWithValuesHasMaximumGapAndMinimumGap(-250d, -200d, 60d, 340d, true, false);
-        givenASeriesWithValuesHasMaximumGapAndMinimumGap(-250d, -200d, 60d, 340d, true, false);
+        givenASegmentWithValuesHasMaximumGapAndMinimumGap(-250d, -200d, 60d, 340d, true, false);
+        givenASegmentWithValuesHasMaximumGapAndMinimumGap(-250d, -200d, 60d, 340d, true, false);
         whenTheSegmentIsSummarised(1);
         thenTheSummaryIs(
                 "Until April 2016 both increase; Sales of doughnuts more steeply, and so the gap between them grows to 540%.");
@@ -340,7 +367,8 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
 
     @Test
     public void testBothRisingDivergingToGlobalMaximumGapFirstTimeMentioned16b() {
-        givenASeriesWithValuesHasMaximumGapAndMinimumGap(-250d, -200d, 60d, 340d, true, false);
+        givenASegmentWithValuesHasMaximumGapAndMinimumGap(-250d, -200d, 60d, 340d, true, false);
+        givenAnotherSegmentWhichWeAreNotInterestedIn(-250d, -200d, 60d, 340d, true, false);
         whenTheSegmentIsSummarised();
         thenTheSummaryIs(
                 "Until April 2016 both increase; Sales of doughnuts more steeply, and so the gap between them grows to 540%, its maximum value.");
@@ -348,21 +376,24 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
 
     @Test
     public void testBothRisingConstant17b() {
-        givenASeriesWithValuesHasMaximumGapAndMinimumGap(50d, 100d, 150d, 200d, false, false);
+        givenASegmentWithValuesHasMaximumGapAndMinimumGap(50d, 100d, 150d, 200d, false, false);
+        givenAnotherSegmentWhichWeAreNotInterestedIn(50d, 100d, 150d, 200d, false, false);
         whenTheSegmentIsSummarised();
         thenTheSummaryIs("Until April 2016 both increase at the same rate, and so the gap between them remains 100%.");
     }
 
     @Test
     public void testBothRisingConvergingToIntersectionAtEndOfSection18b() {
-        givenASeriesWithValuesHasMaximumGapAndMinimumGap(-29450d, -200d, -1298721948760d, -200d, false, false);
+        givenASegmentWithValuesHasMaximumGapAndMinimumGap(-29450d, -200d, -1298721948760d, -200d, false, false);
+        givenAnotherSegmentWhichWeAreNotInterestedIn(-29450d, -200d, -1298721948760d, -200d, false, false);
         whenTheSegmentIsSummarised();
         thenTheSummaryIs("By April 2016 both increase to -200%.");
     }
 
     @Test
     public void testBothRisingConvergingToIntersectionDuringSection19b() {
-        givenASeriesWithValuesHasMaximumGapAndMinimumGap(-1550d, -100d, -1603660d, -10d, false, false);
+        givenASegmentWithValuesHasMaximumGapAndMinimumGap(-1550d, -100d, -1603660d, -10d, false, false);
+        givenAnotherSegmentWhichWeAreNotInterestedIn(-1550d, -100d, -1603660d, -10d, false, false);
         whenTheSegmentIsSummarised();
         thenTheSummaryIs(
                 "Next, both increase; Sales of doughnuts more steeply, so they cross, and by April 2016 Sales of doughnuts are higher with -10%, while Cost of sunglasses has -100%.");
@@ -370,7 +401,8 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
 
     @Test
     public void testOppositeTrendsDivergingFromSameValue20() {
-        givenASeriesWithValuesHasMaximumGapAndMinimumGap(10d, 50d, 10d, 0d, false, false);
+        givenASegmentWithValuesHasMaximumGapAndMinimumGap(10d, 50d, 10d, 0d, false, false);
+        givenAnotherSegmentWhichWeAreNotInterestedIn(10d, 50d, 10d, 0d, false, false);
         whenTheSegmentIsSummarised();
         thenTheSummaryIs(
                 "Until April 2016 Cost of sunglasses increases but Sales of doughnuts decrease, so the gap between them grows, so that Cost of sunglasses is higher with 50%, while Sales of doughnuts have 0%.");
@@ -378,8 +410,8 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
 
     @Test
     public void testOppositeTrendsDivergingFromSameValueToGlobalMaximumGap21() {
-        givenASeriesWithValuesHasMaximumGapAndMinimumGap(-1550d, 10d, -1603660d, 10d, true, false);
-        givenASeriesWithValuesHasMaximumGapAndMinimumGap(10d, 50d, 10d, 0d, true, false);
+        givenASegmentWithValuesHasMaximumGapAndMinimumGap(-1550d, 10d, -1603660d, 10d, true, false);
+        givenASegmentWithValuesHasMaximumGapAndMinimumGap(10d, 50d, 10d, 0d, true, false);
         whenTheSegmentIsSummarised(1);
         thenTheSummaryIs(
                 "Until April 2016 Cost of sunglasses increases but Sales of doughnuts decrease, so the gap between them grows to 50%, so that Cost of sunglasses is higher with 50%, while Sales of doughnuts have 0%.");
@@ -387,7 +419,8 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
 
     @Test
     public void testOppositeTrendsDivergingFromSameValueToGlobalMaximumGapFirstTimeMentioned22() {
-        givenASeriesWithValuesHasMaximumGapAndMinimumGap(10d, 50d, 10d, 0d, true, false);
+        givenASegmentWithValuesHasMaximumGapAndMinimumGap(10d, 50d, 10d, 0d, true, false);
+        givenAnotherSegmentWhichWeAreNotInterestedIn(10d, 50d, 10d, 0d, true, false);
         whenTheSegmentIsSummarised();
         thenTheSummaryIs(
                 "Until April 2016 Cost of sunglasses increases but Sales of doughnuts decrease, so the gap between them grows to 50%, its maximum value, so that Cost of sunglasses is higher with 50%, while Sales of doughnuts have 0%.");
@@ -395,7 +428,8 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
 
     @Test
     public void testBothFallingDivergingFromSameValue23a() {
-        givenASeriesWithValuesHasMaximumGapAndMinimumGap(60d, -200d, 60d, 40d, false, false);
+        givenASegmentWithValuesHasMaximumGapAndMinimumGap(60d, -200d, 60d, 40d, false, false);
+        givenAnotherSegmentWhichWeAreNotInterestedIn(60d, -200d, 60d, 40d, false, false);
         whenTheSegmentIsSummarised();
         thenTheSummaryIs(
                 "Until April 2016 both decrease, Cost of sunglasses more steeply and so, the gap between them grows, so that Sales of doughnuts are higher with 40%, while Cost of sunglasses has -200%.");
@@ -403,8 +437,8 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
 
     @Test
     public void testBothFallingDivergingToGlobalMaximumGapFromSameValue24a() {
-        givenASeriesWithValuesHasMaximumGapAndMinimumGap(-1550d, 10d, -1603660d, 10d, true, false);
-        givenASeriesWithValuesHasMaximumGapAndMinimumGap(60d, -200d, 60d, 40d, true, false);
+        givenASegmentWithValuesHasMaximumGapAndMinimumGap(-1550d, 10d, -1603660d, 10d, true, false);
+        givenASegmentWithValuesHasMaximumGapAndMinimumGap(60d, -200d, 60d, 40d, true, false);
         whenTheSegmentIsSummarised(1);
         thenTheSummaryIs(
                 "Until April 2016 both decrease, Cost of sunglasses more steeply and so, the gap between them grows to 240%, so that Sales of doughnuts are higher with 40%, while Cost of sunglasses has -200%.");
@@ -412,7 +446,8 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
 
     @Test
     public void testBothFallingDivergingToGlobalMaximumGapFromSameValueFirstTimeMentioned25a() {
-        givenASeriesWithValuesHasMaximumGapAndMinimumGap(60d, -200d, 60d, 40d, true, false);
+        givenASegmentWithValuesHasMaximumGapAndMinimumGap(60d, -200d, 60d, 40d, true, false);
+        givenAnotherSegmentWhichWeAreNotInterestedIn(60d, -200d, 60d, 40d, true, false);
         whenTheSegmentIsSummarised();
         thenTheSummaryIs(
                 "Until April 2016 both decrease, Cost of sunglasses more steeply and so the gap between them grows to 240%, its maximum value, so that Sales of doughnuts are higher with 40%, while Cost of sunglasses has -200%.");
@@ -423,14 +458,16 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
      */
     @Test
     public void testBothFallingConstantGapFromSameValue26a() {
-        givenASeriesWithValuesHasMaximumGapAndMinimumGap(100d, 50d, 100d, 50d, false, false);
+        givenASegmentWithValuesHasMaximumGapAndMinimumGap(100d, 50d, 100d, 50d, false, false);
+        givenAnotherSegmentWhichWeAreNotInterestedIn(100d, 50d, 100d, 50d, false, false);
         whenTheSegmentIsSummarised();
         thenTheSummaryIs("Until April 2016 both decrease at the same rate, and so the gap between them remains 0%.");
     }
 
     @Test
     public void testBothRisingDivergingFromSameValue23b() {
-        givenASeriesWithValuesHasMaximumGapAndMinimumGap(-250d, -200d, -250d, 340d, false, false);
+        givenASegmentWithValuesHasMaximumGapAndMinimumGap(-250d, -200d, -250d, 340d, false, false);
+        givenAnotherSegmentWhichWeAreNotInterestedIn(-250d, -200d, -250d, 340d, false, false);
         whenTheSegmentIsSummarised();
         thenTheSummaryIs(
                 "Until April 2016 both increase; Sales of doughnuts more steeply and so the gap between them grows, so that Sales of doughnuts are higher with 340%, while Cost of sunglasses has -200%.");
@@ -438,8 +475,9 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
 
     @Test
     public void testBothRisingDivergingToGlobalMaximumGapFromSameValue24b() {
-        givenASeriesWithValuesHasMaximumGapAndMinimumGap(-250d, -200d, -250d, 340d, true, false);
-        givenASeriesWithValuesHasMaximumGapAndMinimumGap(-250d, -200d, -250d, 340d, true, false);
+        givenASegmentWithValuesHasMaximumGapAndMinimumGap(-250d, -200d, -250d, 340d, true, false);
+        givenASegmentWithValuesHasMaximumGapAndMinimumGap(-250d, -200d, -250d, 340d, true, false);
+        givenAnotherSegmentWhichWeAreNotInterestedIn(-250d, -200d, -250d, 340d, true, false);
         whenTheSegmentIsSummarised(1);
         thenTheSummaryIs(
                 "Until April 2016 both increase; Sales of doughnuts more steeply and so the gap between them grows to 540%, so that Sales of doughnuts are higher with 340%, while Cost of sunglasses has -200%.");
@@ -447,7 +485,8 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
 
     @Test
     public void testBothRisingDivergingToGlobalMaximumGapFromSameValueFirstTimeMentioned25b() {
-        givenASeriesWithValuesHasMaximumGapAndMinimumGap(-250d, -200d, -250d, 340d, true, false);
+        givenASegmentWithValuesHasMaximumGapAndMinimumGap(-250d, -200d, -250d, 340d, true, false);
+        givenAnotherSegmentWhichWeAreNotInterestedIn(-250d, -200d, -250d, 340d, true, false);
         whenTheSegmentIsSummarised();
         thenTheSummaryIs(
                 "Until April 2016 both increase; Sales of doughnuts more steeply and so the gap between them grows to 540%, its maximum value, so that Sales of doughnuts are higher with 340%, while Cost of sunglasses has -200%.");
@@ -455,12 +494,20 @@ public class GraphSegmentSummaryServiceImplTest extends AbstractGraphSegmentTest
 
     @Test
     public void testBothRisingConstantGapFromSameValue26b() {
-        givenASeriesWithValuesHasMaximumGapAndMinimumGap(100d, 200d, 100d, 200d, false, false);
+        givenASegmentWithValuesHasMaximumGapAndMinimumGap(100d, 200d, 100d, 200d, false, false);
+        givenAnotherSegmentWhichWeAreNotInterestedIn(100d, 200d, 100d, 200d, false, false);
         whenTheSegmentIsSummarised();
         thenTheSummaryIs("Until April 2016 both increase at the same rate, and so the gap between them remains 0%.");
     }
 
-    private void givenASeriesWithValuesHasMaximumGapAndMinimumGap(final double firstSeriesStartValue,
+    private void givenAnotherSegmentWhichWeAreNotInterestedIn(final double firstSeriesStartValue,
+            final double firstSeriesEndValue, final double secondSeriesStartValue, final double secondSeriesEndValue,
+            final boolean maximumGap, final boolean minimumGap) {
+        givenASegmentWithValuesHasMaximumGapAndMinimumGap(firstSeriesStartValue, firstSeriesEndValue,
+                secondSeriesStartValue, secondSeriesEndValue, maximumGap, minimumGap);
+    }
+
+    private void givenASegmentWithValuesHasMaximumGapAndMinimumGap(final double firstSeriesStartValue,
             final double firstSeriesEndValue, final double secondSeriesStartValue, final double secondSeriesEndValue,
             final boolean maximumGap, final boolean minimumGap) {
         final GradientType firstSeriesTrend = trendFromValues(firstSeriesStartValue, firstSeriesEndValue);

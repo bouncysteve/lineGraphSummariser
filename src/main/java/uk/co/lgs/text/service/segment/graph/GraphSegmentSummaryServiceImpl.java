@@ -57,9 +57,18 @@ public class GraphSegmentSummaryServiceImpl implements GraphSegmentSummaryServic
         final List<DocumentElement> segmentSummaries = new ArrayList<>();
         boolean mentionedMaxGapYet = false;
         boolean mentionedMinGapYet = false;
+        int index = 0;
+        boolean lastSegment = false;
+        boolean forceDescribeEndState = false;
         for (final GraphSegment graphSegment : model.getGraphSegments()) {
-            segmentSummaries
-                    .add(getSummary(graphSegment, intersectingGraph, mentionedMaxGapYet, mentionedMinGapYet, labels));
+            if (index++ == model.getSegmentCount() - 1) {
+                lastSegment = true;
+            }
+            if (lastSegment) {
+                forceDescribeEndState = !segmentWillDescribeEndState(graphSegment);
+            }
+            segmentSummaries.add(getSummary(graphSegment, intersectingGraph, mentionedMaxGapYet, mentionedMinGapYet,
+                    labels, forceDescribeEndState));
             if (!mentionedMaxGapYet && graphSegment.isGlobalMaximumGapAtSegmentEnd()) {
                 mentionedMaxGapYet = true;
             }
@@ -70,20 +79,34 @@ public class GraphSegmentSummaryServiceImpl implements GraphSegmentSummaryServic
         return segmentSummaries;
     }
 
+    private boolean segmentWillDescribeEndState(final GraphSegment graphSegment) {
+        final boolean willDescribeEndState = graphSegment.isIntersecting()
+                || 0 == graphSegment.getGapBetweenSeriesStartValues()
+                || 0 == graphSegment.getGapBetweenSeriesEndValues();
+        return willDescribeEndState;
+    }
+
     private DocumentElement getSummary(final GraphSegment graphSegment, final boolean intersectingGraph,
-            final boolean mentionedMaxGapYet, final boolean mentionedMinGapYet, final List<NPPhraseSpec> labels) {
+            final boolean mentionedMaxGapYet, final boolean mentionedMinGapYet, final List<NPPhraseSpec> labels,
+            final boolean forceDescribeEndState) {
         LOG.info("******************************************");
         DocumentElement summary;
         CoordinatedPhraseElement endValuesPhrase = null;
         // TODO: Hack! It doesn't make sense to talk about converging if the
         // series start on the same value. There may be something else wrong
         // here.
-        if (null == graphSegment.getHigherSeriesAtStart() && null != graphSegment.getHigherSeriesAtEnd()
-                && !GapTrend.CONVERGING.equals(graphSegment.getGapTrend())) {
+        if (forceDescribeEndState
+                || null != graphSegment.getHigherSeriesAtEnd() && null == graphSegment.getHigherSeriesAtStart()
+                        && !GapTrend.CONVERGING.equals(graphSegment.getGapTrend())) {
             endValuesPhrase = describeSeriesWithDifferentEndValues(labels, graphSegment);
             LOG.info(REALISER.realiseSentence(endValuesPhrase));
-            endValuesPhrase.addPreModifier(
-                    this.nlgFactory.createPrepositionPhrase(this.synonymService.getSynonym(Constants.SO_THAT)));
+            if (!forceDescribeEndState) {
+                endValuesPhrase.addPreModifier(
+                        this.nlgFactory.createPrepositionPhrase(this.synonymService.getSynonym(Constants.SO_THAT)));
+            } else {
+                endValuesPhrase.addPreModifier(this.nlgFactory.createPrepositionPhrase(
+                        this.synonymService.getSynonym(Constants.AND_AT_THE_END_OF_THE_GRAPH)));
+            }
             LOG.info(REALISER.realiseSentence(endValuesPhrase));
         }
 
@@ -351,11 +374,11 @@ public class GraphSegmentSummaryServiceImpl implements GraphSegmentSummaryServic
     }
 
     private String getMaximumValue(final boolean mentionedMaxGapYet) {
-        return mentionedMaxGapYet ? "" : "its maximum value";
+        return mentionedMaxGapYet ? "" : Constants.ITS_MAXIMUM_VALUE;
     }
 
     private String getMinimumValue(final boolean mentionedMinGapYet, final boolean intersectingGraph) {
-        String minPhrase = "its minimum value";
+        String minPhrase = Constants.ITS_MINIMUM_VALUE;
 
         if (mentionedMinGapYet || intersectingGraph) {
             minPhrase = "";

@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.mockito.Mock;
+import org.mockito.Spy;
 
 import uk.co.lgs.model.graph.GraphModel;
 import uk.co.lgs.model.graph.collator.exception.CollatorException;
@@ -27,6 +28,9 @@ public abstract class AbstractModelCollatorTest extends AbstractTest {
     static final String DUMMY_START_TIME = "start";
     static final String COLLATED_END_TIME = "endLater";
 
+    @Spy
+    GapService gapService = new GapServiceImpl();
+
     @Mock
     GraphModel inputGraphModel;
     GraphModel outputGraphModel;
@@ -35,24 +39,22 @@ public abstract class AbstractModelCollatorTest extends AbstractTest {
     @Mock
     SeriesSegment secondSeries;
 
-    protected ModelCollator underTest;
-
     public AbstractModelCollatorTest() {
         super();
     }
 
-    protected void givenAModelContainingSegmentCategoriesAndGapTrends(List<GraphSegmentGradient> categories,
-            List<GapTrend> gapTrendList) throws SegmentCategoryNotFoundException, SegmentAppendException {
-        List<GraphSegment> segments = new ArrayList<GraphSegment>();
+    protected void givenAModelContainingSegmentCategoriesAndGapTrends(final List<GraphSegmentGradient> categories,
+            final List<GapTrend> gapTrendList) throws SegmentCategoryNotFoundException, SegmentAppendException {
+        final List<GraphSegment> segments = new ArrayList<GraphSegment>();
         int index = 0;
-        GraphSegment collatedSegment = mock(GraphSegmentImpl.class);
+        final GraphSegment collatedSegment = mock(GraphSegmentImpl.class);
         when(collatedSegment.getLength()).thenReturn(2);
         when(collatedSegment.getGraphSegmentGradientCategory()).thenReturn(categories.get(0));
         when(collatedSegment.getStartTime()).thenReturn(DUMMY_START_TIME);
         when(collatedSegment.getEndTime()).thenReturn(COLLATED_END_TIME);
         when(collatedSegment.getGapTrend()).thenReturn(gapTrendList.get(0));
-        for (GraphSegmentGradient category : categories) {
-            GraphSegment segment = mock(GraphSegmentImpl.class);
+        for (final GraphSegmentGradient category : categories) {
+            final GraphSegment segment = mock(GraphSegmentImpl.class);
             when(segment.getGraphSegmentGradientCategory()).thenReturn(category);
             when(segment.isIntersecting()).thenReturn(category.isIntersecting());
             when(segment.getLength()).thenReturn(1);
@@ -72,31 +74,29 @@ public abstract class AbstractModelCollatorTest extends AbstractTest {
         when(this.inputGraphModel.getLength()).thenReturn(categories.size());
     }
 
-    protected void whenTheModelIsCollated() throws SegmentCategoryNotFoundException, CollatorException {
-        this.outputGraphModel = this.underTest.collate(this.inputGraphModel);
-    }
+    protected abstract void whenTheModelIsCollated() throws SegmentCategoryNotFoundException, CollatorException;
 
-    protected void thenTheModelHasSegments(List<GraphSegmentGradient> categoryList) {
-        List<GraphSegment> segments = this.outputGraphModel.getGraphSegments();
+    protected void thenTheModelHasSegments(final List<GraphSegmentGradient> categoryList) {
+        final List<GraphSegment> segments = this.outputGraphModel.getGraphSegments();
         for (int i = 0; i < categoryList.size(); i++) {
             assertEquals(categoryList.get(i), segments.get(i).getGraphSegmentGradientCategory());
         }
     }
 
-    protected void thenTheModelSaysItIsCollated(boolean expectedCollatedStatus) {
+    protected void thenTheModelSaysItIsCollated(final boolean expectedCollatedStatus) {
         assertEquals(expectedCollatedStatus, this.outputGraphModel.isCollated());
     }
 
-    protected void thenTheModelHasLengths(List<Integer> lengthList) {
-        List<GraphSegment> segments = this.outputGraphModel.getGraphSegments();
+    protected void thenTheModelHasLengths(final List<Integer> lengthList) {
+        final List<GraphSegment> segments = this.outputGraphModel.getGraphSegments();
         for (int i = 0; i < lengthList.size(); i++) {
             assertEquals(lengthList.get(i), (Integer) segments.get(i).getLength());
         }
 
     }
 
-    protected void thenTheModelHasGaps(List<GapTrend> gapTrends) {
-        List<GraphSegment> segments = this.outputGraphModel.getGraphSegments();
+    protected void thenTheModelHasGaps(final List<GapTrend> gapTrends) {
+        final List<GraphSegment> segments = this.outputGraphModel.getGraphSegments();
         for (int i = 0; i < gapTrends.size(); i++) {
             assertEquals(gapTrends.get(i), segments.get(i).getGapTrend());
         }

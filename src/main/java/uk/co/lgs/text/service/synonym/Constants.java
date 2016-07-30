@@ -24,6 +24,8 @@ public class Constants {
     public static final String INCREASE_SERIES = "increase";
     public static final String IN = "in";
     public static final String IT = "it";
+    public static final String ITS_MINIMUM_VALUE = "its minimum value";
+    public static final String ITS_MAXIMUM_VALUE = "its maximum value";
     public static final String MORE_STEEPLY = "more steeply";
     public static final String NEXT = "next";
     public static final String REMAIN_GAP = "remain";
@@ -39,6 +41,7 @@ public class Constants {
     public static final String UNTIL = "until";
     public static final String WHILE = "while";
     public static final String WITH = "with";
+    public static final String AND_AT_THE_END_OF_THE_GRAPH = "and at the end of the graph";
 
     private Constants() {
         // I should not be instantiated.

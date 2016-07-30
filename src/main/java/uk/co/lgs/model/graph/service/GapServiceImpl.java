@@ -55,12 +55,8 @@ public class GapServiceImpl implements GapService {
         graphSegmentsWithGapInfo.addAll(graphSegments);
         for (final GraphSegment graphSegment : graphSegmentsWithGapInfo) {
             final double gap = graphSegment.getGapBetweenSeriesEndValues();
-            if (!graphContainsIntersection && gap == minimumGap) {
-                graphSegment.setGlobalMinimumGapAtSegmentEnd(true);
-            }
-            if (gap == maximumGap) {
-                graphSegment.setGlobalMaximumGapAtSegmentEnd(true);
-            }
+            graphSegment.setGlobalMinimumGapAtSegmentEnd(!graphContainsIntersection && gap == minimumGap);
+            graphSegment.setGlobalMaximumGapAtSegmentEnd(gap == maximumGap);
         }
         return graphSegmentsWithGapInfo;
     }
