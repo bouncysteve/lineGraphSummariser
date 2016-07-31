@@ -22,4 +22,8 @@ public interface GraphSegmentSummaryService {
      * @return
      */
     List<DocumentElement> getSegmentSummaries(final GraphModel model);
+
+    String getMaximumValue(boolean mentionedMaxGapYet);
+
+    String getMinimumValue(boolean mentionedMinGapYet, boolean intersectingGraph);
 }

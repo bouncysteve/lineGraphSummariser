@@ -55,6 +55,10 @@ public class GraphSegmentImpl implements GraphSegment {
 
     private boolean endValuesAreGlobalMinimumGap;
 
+    private boolean startValuesAreGlobalMaximumGap;
+
+    private boolean startValuesAreGlobalMinimumGap;
+
     /**
      * I create an object representing two series between two points in time.
      *
@@ -338,5 +342,27 @@ public class GraphSegmentImpl implements GraphSegment {
     @Override
     public double getGapBetweenSeriesStartValues() {
         return Math.abs(this.getSeriesSegment(0).getStartValue() - this.getSeriesSegment(1).getStartValue());
+    }
+
+    @Override
+    public boolean isGlobalMinimumGapAtSegmentStart() {
+        return this.startValuesAreGlobalMinimumGap;
+    }
+
+    @Override
+    public void setGlobalMinimumGapAtSegmentStart(final boolean b) {
+        this.startValuesAreGlobalMinimumGap = b;
+
+    }
+
+    @Override
+    public boolean isGlobalMaximumGapAtSegmentStart() {
+        return this.startValuesAreGlobalMaximumGap;
+    }
+
+    @Override
+    public void setGlobalMaximumGapAtSegmentStart(final boolean b) {
+        this.startValuesAreGlobalMaximumGap = b;
+
     }
 }

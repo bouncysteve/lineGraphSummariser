@@ -373,11 +373,13 @@ public class GraphSegmentSummaryServiceImpl implements GraphSegmentSummaryServic
                         graphSegment.getSeriesSegment(0).getUnits()));
     }
 
-    private String getMaximumValue(final boolean mentionedMaxGapYet) {
+    @Override
+    public String getMaximumValue(final boolean mentionedMaxGapYet) {
         return mentionedMaxGapYet ? "" : Constants.ITS_MAXIMUM_VALUE;
     }
 
-    private String getMinimumValue(final boolean mentionedMinGapYet, final boolean intersectingGraph) {
+    @Override
+    public String getMinimumValue(final boolean mentionedMinGapYet, final boolean intersectingGraph) {
         String minPhrase = Constants.ITS_MINIMUM_VALUE;
 
         if (mentionedMinGapYet || intersectingGraph) {

@@ -123,6 +123,7 @@ public class GraphSummaryServiceImpl implements GraphSummaryService {
         final SeriesSegment firstSeriesSegment = firstSegment.getSeriesSegment(0);
 
         final String startTime = firstSegment.getStartTime();
+        final CoordinatedPhraseElement parentPhrase = this.nlgFactory.createCoordinatedPhrase();
         final NLGElement higherSeriesAtStartPhrase;
         final PPPhraseSpec preposition = this.nlgFactory.createPrepositionPhrase(Constants.IN, startTime);
 
@@ -132,10 +133,43 @@ public class GraphSummaryServiceImpl implements GraphSummaryService {
             higherSeriesAtStartPhrase = describeSeriesWithDifferentStartValues(labels, firstSegment, higherSeries,
                     preposition);
         }
+        parentPhrase.addCoordinate(higherSeriesAtStartPhrase);
+
+        if (firstSegment.isGlobalMaximumGapAtSegmentStart()) {
+            parentPhrase.addCoordinate(getMaximumGapPhrase(firstSegment));
+        } else if (firstSegment.isGlobalMinimumGapAtSegmentStart()) {
+            parentPhrase.addCoordinate(getMinimumGapPhrase(firstSegment, model.isIntersecting()));
+        }
         if (LOG.isDebugEnabled()) {
             LOG.debug("Start of graph phrase: {}", REALISER.realiseSentence(higherSeriesAtStartPhrase));
         }
-        return higherSeriesAtStartPhrase;
+        return parentPhrase;
+    }
+
+    private SPhraseSpec getMaximumGapPhrase(final GraphSegment firstSegment) {
+        final SPhraseSpec gapPhrase = getGapPhrase(firstSegment);
+        gapPhrase.addPostModifier(this.graphSegmentSummaryService.getMaximumValue(false));
+        return gapPhrase;
+    }
+
+    private SPhraseSpec getMinimumGapPhrase(final GraphSegment firstSegment, final boolean intersecting) {
+        final SPhraseSpec gapPhrase = getGapPhrase(firstSegment);
+        gapPhrase.addPostModifier(this.graphSegmentSummaryService.getMinimumValue(false, intersecting));
+        return gapPhrase;
+    }
+
+    private SPhraseSpec getGapPhrase(final GraphSegment firstSegment) {
+        final SPhraseSpec gapPhrase = this.nlgFactory.createClause();
+        gapPhrase.setSubject(this.synonymService.getSynonym(Constants.THE_GAP_BETWEEN_THEM));
+        gapPhrase.setVerb(this.nlgFactory.createVerbPhrase("be"));
+        gapPhrase.addComplement(getGapValue(firstSegment, null));
+        return gapPhrase;
+    }
+
+    private PPPhraseSpec getGapValue(final GraphSegment graphSegment, final String preposition) {
+        return this.nlgFactory.createPrepositionPhrase(this.synonymService.getSynonym(preposition),
+                this.valueService.formatValueWithUnits(graphSegment.getGapBetweenSeriesStartValues(),
+                        graphSegment.getSeriesSegment(0).getUnits()));
     }
 
     private PhraseElement describeSeriesWithSameStartValue(final List<NPPhraseSpec> labels,

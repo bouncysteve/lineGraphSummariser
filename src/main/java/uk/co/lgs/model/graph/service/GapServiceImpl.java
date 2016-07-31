@@ -53,8 +53,15 @@ public class GapServiceImpl implements GapService {
             final boolean graphContainsIntersection, final List<GraphSegment> graphSegments) {
         final List<GraphSegment> graphSegmentsWithGapInfo = new ArrayList<>();
         graphSegmentsWithGapInfo.addAll(graphSegments);
+        boolean firstSegment = true;
         for (final GraphSegment graphSegment : graphSegmentsWithGapInfo) {
             final double gap = graphSegment.getGapBetweenSeriesEndValues();
+            if (firstSegment) {
+                final double startGap = graphSegment.getGapBetweenSeriesStartValues();
+                graphSegment.setGlobalMinimumGapAtSegmentStart(!graphContainsIntersection && startGap == minimumGap);
+                graphSegment.setGlobalMaximumGapAtSegmentStart(startGap == maximumGap);
+                firstSegment = false;
+            }
             graphSegment.setGlobalMinimumGapAtSegmentEnd(!graphContainsIntersection && gap == minimumGap);
             graphSegment.setGlobalMaximumGapAtSegmentEnd(gap == maximumGap);
         }
